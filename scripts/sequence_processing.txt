@@ -1,0 +1,67 @@
+
+# Unzip sequence data archive
+unzip ../data/Cunning_3967Raw09172015.zip -d ../data/fastq
+
+# Generate config files for merging reads with illumina-utils
+iu-gen-configs ../data/fastq_list.txt -o ../data/merged
+
+# Merge paired reads for each sample (in parallel, 22 at a time)
+for i in $(seq 1 $(ls -1 ../data/merged/*.ini | wc -l))
+do
+  file=$(ls -1 ../data/merged/*.ini | head -$i | tail -1)
+  iu-merge-pairs  $file  --min-overlap-size 150 --enforce-Q30-check --marker-gene-stringent &
+  if (( $i % 22 == 0 )); then wait; fi
+done
+wait
+
+# Filter sequences - keep only those with 3 mismatches or less
+for i in ../data/*_MERGED
+do
+iu-filter-merged-reads $i --max-mismatches 3
+done
+
+# Add QIIME labels
+add_qiime_labels.py -m ../data/mapping_file.txt -i ../data/merged/ -c InputFileName -o ../data/merged
+
+# Chimera checking
+identify_chimeric_seqs.py -i ../data/merged/combined_seqs.fna --suppress_usearch61_ref -m usearch61 -o ../data/merged/usearch61_chimeras
+filter_fasta.py -f ../data/merged/combined_seqs.fna -o ../data/merged/seqs_chimera_filtered.fasta -s ../data/merged/usearch61_chimeras/chimeras.txt -n
+
+# Split into individual sample files
+split_sequence_file_on_sample_ids.py -i ../data/merged/seqs_chimera_filtered.fasta -o ../data/filtered
+
+# OTU clustering at 97% similarity for each sample
+for i in ../data/filtered/*.fasta
+do
+s=`echo $i | grep -Eoh '/[0-9]{1,4}' | cut -c 2-`
+pick_otus.py -i $i -s 0.97 --denovo_otu_id_prefix $s'_denovo' -o ../data/clustered_97
+done
+
+# Pick representative sequence set for each sample
+for i in ../data/clustered_97/*_otus.txt
+do
+s=`echo $i | grep -Eoh '/[0-9]{1,4}' | cut -c 2-`
+pick_rep_set.py -i $i -m most_abundant -f '../data/filtered/'$s'.fasta' -o '../data/clustered_97/'$s'_rep_set.fasta'
+count_seqs.py -i '../data/clustered_97/'$s'_rep_set.fasta'
+done
+
+# Merge all rep sets together
+cat ../data/clustered_97/*_rep_set.fasta > ../data/clustered_97/all_rep_set.fasta
+
+# Cluster all rep sets at 100% identity
+pick_otus.py -i ../data/clustered_97/all_rep_set.fasta -s 1.0 -o ../data/clustered_97
+
+# Get rep set of 100% OTUs and assign taxonomy
+pick_rep_set.py -i ../data/clustered_97/all_rep_set_otus.txt -f ../data/clustered_97/all_rep_set.fasta -o ../data/clustered_97/all_rep_set_rep_set.fasta
+assign_taxonomy.py -i ../data/clustered_97/all_rep_set_rep_set.fasta -r ../data/Unaligned_ITS2_Database_23April13.fasta -t ../data/id_to_taxonomy_subtype_mod.txt -m blast -o ../data/clustered_97/blast_taxonomy
+
+# Make list of "no blast hits"
+awk '/No blast hit/' ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt > ../data/clustered_97/blast_taxonomy/no_blast_hits.txt
+ 
+# Concatenate 97% OTU maps and merge with 100% OTU map
+cat ../data/clustered_97/*_otus.txt > ../data/clustered_97/all_97_otus.txt
+merge_otu_maps.py -i ../data/clustered_97/all_97_otus.txt,../data/clustered_97/all_rep_set_otus.txt -o ../data/clustered_97/merged_otu_map.txt
+
+# Make OTU table excluding no blast hits
+make_otu_table.py -i ../data/clustered_97/merged_otu_map.txt -t ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt -e ../data/clustered_97/blast_taxonomy/no_blast_hits.txt -o ../data/clustered_97/otu_table.biom
+biom convert -i ../data/clustered_97/otu_table.biom -o ../data/clustered_97/otu_table.tsv --to-tsv --header-key taxonomy
