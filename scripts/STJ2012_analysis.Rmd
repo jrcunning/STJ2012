@@ -6,7 +6,9 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = normalizePath(".."))
 knitr::opts_chunk$set(echo = TRUE)
+
 options(scipen = 4, digits = 2)
 library(phyloseq); library(vegan)
 
@@ -204,4 +206,5 @@ plot_bar(dstr, x="Sample", y="Abundance", fill="Subtype")
 # Also try 100% OTUs
 ```
 
-     
+
+    
