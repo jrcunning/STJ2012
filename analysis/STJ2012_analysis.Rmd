@@ -2,7 +2,9 @@
 title: "STJ2012 analysis"
 author: "Ross Cunning"
 date: "July 28, 2016"
-output: html_document
+output: 
+  html_document: 
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -18,7 +20,8 @@ taxcolors <- matrix(c(rgb(141, 211, 199, maxColorValue=255), rgb(255, 255, 179, 
                     dimnames=list(c("CladeA", "CladeB", "CladeC", "CladeD", "CladeF")))
 ```
 
-## Import data
+# Data pre-processing
+## Import dataset
 
 ```{r data_import, cache=T}
 # Import OTU table
@@ -34,13 +37,13 @@ phy <- phyloseq(OTU, TAX, SAM)
 phy
 ```
 
-## Descriptive statistics for dataset  
+#### Descriptive statistics  
 * Total count in OTU table: `r sum(otu_table(phy))`  
 * Number of samples: `r nsamples(phy)`  
 * Number of OTUs: `r ntaxa(phy)`  
 
 #### Distribution of OTU counts and reads per sample  
-```{r phy_histograms, fig.height=3, fig.width=8}
+```{r phy_histograms, fig.height=2, fig.width=8}
 taxhist <- hist(log10(taxa_sums(phy)), plot=F)
 samhist <- hist(log10(sample_sums(phy)), plot=F)
 
@@ -85,8 +88,13 @@ phy.f <- prune_samples(sample_sums(phy.f)>=sn, phy.f)
 
 * Number of samples remaining in dataset: `r nsamples(phy.f) `
 
-#### Distribution of OTU counts and reads per sample post-filtering
-```{r phy.f_histograms, fig.height=3, fig.width=8}
+#### Descriptive statistics of filtered dataset
+* Total count in OTU table: `r sum(otu_table(phy.f))`  
+* Number of samples: `r nsamples(phy.f)`  
+* Number of OTUs: `r ntaxa(phy.f)` 
+
+#### Distribution of OTU counts and reads of filtered dataset
+```{r phy.f_histograms, fig.height=2, fig.width=8}
 taxhist <- hist(log10(taxa_sums(phy.f)), plot=F)
 samhist <- hist(log10(sample_sums(phy.f)), plot=F)
 
@@ -107,7 +115,7 @@ plot(samhist, col="black", main=NA, xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
 plot_bar(phy.f, x="Sample", y="Abundance")
 ```
 
-## Transform taxa count data
+## Transform count data
 ```{r transform}
 # Convert to proportion (relative abundance)
 phy.f.p <- transform_sample_counts(phy.f, function(x) x/sum(x))
@@ -116,9 +124,12 @@ transform <- function(x) sqrt(x/sum(x))  # Set transformation function
 phy.f.t <- transform_sample_counts(phy.f, transform)  # Transform data
 ```
 
-## Community composition in all samples
+-----
+
+# Data analysis
+## *Symbiodinium* community composition barplots
 Here the composition of each sample is plotted as a horizontal bar, sorted by species and shore. Each segment of the bar represents an individual OTU. In the lefthand plot, all OTUs are colored by clade, in the right OTU, all OTUs are given a unique color.
-```{r cladecomp, fig.height=6, fig.width=10}
+```{r cladecomp, fig.height=6, fig.width=8}
 # Define function to plot Symbiodinium community composition
 composition <- function(phy, col, legend=T) {
   samdat <- data.frame(sample_data(phy))
@@ -160,11 +171,13 @@ composition(phy.f.p, col=rainbow(ntaxa(phy.f.p)), legend=F)
 
 ```
 
+## Beta diversity
+
+```{r beta, cache=T}
 # Statistical comparison of beta diversity defined by multivariate dispersion of B-C dissimilarity
 #   Calculate distances to group centroids in full-dimensional principal coordinate space
 #   Implemented by vegan betadisper(), based on Anderson (2006).
 # Compartments/species:
-```{r beta, cache=T}
 sambd <- betadisper(d=vegdist(t(otu_table(phy.f.t)), method="bray"), 
                     group=data.frame(sample_data(phy.f.t))$Species, type="centroid")
 anova(sambd)
