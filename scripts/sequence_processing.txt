@@ -66,6 +66,8 @@ merge_otu_maps.py -i ../data/clustered_97/all_97_otus.txt,../data/clustered_97/a
 make_otu_table.py -i ../data/clustered_97/merged_otu_map.txt -t ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt -e ../data/clustered_97/blast_taxonomy/no_blast_hits.txt -o ../data/clustered_97/otu_table.biom
 biom convert -i ../data/clustered_97/otu_table.biom -o ../data/clustered_97/otu_table.tsv --to-tsv
 
-# Copy final OTU table and taxonomy to data directory
+# Add clade to tax table and copy to data directory
+cut -d$'\t' -f4- ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt | cut -c-1 | paste - ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt > ../data/tax_assignments.txt
+
+# Copy final OTU table to data directory
 cp ../data/clustered_97/otu_table.tsv ../data/otu_table.tsv
-cp ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt ../data/tax_assignments.txt
