@@ -12,7 +12,7 @@ knitr::opts_knit$set(root.dir = normalizePath(".."))
 knitr::opts_chunk$set(echo = TRUE)
 
 options(scipen = 4, digits = 2)
-library(phyloseq); library(vegan)
+library(phyloseq); library(vegan); library(multcompView)
 
 taxcolors <- matrix(c(rgb(141, 211, 199, maxColorValue=255), rgb(255, 255, 179, maxColorValue=255), 
                       rgb(190, 186, 218, maxColorValue=255), rgb(251, 128, 114, maxColorValue=255), 
@@ -127,7 +127,7 @@ phy.f.t <- transform_sample_counts(phy.f, transform)  # Transform data
 -----
 
 # Data analysis
-## *Symbiodinium* community composition barplots
+## Community composition barplots
 Here the composition of each sample is plotted as a horizontal bar, sorted by species and shore. Each segment of the bar represents an individual OTU. In the lefthand plot, all OTUs are colored by clade, in the right OTU, all OTUs are given a unique color.
 ```{r cladecomp, fig.height=6, fig.width=8}
 # Define function to plot Symbiodinium community composition
@@ -137,7 +137,8 @@ composition <- function(phy, col, legend=T) {
   samdat$Species <- factor(samdat$Species, levels=rev(levels(samdat$Species)))
   samdat$Shore <- factor(samdat$Shore, levels=rev(levels(samdat$Shore)))
   samdat <- samdat[with(samdat, order(Genus, Species, Shore)), ]
-  typerelabund <- as.matrix(otu_table(phy)[order(data.frame(tax_table(phy))$Subtype), rownames(samdat)])
+  typerelabund <- as.matrix(otu_table(phy)[order(data.frame(tax_table(phy))$Subtype), 
+                                           rownames(samdat)])
   shorebreaks <- c(as.character(samdat$Shore), "X")==c("X", as.character(samdat$Shore))
   shorebreaks <- which(shorebreaks==F) - 1
   spbreaks <- c(which(duplicated(samdat$Species)==F) - 1, nrow(samdat))
@@ -148,13 +149,17 @@ composition <- function(phy, col, legend=T) {
   mtext(side=1, "Relative abundance", cex=0.7, line=1)
   # Add legend
   if (legend==T) {
-    legend(x=par("usr")[2]/2, y=par("usr")[4], xjust=0.5, yjust=0.25, horiz=T, bty="n", xpd=T, cex=0.7, legend=c("A", "B", "C", "D", "F"), fill=taxcolors, x.intersp=0.5)
-    legend(x=par("usr")[2]-0.03, y=par("usr")[4], xjust=0, yjust=0.1, bty="n", xpd=T, cex=0.6, pt.cex=0.6, legend=c("N Shore", "S Shore"), fill=c(0, "gray40"), y.intersp=0.7, x.intersp=0.3)
+    legend(x=par("usr")[2]/2, y=par("usr")[4], xjust=0.5, yjust=0.25, horiz=T, bty="n", xpd=T, 
+           cex=0.7, legend=c("A", "B", "C", "D", "F"), fill=taxcolors, x.intersp=0.5)
+    legend(x=par("usr")[2]-0.03, y=par("usr")[4], xjust=0, yjust=0.1, bty="n", xpd=T, cex=0.6, 
+           pt.cex=0.6, legend=c("N Shore", "S Shore"), fill=c(0, "gray40"), y.intersp=0.7, 
+           x.intersp=0.3)
   }
   # Add grouping bars for Shore
   for (i in 1:length(shorebreaks)) {
     lines(c(0, 1), c(shorebreaks[i], shorebreaks[i]), lty=2, lwd=0.25)
-    rect(1.01, shorebreaks[i], 1.04, shorebreaks[i+1], col=rep(c("gray40", 0), 50)[i], lwd=0.25, xpd=T)
+    rect(1.01, shorebreaks[i], 1.04, shorebreaks[i+1], col=rep(c("gray40", 0), 50)[i], 
+         lwd=0.25, xpd=T)
   }
   # Add lines to separate species and species names
   for (i in 1:length(spbreaks)) {
@@ -172,43 +177,35 @@ composition(phy.f.p, col=rainbow(ntaxa(phy.f.p)), legend=F)
 ```
 
 ## Beta diversity
-
-```{r beta, cache=T}
-# Statistical comparison of beta diversity defined by multivariate dispersion of B-C dissimilarity
-#   Calculate distances to group centroids in full-dimensional principal coordinate space
-#   Implemented by vegan betadisper(), based on Anderson (2006).
-# Compartments/species:
+Beta diversity is evaluated here as the multivariate dispersion of samples within a coral species group. Principal coordinate analysis on Bray-Curtis dissimilarities is used to calculate average distance-to-centroid values for each species group, which are then compared statistically by a permutation test. This analysis is implemented using betadisper() in the vegan package, based on [Anderson (2006)](dx.doi.org/10.1111/j.1541-0420.2005.00440.x).
+```{r betadisper, cache=T, fig.width=4, fig.height=4}
+# Calculate distances to species centroids for each sample in principal coordinate space
 sambd <- betadisper(d=vegdist(t(otu_table(phy.f.t)), method="bray"), 
-                    group=data.frame(sample_data(phy.f.t))$Species, type="centroid")
-anova(sambd)
-boxplot(sambd)
-sambdmeans <- aggregate(sambd$distances, by=list(group=sambd$group), FUN=mean)
-sambdses <- aggregate(sambd$distances, by=list(group=sambd$group), 
-                      FUN=function(x) sd(x)/sqrt(length(x)))
-sampt <- permutest(sambd, pairwise = T)
-sampt2 <- TukeyHSD(sambd)
-library(multcompView)
-saml <- multcompLetters(sampt$pairwise$permuted)#, Letters=c("e","a", "f","d","c","b"))
-saml2 <- multcompLetters(sampt2$group[, 4])
+                    group=data.frame(sample_data(phy.f.t))$Species, type="centroid",
+                    bias.adjust=TRUE)
+# Calculate each species' mean distance to centroid and standard error
+sambdsumm <- aggregate(data.frame(mean=sambd$distances), by=list(group=sambd$group), FUN=mean)
+sambdsumm$se <- aggregate(sambd$distances, by=list(group=sambd$group), 
+                      FUN=function(x) sd(x)/sqrt(length(x)))$x
+# Determine order of decreasing mean dispersion
+sambdsumm.ord <- sambdsumm[order(sambdsumm$mean, decreasing=T), ]
+# Update betadisper object with species in decreasing order of mean dispersion
+sambd <- betadisper(d=vegdist(t(otu_table(phy.f.t)), method="bray"), 
+                    group=factor(data.frame(sample_data(phy.f.t))$Species, levels=as.character(sambdsumm.ord$group)), type="centroid", bias.adjust=TRUE)
+# Use permutations to perform pairwise comparisons of group mean dispersions
+sampt <- permutest(sambd, pairwise=T)
+saml <- multcompLetters(sampt$pairwise$permuted)
 
-
-# Figure: Distances to centroids
-# Coral species
+# Figure: Distance to centroids
 par(mfrow=c(1,1), mar=c(3.5,4,1,1), lwd=1)
-plot(sambdmeans$x[order(sambdmeans$x, decreasing=T)], type="n", ylim=c(0, 0.75),
-     ylab="Distance to centroid", xaxt="n", xlab="")
-arrows(1:10, sambdmeans$x[order(sambdmeans$x, decreasing=T)] - sambdses$x[order(sambdmeans$x, decreasing=T)],
-       1:10, sambdmeans$x[order(sambdmeans$x, decreasing=T)] + sambdses$x[order(sambdmeans$x, decreasing=T)],
-       length=0.05, angle=90, code=3)
-points(1:10, sambdmeans$x[order(sambdmeans$x, decreasing=T)], cex=1, pch=21, bg="white")
-text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75,
-     labels=levels(SAM$Species)[order(sambdmeans$x, decreasing=T)])
-
-text(1:10, sambdmeans$x[order(sambdmeans$x, decreasing=T)] + sambdses$x[order(sambdmeans$x, decreasing=T)] + 0.03,
-     labels=saml$Letters[as.character(sambdmeans$group)][order(sambdmeans$x, decreasing=T)], cex=0.5)
-text(1:10, sambdmeans$x[order(sambdmeans$x, decreasing=T)] - sambdses$x[order(sambdmeans$x, decreasing=T)] - 0.03,
-     labels=saml2$Letters[as.character(sambdmeans$group)][order(sambdmeans$x, decreasing=T)], cex=0.5)
-     
+with(sambdsumm.ord, {
+  plot(mean, type="n", ylim=c(0, 0.75), ylab="Distance to centroid", xaxt="n", xlab="")
+  arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
+  points(1:10, mean, cex=1, pch=21, bg="white")
+  text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75, 
+       labels=levels(SAM$Species)[order(sambdsumm$mean, decreasing=T)])
+  text(1:10, mean + se + 0.03, labels=saml$Letters[as.character(group)], cex=0.5)
+})
 ```
 
 ```{r strigosa}
