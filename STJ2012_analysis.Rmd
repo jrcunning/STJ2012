@@ -7,7 +7,13 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(phyloseq)
+options(scipen = 4, digits = 2)
+library(phyloseq); library(vegan)
+
+taxcolors <- matrix(c(rgb(141, 211, 199, maxColorValue=255), rgb(255, 255, 179, maxColorValue=255), 
+                      rgb(190, 186, 218, maxColorValue=255), rgb(251, 128, 114, maxColorValue=255), 
+                      rgb(253, 180, 98, maxColorValue=255)), 
+                    dimnames=list(c("CladeA", "CladeB", "CladeC", "CladeD", "CladeF")))
 ```
 
 ## Import data
@@ -17,10 +23,156 @@ library(phyloseq)
 OTU <- otu_table(read.table("data/otu_table.tsv", header=T, check.names=F, row.names=1,
                             skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
 # Import taxonomy
-TAX <- tax_table(as.matrix(read.table("data/tax_assignments.txt", sep="\t", row.names=1,
-                                      col.names=c("OTU.ID", "Taxonomy", "Eval", "Subtype"))))
+TAX <- tax_table(as.matrix(read.table("data/tax_assignments.txt", sep="\t", row.names=2,
+                                      col.names=c("Clade", "OTU.ID", "Taxonomy", "Eval", "Subtype"))))
 # Import sample data
 SAM <- sample_data(read.delim("data/mapping_file.txt", sep="\t", header=T, row.names=1))
+# Build phyloseq object
 phy <- phyloseq(OTU, TAX, SAM)
+phy
 ```
 
+## Descriptive statistics for dataset  
+* Total count in OTU table: `r sum(otu_table(phy))`  
+* Number of samples: `r nsamples(phy)`  
+* Number of OTUs: `r ntaxa(phy)`  
+
+#### Distribution of OTU counts and reads per sample  
+```{r phy_histograms, fig.height=3, fig.width=8}
+taxhist <- hist(log10(taxa_sums(phy)), plot=F)
+samhist <- hist(log10(sample_sums(phy)), plot=F)
+
+par(mfrow=c(1, 2), mar=c(3,3,1,1))
+plot(taxhist, col="black", main=NA, xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
+     xlab="No. sequences (log10)", ylab="No. OTUs", cex.lab=0.75, cex.axis=0.75)
+plot(samhist, col="black", main=NA, xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
+     xlab="No. sequences (log10)", ylab="No. samples", cex.lab=0.75, cex.axis=0.75)
+```
+
+* Range of OTU counts: `r range(taxa_sums(phy))`  
+* Number of singletons:  `r length(taxa_sums(phy)[taxa_sums(phy) <= 1])`  
+* Range of reads per sample: `r range(sample_sums(phy))`  
+* Mean (±SD) reads per sample (arithmetic): `r mean(sample_sums(phy))` ± `r sd(sample_sums(phy))`  
+* Mean (±SD) reads per sample (geometric): `r exp(mean(log(sample_sums(phy))))` ± `r exp(sd(log(sample_sums(phy))))`  
+
+```{r reads_per_sample, fig.height=2, fig.width=8}
+plot_bar(phy, x="Sample", y="Abundance")
+```
+
+## Filter dataset  
+#### Filter OTUs by minimum count
+```{r filter_taxa}
+# Set threshold count
+n <- 10
+# Identify OTUs below threshold count
+taxa <- taxa_sums(phy)[which(taxa_sums(phy) >= n)]  
+# Remove taxa below threshold count
+phy.f <- prune_taxa(names(taxa), phy)  
+```
+
+* Number of OTUs remaining in dataset: `r ntaxa(phy.f)`
+
+#### Filter samples by minimum count
+```{r filter_samples}
+# Set threshold number of reads
+sn <- 100
+# Remove samples with fewer reads than threshold
+phy.f <- prune_samples(sample_sums(phy.f)>=sn, phy.f)
+ 
+```
+
+* Number of samples remaining in dataset: `r nsamples(phy.f) `
+
+## Transform taxa count data
+```{r transform}
+# Convert to proportion (relative abundance)
+phy.f.p <- transform_sample_counts(phy.f, function(x) x/sum(x))
+# Apply transformation function
+transform <- function(x) sqrt(x/sum(x))  # Set transformation function
+phy.f.t <- transform_sample_counts(phy.f, transform)  # Transform data
+```
+
+## Clade composition in all samples
+```{r cladecomp, fig.height=6, fig.width=6}
+samdat <- data.frame(sample_data(phy.f.p))
+samdat$Genus <- factor(samdat$Genus, levels=rev(levels(samdat$Genus)))
+samdat$Species <- factor(samdat$Species, levels=rev(levels(samdat$Species)))
+samdat$Shore <- factor(samdat$Shore, levels=rev(levels(samdat$Shore)))
+samdat <- samdat[with(samdat, order(Genus, Species, Shore)), ]
+typerelabund <- as.matrix(otu_table(phy.f.p)[order(data.frame(tax_table(phy.f.p))$Subtype), rownames(samdat)])
+shorebreaks <- c(as.character(samdat$Shore), "X")==c("X", as.character(samdat$Shore))
+shorebreaks <- which(shorebreaks==F) - 1
+spbreaks <- c(which(duplicated(samdat$Species)==F) - 1, nrow(samdat))
+# Make Barplot
+par(mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7, mfrow=c(1, 1))
+barplot(typerelabund, horiz=T, space=0, axes=F,axisnames=F, yaxs="i",
+        col=rainbow(75))#,
+        #col=taxcolors[data.frame(tax_table(phy.f.p))[order(data.frame(tax_table(phy.f.p))$Subtype), ]$Clade])
+rect(0, 0, par("usr")[2], par("usr")[4], lwd=1, xpd=T)
+axis(side=1, at=seq(0, 1, 0.1), line=0, tck=-0.025, mgp=c(0,0.25,0), cex.axis=0.7)
+mtext(side=1, "Relative abundance", cex=0.7, line=1)
+legend(x=par("usr")[2]/2, y=par("usr")[4], xjust=0.5, yjust=0.25, horiz=T, bty="n", xpd=T, cex=0.7,
+       legend=c("A", "B", "C", "D", "F"), fill=taxcolors, x.intersp=0.5)
+legend(x=par("usr")[2]-0.03, y=par("usr")[4], xjust=0, yjust=0.1, bty="n", xpd=T, cex=0.6, pt.cex=0.6,
+       legend=c("N Shore", "S Shore"), fill=c(0, "gray40"), y.intersp=0.7, x.intersp=0.3)
+# Add grouping bars for Shore
+for (i in 1:length(shorebreaks)) {
+  lines(c(0, 1), c(shorebreaks[i], shorebreaks[i]), lty=2, lwd=0.25)
+  rect(1.01, shorebreaks[i], 1.04, shorebreaks[i+1], col=rep(c("gray40", 0), 50)[i], lwd=0.25, xpd=T)
+}
+# Add lines to separate species and species names
+for (i in 1:length(spbreaks)) {
+  lines(c(0, 1.07), c(spbreaks[i], spbreaks[i]), xpd=T, type="l", lwd=0.4)
+  text(1.03, (spbreaks[i] + spbreaks[i+1]) / 2, xpd=T, pos=4, cex=0.6,
+       labels=paste(samdat$Genus[which(duplicated(samdat$Species)==F)][i], "\n",
+                    samdat$Species[which(duplicated(samdat$Species)==F)][i], sep=""))
+}
+```
+
+# Statistical comparison of beta diversity defined by multivariate dispersion of B-C dissimilarity
+#   Calculate distances to group centroids in full-dimensional principal coordinate space
+#   Implemented by vegan betadisper(), based on Anderson (2006).
+# Compartments/species:
+```{r }
+sambd <- betadisper(d=vegdist(t(otu_table(phy.f.t)), method="bray"), 
+                    group=data.frame(sample_data(phy.f.t))$Species, type="centroid")
+anova(sambd)
+boxplot(sambd)
+sambdmeans <- aggregate(sambd$distances, by=list(group=sambd$group), FUN=mean)
+sambdses <- aggregate(sambd$distances, by=list(group=sambd$group), 
+                      FUN=function(x) sd(x)/sqrt(length(x)))
+sampt <- permutest(sambd, pairwise = T)
+sampt2 <- TukeyHSD(sambd)
+library(multcompView)
+saml <- multcompLetters(sampt$pairwise$permuted)#, Letters=c("e","a", "f","d","c","b"))
+saml2 <- multcompLetters(sampt2$group[, 4])
+
+
+# Figure: Distances to centroids
+# Coral species
+par(mfrow=c(1,1), mar=c(3.5,4,1,1), lwd=1)
+plot(sambdmeans$x[order(sambdmeans$x, decreasing=T)], type="n", ylim=c(0, 0.75),
+     ylab="Distance to centroid", xaxt="n", xlab="")
+arrows(1:10, sambdmeans$x[order(sambdmeans$x, decreasing=T)] - sambdses$x[order(sambdmeans$x, decreasing=T)],
+       1:10, sambdmeans$x[order(sambdmeans$x, decreasing=T)] + sambdses$x[order(sambdmeans$x, decreasing=T)],
+       length=0.05, angle=90, code=3)
+points(1:10, sambdmeans$x[order(sambdmeans$x, decreasing=T)], cex=1, pch=21, bg="white")
+text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75,
+     labels=levels(SAM$Species)[order(sambdmeans$x, decreasing=T)])
+
+text(1:10, sambdmeans$x[order(sambdmeans$x, decreasing=T)] + sambdses$x[order(sambdmeans$x, decreasing=T)] + 0.03,
+     labels=saml$Letters[as.character(sambdmeans$group)][order(sambdmeans$x, decreasing=T)], cex=0.5)
+text(1:10, sambdmeans$x[order(sambdmeans$x, decreasing=T)] - sambdses$x[order(sambdmeans$x, decreasing=T)] - 0.03,
+     labels=saml2$Letters[as.character(sambdmeans$group)][order(sambdmeans$x, decreasing=T)], cex=0.5)
+     
+```
+
+```{r strigosa}
+dstr <- subset_samples(phy.f.p, Species=="strigosa")
+plot_bar(dstr, x="Sample", y="Abundance", fill="OTU")
+plot_bar(dstr, x="Sample", y="Abundance", fill="Subtype")
+# D strigosa hosted B1, B24, B35, B38, and C3 in Finney et al.... B25, B35, and B38 are missing from ref database.
+# Also try 100% OTUs
+```
+
+     
