@@ -1,0 +1,26 @@
+---
+title: "STJ2012 analysis"
+author: "Ross Cunning"
+date: "July 28, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(phyloseq)
+```
+
+## Import data
+
+```{r data_import}
+# Import OTU table
+OTU <- otu_table(read.table("data/otu_table.tsv", header=T, check.names=F, row.names=1,
+                            skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
+# Import taxonomy
+TAX <- tax_table(as.matrix(read.table("data/tax_assignments.txt", sep="\t", row.names=1,
+                                      col.names=c("OTU.ID", "Taxonomy", "Eval", "Subtype"))))
+# Import sample data
+SAM <- sample_data(read.delim("data/mapping_file.txt", sep="\t", header=T, row.names=1))
+phy <- phyloseq(OTU, TAX, SAM)
+```
+
