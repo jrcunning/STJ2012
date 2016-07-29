@@ -18,7 +18,7 @@ taxcolors <- matrix(c(rgb(141, 211, 199, maxColorValue=255), rgb(255, 255, 179, 
 
 ## Import data
 
-```{r data_import}
+```{r data_import, cache=T}
 # Import OTU table
 OTU <- otu_table(read.table("data/otu_table.tsv", header=T, check.names=F, row.names=1,
                             skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
@@ -75,13 +75,35 @@ phy.f <- prune_taxa(names(taxa), phy)
 #### Filter samples by minimum count
 ```{r filter_samples}
 # Set threshold number of reads
-sn <- 100
+sn <- 10
 # Remove samples with fewer reads than threshold
 phy.f <- prune_samples(sample_sums(phy.f)>=sn, phy.f)
  
 ```
 
 * Number of samples remaining in dataset: `r nsamples(phy.f) `
+
+#### Distribution of OTU counts and reads per sample post-filtering
+```{r phy.f_histograms, fig.height=3, fig.width=8}
+taxhist <- hist(log10(taxa_sums(phy.f)), plot=F)
+samhist <- hist(log10(sample_sums(phy.f)), plot=F)
+
+par(mfrow=c(1, 2), mar=c(3,3,1,1))
+plot(taxhist, col="black", main=NA, xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
+     xlab="No. sequences (log10)", ylab="No. OTUs", cex.lab=0.75, cex.axis=0.75)
+plot(samhist, col="black", main=NA, xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
+     xlab="No. sequences (log10)", ylab="No. samples", cex.lab=0.75, cex.axis=0.75)
+```
+
+* Range of OTU counts: `r range(taxa_sums(phy.f))`  
+* Number of singletons:  `r length(taxa_sums(phy.f)[taxa_sums(phy.f) <= 1])`  
+* Range of reads per sample: `r range(sample_sums(phy.f))`  
+* Mean (±SD) reads per sample (arithmetic): `r mean(sample_sums(phy.f))` ± `r sd(sample_sums(phy.f))`  
+* Mean (±SD) reads per sample (geometric): `r exp(mean(log(sample_sums(phy.f))))` ± `r exp(sd(log(sample_sums(phy.f))))`  
+
+```{r reads_per_sample_filtered, fig.height=2, fig.width=8}
+plot_bar(phy.f, x="Sample", y="Abundance")
+```
 
 ## Transform taxa count data
 ```{r transform}
@@ -92,48 +114,55 @@ transform <- function(x) sqrt(x/sum(x))  # Set transformation function
 phy.f.t <- transform_sample_counts(phy.f, transform)  # Transform data
 ```
 
-## Clade composition in all samples
-```{r cladecomp, fig.height=6, fig.width=6}
-samdat <- data.frame(sample_data(phy.f.p))
-samdat$Genus <- factor(samdat$Genus, levels=rev(levels(samdat$Genus)))
-samdat$Species <- factor(samdat$Species, levels=rev(levels(samdat$Species)))
-samdat$Shore <- factor(samdat$Shore, levels=rev(levels(samdat$Shore)))
-samdat <- samdat[with(samdat, order(Genus, Species, Shore)), ]
-typerelabund <- as.matrix(otu_table(phy.f.p)[order(data.frame(tax_table(phy.f.p))$Subtype), rownames(samdat)])
-shorebreaks <- c(as.character(samdat$Shore), "X")==c("X", as.character(samdat$Shore))
-shorebreaks <- which(shorebreaks==F) - 1
-spbreaks <- c(which(duplicated(samdat$Species)==F) - 1, nrow(samdat))
-# Make Barplot
-par(mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7, mfrow=c(1, 1))
-barplot(typerelabund, horiz=T, space=0, axes=F,axisnames=F, yaxs="i",
-        col=rainbow(75))#,
-        #col=taxcolors[data.frame(tax_table(phy.f.p))[order(data.frame(tax_table(phy.f.p))$Subtype), ]$Clade])
-rect(0, 0, par("usr")[2], par("usr")[4], lwd=1, xpd=T)
-axis(side=1, at=seq(0, 1, 0.1), line=0, tck=-0.025, mgp=c(0,0.25,0), cex.axis=0.7)
-mtext(side=1, "Relative abundance", cex=0.7, line=1)
-legend(x=par("usr")[2]/2, y=par("usr")[4], xjust=0.5, yjust=0.25, horiz=T, bty="n", xpd=T, cex=0.7,
-       legend=c("A", "B", "C", "D", "F"), fill=taxcolors, x.intersp=0.5)
-legend(x=par("usr")[2]-0.03, y=par("usr")[4], xjust=0, yjust=0.1, bty="n", xpd=T, cex=0.6, pt.cex=0.6,
-       legend=c("N Shore", "S Shore"), fill=c(0, "gray40"), y.intersp=0.7, x.intersp=0.3)
-# Add grouping bars for Shore
-for (i in 1:length(shorebreaks)) {
-  lines(c(0, 1), c(shorebreaks[i], shorebreaks[i]), lty=2, lwd=0.25)
-  rect(1.01, shorebreaks[i], 1.04, shorebreaks[i+1], col=rep(c("gray40", 0), 50)[i], lwd=0.25, xpd=T)
-}
-# Add lines to separate species and species names
-for (i in 1:length(spbreaks)) {
-  lines(c(0, 1.07), c(spbreaks[i], spbreaks[i]), xpd=T, type="l", lwd=0.4)
-  text(1.03, (spbreaks[i] + spbreaks[i+1]) / 2, xpd=T, pos=4, cex=0.6,
-       labels=paste(samdat$Genus[which(duplicated(samdat$Species)==F)][i], "\n",
+## Community composition in all samples
+Here the composition of each sample is plotted as a horizontal bar, sorted by species and shore. Each segment of the bar represents an individual OTU. In the lefthand plot, all OTUs are colored by clade, in the right OTU, all OTUs are given a unique color.
+```{r cladecomp, fig.height=6, fig.width=10}
+# Define function to plot Symbiodinium community composition
+composition <- function(phy, col, legend=T) {
+  samdat <- data.frame(sample_data(phy))
+  samdat$Genus <- factor(samdat$Genus, levels=rev(levels(samdat$Genus)))
+  samdat$Species <- factor(samdat$Species, levels=rev(levels(samdat$Species)))
+  samdat$Shore <- factor(samdat$Shore, levels=rev(levels(samdat$Shore)))
+  samdat <- samdat[with(samdat, order(Genus, Species, Shore)), ]
+  typerelabund <- as.matrix(otu_table(phy)[order(data.frame(tax_table(phy))$Subtype), rownames(samdat)])
+  shorebreaks <- c(as.character(samdat$Shore), "X")==c("X", as.character(samdat$Shore))
+  shorebreaks <- which(shorebreaks==F) - 1
+  spbreaks <- c(which(duplicated(samdat$Species)==F) - 1, nrow(samdat))
+  # Make Barplot
+  barplot(typerelabund, horiz=T, space=0, axes=F,axisnames=F, yaxs="i", col=col)
+  rect(0, 0, par("usr")[2], par("usr")[4], lwd=1, xpd=T)
+  axis(side=1, at=seq(0, 1, 0.1), line=0, tck=-0.025, mgp=c(0,0.25,0), cex.axis=0.7)
+  mtext(side=1, "Relative abundance", cex=0.7, line=1)
+  # Add legend
+  if (legend==T) {
+    legend(x=par("usr")[2]/2, y=par("usr")[4], xjust=0.5, yjust=0.25, horiz=T, bty="n", xpd=T, cex=0.7, legend=c("A", "B", "C", "D", "F"), fill=taxcolors, x.intersp=0.5)
+    legend(x=par("usr")[2]-0.03, y=par("usr")[4], xjust=0, yjust=0.1, bty="n", xpd=T, cex=0.6, pt.cex=0.6, legend=c("N Shore", "S Shore"), fill=c(0, "gray40"), y.intersp=0.7, x.intersp=0.3)
+  }
+  # Add grouping bars for Shore
+  for (i in 1:length(shorebreaks)) {
+    lines(c(0, 1), c(shorebreaks[i], shorebreaks[i]), lty=2, lwd=0.25)
+    rect(1.01, shorebreaks[i], 1.04, shorebreaks[i+1], col=rep(c("gray40", 0), 50)[i], lwd=0.25, xpd=T)
+  }
+  # Add lines to separate species and species names
+  for (i in 1:length(spbreaks)) {
+    lines(c(0, 1.07), c(spbreaks[i], spbreaks[i]), xpd=T, type="l", lwd=0.4)
+    text(1.03, (spbreaks[i] + spbreaks[i+1]) / 2, xpd=T, pos=4, cex=0.6,
+        labels=paste(samdat$Genus[which(duplicated(samdat$Species)==F)][i], "\n",
                     samdat$Species[which(duplicated(samdat$Species)==F)][i], sep=""))
+  }
 }
+
+par(mfrow=c(1,2), mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7)
+composition(phy.f.p, col=taxcolors[data.frame(tax_table(phy.f.p))[order(data.frame(tax_table(phy.f.p))$Subtype), ]$Clade], legend=T)
+composition(phy.f.p, col=rainbow(ntaxa(phy.f.p)), legend=F)
+
 ```
 
 # Statistical comparison of beta diversity defined by multivariate dispersion of B-C dissimilarity
 #   Calculate distances to group centroids in full-dimensional principal coordinate space
 #   Implemented by vegan betadisper(), based on Anderson (2006).
 # Compartments/species:
-```{r }
+```{r beta, cache=T}
 sambd <- betadisper(d=vegdist(t(otu_table(phy.f.t)), method="bray"), 
                     group=data.frame(sample_data(phy.f.t))$Species, type="centroid")
 anova(sambd)
