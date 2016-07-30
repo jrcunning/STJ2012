@@ -64,29 +64,30 @@ plot(samhist, col="black", main=NA, xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
 plot_bar(phy, x="Sample", y="Abundance")
 ```
 
-## Filter dataset  
-#### Filter OTUs by minimum count
-```{r filter_taxa}
-# Set threshold count
-n <- 10
-# Identify OTUs below threshold count
-taxa <- taxa_sums(phy)[which(taxa_sums(phy) >= n)]  
-# Remove taxa below threshold count
-phy.f <- prune_taxa(names(taxa), phy)  
-```
-
-* Number of OTUs remaining in dataset: `r ntaxa(phy.f)`
-
+## Filter dataset
 #### Filter samples by minimum count
 ```{r filter_samples}
 # Set threshold number of reads
 sn <- 10
 # Remove samples with fewer reads than threshold
-phy.f <- prune_samples(sample_sums(phy.f)>=sn, phy.f)
+phy.f <- prune_samples(sample_sums(phy)>=sn, phy)
  
 ```
 
 * Number of samples remaining in dataset: `r nsamples(phy.f) `
+
+#### Filter OTUs by minimum count
+```{r filter_taxa}
+# Set threshold count
+n <- 3
+# Identify OTUs below threshold count
+taxa <- taxa_sums(phy.f)[which(taxa_sums(phy.f) >= n)]  
+# Remove taxa below threshold count
+phy.f <- prune_taxa(names(taxa), phy.f)  
+```
+
+* Number of OTUs remaining in dataset: `r ntaxa(phy.f)`
+
 
 #### Descriptive statistics of filtered dataset
 * Total count in OTU table: `r sum(otu_table(phy.f))`  
@@ -182,6 +183,27 @@ Whether *Symbiodinium* communities differ among species, or differ between north
 ```{r permanovas, cache=T}
 # PERMANOVA for differences among species? Post-hoc: which spp are different?
 
+permanova.spp.t <- adonis(phyloseq::distance(phy.f.t, "bray") ~ Species, 
+                          data=as(sample_data(phy.f.t), "data.frame"), permutations=9999)
+
+dmat <- as(phyloseq::distance(phy.f.t, "bray"), "matrix")
+df <- as(sample_data(phy.f.t), "data.frame")
+
+
+pairs <- data.frame(t(combn(levels(df$Species), 2)), stringsAsFactors=F)
+p.pairs <- setNames(rep(NA, nrow(pairs)), with(pairs, paste(X1, X2, sep='-')))
+
+for (i in 1:nrow(pairs)) {
+  dfs <- subset(df, Species %in% c(pairs[i,1], pairs[i,2]))
+  dmats <- dmat[rownames(dfs), rownames(dfs)]
+  set.seed(152470)
+  permanova <- adonis(dmats ~ Species, data=dfs, permutations=999)
+  p.pairs[i] <- permanova$aov.tab$`Pr(>F)`[1]
+}
+
+multcompLetters(p.pairs)
+
+
 # Compute within- and between-pool statistics for each Species
 shorestats <- data.frame(matrix(dimnames=list(levels(data.frame(sample_data(phy.f.t))$Species), 
                                               c("Species", "n", "overall", "within", 
@@ -199,7 +221,7 @@ for (i in 1:nlevels(data.frame(sample_data(phy.f.t))$Species)) {
   if (nlevels(as(sample_data(phy.f.t.species), "data.frame")$Shore) > 1) {
     set.seed(70235)
     permanova <- adonis(phyloseq::distance(phy.f.t.species, "bray") ~ Shore, 
-                        data=as(sample_data(phy.f.t.species), "data.frame"), permutations=9999)
+                        data=as(sample_data(phy.f.t.species), "data.frame"), permutations=999)
     shorestats$R2[i] <- permanova$aov.tab$"R2"[1]  # PERMANOVA partial R-squared
     shorestats$p[i] <- permanova$aov.tab$"Pr(>F)"[1]  # PERMANOVA p-value
     bd <- betadisper(phyloseq::distance(phy.f.t.species, "bray"),
@@ -254,5 +276,21 @@ plot_bar(dstr, x="Sample", y="Abundance", fill="Subtype")
 # Also try 100% OTUs
 ```
 
+## Niche breadth of *Symbiodinium*
+```{r nichebreadth}
+# Mean dispersion of clades
+otubd <- betadisper(d=vegdist(otu_table(phy.f.t), method="bray"), 
+                    group=data.frame(tax_table(phy.f.t))$Clade, type="centroid")
+otubd
 
+# Number of samples each OTU appears in
+nsamp <- data.frame(n=rowSums(otu_table(phy.f.t) != 0))
+nsamp$Subtype <- data.frame(tax_table(phy.f.t))[rownames(nsamp), "Subtype"]
+nsamp[order(nsamp$n, decreasing=T), ]
+nsamp
+?order
+
+```
+
+plot_richness(phy.f, x="Species")
     
