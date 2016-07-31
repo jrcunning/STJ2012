@@ -62,15 +62,18 @@ awk '/No blast hit/' ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax
 cat ../data/clustered_97/*_otus.txt > ../data/clustered_97/all_97_otus.txt
 merge_otu_maps.py -i ../data/clustered_97/all_97_otus.txt,../data/clustered_97/all_rep_set_otus.txt -o ../data/clustered_97/merged_otu_map.txt
 
+# Remove singletons before picking rep set and assigning taxonomy (to save time)
+awk '$3 ~ /./ {print}' ../data/clustered_97/merged_otu_map.txt > ../data/clustered_97/nosingles_otus.txt
+
 # Make OTU table excluding no blast hits
-make_otu_table.py -i ../data/clustered_97/merged_otu_map.txt -t ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt -e ../data/clustered_97/blast_taxonomy/no_blast_hits.txt -o ../data/clustered_97/otu_table.biom
-biom convert -i ../data/clustered_97/otu_table.biom -o ../data/clustered_97/otu_table.tsv --to-tsv
+make_otu_table.py -i ../data/clustered_97/nosingles_otus.txt -t ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt -e ../data/clustered_97/blast_taxonomy/no_blast_hits.txt -o ../data/clustered_97/97_otu_table.biom
+biom convert -i ../data/clustered_97/97_otu_table.biom -o ../data/clustered_97/97_otu_table.tsv --to-tsv
 
 # Add clade to tax table and copy to data directory
-cut -d$'\t' -f4- ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt | cut -c-1 | paste - ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt > ../data/tax_assignments.txt
+cut -d$'\t' -f4- ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt | cut -c-1 | paste - ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt > ../data/97_tax_assignments.txt
 
 # Copy final OTU table to data directory
-cp ../data/clustered_97/otu_table.tsv ../data/otu_table.tsv
+cp ../data/clustered_97/97_otu_table.tsv ../data/97_otu_table.tsv
 
 # -------
 # Cluster entire dataset at 100% similarity
