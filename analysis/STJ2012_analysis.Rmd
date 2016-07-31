@@ -4,6 +4,7 @@ author: "Ross Cunning"
 date: "July 28, 2016"
 output: 
   html_document: 
+    self_contained: no
     toc: yes
 ---
 
@@ -11,7 +12,7 @@ output:
 knitr::opts_knit$set(root.dir = normalizePath(".."))
 knitr::opts_chunk$set(echo = TRUE)
 
-options(scipen = 4, digits = 2)
+options(scipen = 3, digits = 2)
 library(phyloseq); library(vegan); library(multcompView)
 
 taxcolors <- matrix(c(rgb(141, 211, 199, maxColorValue=255), rgb(255, 255, 179, maxColorValue=255), 
@@ -24,45 +25,69 @@ taxcolors <- matrix(c(rgb(141, 211, 199, maxColorValue=255), rgb(255, 255, 179, 
 ## Import dataset
 
 ```{r data_import, cache=T}
-# Import OTU table
-OTU <- otu_table(read.table("data/otu_table.tsv", header=T, check.names=F, row.names=1,
-                            skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
+# Import OTU tables
+OTU97 <- otu_table(read.table("data/97_otu_table.tsv", header=T, check.names=F, row.names=1,
+                              skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
+OTU100 <- otu_table(read.table("data/100_otu_table.tsv", header=T, check.names=F, row.names=1,
+                               skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
 # Import taxonomy
-TAX <- tax_table(as.matrix(read.table("data/tax_assignments.txt", sep="\t", row.names=2,
-                                      col.names=c("Clade", "OTU.ID", "Taxonomy", "Eval", "Subtype"))))
+TAX97 <- tax_table(as.matrix(read.table("data/97_tax_assignments.txt", sep="\t", row.names=2,
+                                        col.names=c("Clade", "OTU.ID", "Taxonomy", "Eval", "Subtype"))))
+TAX100 <- tax_table(as.matrix(read.table("data/100_tax_assignments.txt", sep="\t", row.names=2,
+                                         col.names=c("Clade", "OTU.ID", "Taxonomy", "Eval", "Subtype"))))
 # Import sample data
 SAM <- sample_data(read.delim("data/mapping_file.txt", sep="\t", header=T, row.names=1))
-# Build phyloseq object
-phy <- phyloseq(OTU, TAX, SAM)
-phy
+# Build phyloseq objects
+phy97 <- phyloseq(OTU97, TAX97, SAM)
+phy100 <- phyloseq(OTU100, TAX100, SAM)
 ```
 
-#### Descriptive statistics  
-* Total count in OTU table: `r sum(otu_table(phy))`  
-* Number of samples: `r nsamples(phy)`  
-* Number of OTUs: `r ntaxa(phy)`  
+#### Descriptive statistics and distribution of OTU counts
+```{r phy_stats, fig.height=4, fig.width=8}
+# Compute summary statistics
+stats <- function(phy) {
+  return(
+    data.frame(rangeotus=paste0(range(taxa_sums(phy)), collapse=" - "),
+               nsingles=length(taxa_sums(phy)[taxa_sums(phy) <= 1]),
+               rangerps=paste0(range(sample_sums(phy)), collapse=" - "),
+               amrps=paste(as.integer(mean(sample_sums(phy))), 
+                           as.integer(sd(sample_sums(phy))), sep=" ± "),
+               gmrps=paste(as.integer(exp(mean(log(sample_sums(phy))))),
+                           as.integer(exp(sd(log(sample_sums(phy))))), sep=" ± "))
+  )
+}
+stats97 <- stats(phy97)
+stats100 <- stats(phy100)
 
-#### Distribution of OTU counts and reads per sample  
-```{r phy_histograms, fig.height=2, fig.width=8}
-taxhist <- hist(log10(taxa_sums(phy)), plot=F)
-samhist <- hist(log10(sample_sums(phy)), plot=F)
+# Create and plot histograms
+phy <- phy97
+taxhist97 <- hist(log10(taxa_sums(phy97)), plot=F)
+samhist97 <- hist(log10(sample_sums(phy97)), plot=F)
 
-par(mfrow=c(1, 2), mar=c(3,3,1,1))
-plot(taxhist, col="black", main=NA, xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
+taxhist100 <- hist(log10(taxa_sums(phy100)), plot=F)
+samhist100 <- hist(log10(sample_sums(phy100)), plot=F)
+
+par(mfrow=c(2, 2), mar=c(3,3,1,1))
+plot(taxhist97, col="black", main="97% OTU counts", xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
      xlab="No. sequences (log10)", ylab="No. OTUs", cex.lab=0.75, cex.axis=0.75)
-plot(samhist, col="black", main=NA, xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
+plot(taxhist100, col="black", main="100% OTU counts", xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
+     xlab="No. sequences (log10)", ylab="No. OTUs", cex.lab=0.75, cex.axis=0.75)
+plot(samhist97, col="black", main="97% OTU reads per sample", xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
+     xlab="No. sequences (log10)", ylab="No. samples", cex.lab=0.75, cex.axis=0.75)
+plot(samhist100, col="black", main="100% OTU reads per sample", xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
      xlab="No. sequences (log10)", ylab="No. samples", cex.lab=0.75, cex.axis=0.75)
 ```
 
-* Range of OTU counts: `r range(taxa_sums(phy))`  
-* Number of singletons:  `r length(taxa_sums(phy)[taxa_sums(phy) <= 1])`  
-* Range of reads per sample: `r range(sample_sums(phy))`  
-* Mean (±SD) reads per sample (arithmetic): `r mean(sample_sums(phy))` ± `r sd(sample_sums(phy))`  
-* Mean (±SD) reads per sample (geometric): `r exp(mean(log(sample_sums(phy))))` ± `r exp(sd(log(sample_sums(phy))))`  
-
-```{r reads_per_sample, fig.height=2, fig.width=8}
-plot_bar(phy, x="Sample", y="Abundance")
-```
+|                                  |    97% OTUs               |    100% OTUs                |
+| -------------------------------- | ------------------------- | --------------------------- |
+| Total count in OTU table         | `r sum(otu_table(phy97))` |  `r sum(otu_table(phy100))` |
+| Number of OTUs                   | `r ntaxa(phy97)`          |  `r ntaxa(phy100)`          |
+| Range of OTU counts              | `r stats97$rangeotus`     | `r stats100$rangeotus`      |
+| Number of singleton OTUs         | `r stats97$nsingles`      | `r stats100$nsingles`       |
+| Number of samples                | `r nsamples(phy97)`       |  `r nsamples(phy100)`       |
+| Range of reads per sample        | `r stats97$rangerps`      | `r stats100$rangerps`       |
+| Mean (±SD) reads per sample (arithmetic) | `r stats97$amrps` | `r stats100$amrps`          |
+| Mean (±SD) reads per sample (geometric)  | `r stats97$gmrps` | `r stats100$gmrps`          |
 
 ## Filter dataset
 #### Filter samples by minimum count
@@ -70,59 +95,73 @@ plot_bar(phy, x="Sample", y="Abundance")
 # Set threshold number of reads
 sn <- 10
 # Remove samples with fewer reads than threshold
-phy.f <- prune_samples(sample_sums(phy)>=sn, phy)
+phy97.f <- prune_samples(sample_sums(phy97)>=sn, phy97)
+phy100.f <- prune_samples(sample_sums(phy100)>=sn, phy100)
  
 ```
 
-* Number of samples remaining in dataset: `r nsamples(phy.f) `
+* Number of samples remaining in 97% OTU dataset: `r nsamples(phy97.f) `
+* Number of samples remaining in 100% OTU dataset: `r nsamples(phy100.f) `
 
 #### Filter OTUs by minimum count
 ```{r filter_taxa}
 # Set threshold count
-n <- 3
+n <- 1
 # Identify OTUs below threshold count
-taxa <- taxa_sums(phy.f)[which(taxa_sums(phy.f) >= n)]  
+taxa97 <- taxa_sums(phy97.f)[which(taxa_sums(phy97.f) >= n)]  
+taxa100 <- taxa_sums(phy100.f)[which(taxa_sums(phy100.f) >= n)]
 # Remove taxa below threshold count
-phy.f <- prune_taxa(names(taxa), phy.f)  
+phy97.f <- prune_taxa(names(taxa97), phy97.f)  
+phy100.f <- prune_taxa(names(taxa100), phy100.f)  
 ```
 
-* Number of OTUs remaining in dataset: `r ntaxa(phy.f)`
+* Number of OTUs remaining in 97% dataset: `r ntaxa(phy97.f)`
+* Number of OTUs remaining in 97% dataset: `r ntaxa(phy100.f)`
 
 
-#### Descriptive statistics of filtered dataset
-* Total count in OTU table: `r sum(otu_table(phy.f))`  
-* Number of samples: `r nsamples(phy.f)`  
-* Number of OTUs: `r ntaxa(phy.f)` 
+#### Filtered data: descriptive statistics and distribution of OTUs
+```{r phy.f_histograms, fig.height=4, fig.width=8}
+# Compute summary statistics
+stats97.f <- stats(phy97.f)
+stats100.f <- stats(phy100.f)
 
-#### Distribution of OTU counts and reads of filtered dataset
-```{r phy.f_histograms, fig.height=2, fig.width=8}
-taxhist <- hist(log10(taxa_sums(phy.f)), plot=F)
-samhist <- hist(log10(sample_sums(phy.f)), plot=F)
+# Create and plot histograms
+taxhist97 <- hist(log10(taxa_sums(phy97.f)), plot=F)
+taxhist100 <- hist(log10(taxa_sums(phy100.f)), plot=F)
+samhist97 <- hist(log10(sample_sums(phy97.f)), plot=F)
+samhist100 <- hist(log10(sample_sums(phy100.f)), plot=F)
 
-par(mfrow=c(1, 2), mar=c(3,3,1,1))
-plot(taxhist, col="black", main=NA, xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
+par(mfrow=c(2, 2), mar=c(3,3,1,1))
+plot(taxhist97, col="black", main="97% OTU counts", xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
      xlab="No. sequences (log10)", ylab="No. OTUs", cex.lab=0.75, cex.axis=0.75)
-plot(samhist, col="black", main=NA, xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
+plot(taxhist100, col="black", main="100% OTU counts", xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
+     xlab="No. sequences (log10)", ylab="No. OTUs", cex.lab=0.75, cex.axis=0.75)
+plot(samhist97, col="black", main="97% OTU reads per sample", xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
+     xlab="No. sequences (log10)", ylab="No. samples", cex.lab=0.75, cex.axis=0.75)
+plot(samhist100, col="black", main="100% OTU reads per sample", xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
      xlab="No. sequences (log10)", ylab="No. samples", cex.lab=0.75, cex.axis=0.75)
 ```
 
-* Range of OTU counts: `r range(taxa_sums(phy.f))`  
-* Number of singletons:  `r length(taxa_sums(phy.f)[taxa_sums(phy.f) <= 1])`  
-* Range of reads per sample: `r range(sample_sums(phy.f))`  
-* Mean (±SD) reads per sample (arithmetic): `r mean(sample_sums(phy.f))` ± `r sd(sample_sums(phy.f))`  
-* Mean (±SD) reads per sample (geometric): `r exp(mean(log(sample_sums(phy.f))))` ± `r exp(sd(log(sample_sums(phy.f))))`  
-
-```{r reads_per_sample_filtered, fig.height=2, fig.width=8}
-plot_bar(phy.f, x="Sample", y="Abundance")
-```
+|                                  |    97% OTUs                     |    100% OTUs                |
+| -------------------------------- | ------------------------------- | --------------------------- |
+| Total count in OTU table         | `r sum(otu_table(phy97.f))`     | `r sum(otu_table(phy100.f))`|
+| Number of OTUs                   | `r ntaxa(phy97.f)`              | `r ntaxa(phy100.f)`         |
+| Range of OTU counts              | `r stats97.f$rangeotus`         | `r stats100.f$rangeotus`    |
+| Number of singleton OTUs         | `r stats97.f$nsingles`          | `r stats100.f$nsingles`     |
+| Number of samples                | `r nsamples(phy97.f)`           | `r nsamples(phy100.f)`      |
+| Range of reads per sample        | `r stats97.f$rangerps`          | `r stats100.f$rangerps`     |
+| Mean (±SD) reads per sample (arithmetic) | `r stats97.f$amrps`     | `r stats100.f$amrps`        |
+| Mean (±SD) reads per sample (geometric)  | `r stats97.f$gmrps`     | `r stats100.f$gmrps`        |
 
 ## Transform count data
 ```{r transform}
 # Convert to proportion (relative abundance)
-phy.f.p <- transform_sample_counts(phy.f, function(x) x/sum(x))
+phy97.f.p <- transform_sample_counts(phy97.f, function(x) x/sum(x))
+phy100.f.p <- transform_sample_counts(phy100.f, function(x) x/sum(x))
 # Apply transformation function
 transform <- function(x) sqrt(x/sum(x))  # Set transformation function
-phy.f.t <- transform_sample_counts(phy.f, transform)  # Transform data
+phy97.f.t <- transform_sample_counts(phy97.f, transform)  # Transform data
+phy100.f.t <- transform_sample_counts(phy100.f, transform)
 ```
 
 -----
@@ -172,10 +211,19 @@ composition <- function(phy, col, legend=T) {
 }
 
 par(mfrow=c(1,2), mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7)
-composition(phy.f.p, col=taxcolors[data.frame(tax_table(phy.f.p))[order(data.frame(tax_table(phy.f.p))$Subtype), ]$Clade], legend=T)
-composition(phy.f.p, col=rainbow(ntaxa(phy.f.p)), legend=F)
+composition(phy97.f.p, col=taxcolors[data.frame(tax_table(phy97.f.p))[order(data.frame(tax_table(phy97.f.p))$Subtype), ]$Clade], legend=T)
+composition(phy97.f.p, col=rainbow(ntaxa(phy97.f.p)), legend=F)
 
 ```
+
+```{r, cache=T}
+par(mfrow=c(1,2), mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7)
+composition(phy100.f.p, col=taxcolors[data.frame(tax_table(phy100.f.p))[order(data.frame(tax_table(phy100.f.p))$Subtype), ]$Clade], legend=T)
+composition(phy100.f.p, col=rainbow(ntaxa(phy100.f.p)), legend=F)
+phy.f.p <- phy97.f.p
+phy.f.t <- phy97.f.t
+```
+
 
 ## Differences between species and shores
 Whether *Symbiodinium* communities differ among species, or differ between north vs. south shores within species, is evaluated here using permutational analysis of variance (PERMANOVA).
@@ -269,11 +317,24 @@ with(sambdsumm.ord, {
 ```
 
 ```{r strigosa}
-dstr <- subset_samples(phy.f.p, Species=="strigosa")
-plot_bar(dstr, x="Sample", y="Abundance", fill="OTU")
-plot_bar(dstr, x="Sample", y="Abundance", fill="Subtype")
+dstr97 <- subset_samples(phy97.f.p, Species=="strigosa")
+plot_bar(dstr97, x="Sample", y="Abundance", fill="OTU")
+plot_bar(dstr97, x="Sample", y="Abundance", fill="Subtype")
 # D strigosa hosted B1, B24, B35, B38, and C3 in Finney et al.... B25, B35, and B38 are missing from ref database.
-# Also try 100% OTUs
+# Also try 100% OTUs -- must filter more first...
+#dstr100.f <- subset_samples(phy100.f, Species=="strigosa")
+#dstr100.f.p <- transform_sample_counts(dstr100.f, function(x) x/sum(x))
+#dstr100.f.p.f <- prune_taxa(rownames(otu_table(dstr100.f.p))[which(rowSums(otu_table(dstr100.f.p)) > 0.01)],
+#                            dstr100.f.p)
+#  
+#plot_bar(dstr100.f.p.f, x="Sample", y="Abundance", fill="OTU")
+#plot_bar(dstr100, x="Sample", y="Abundance", fill="Subtype")
+#sample_names(dstr100.f)
+#subset_samples(dstr100, Sample=="7")
+#otu_table(dstr100.f)
+#dstr100.f.p <- transform_sample_counts(dstr100.f, function(x) x/sum(x))
+#colSums(otu_table(dstr100.f.p)[rowSums(otu_table(dstr100.f.p)) > 0.1, ])
+
 ```
 
 ## Niche breadth of *Symbiodinium*
