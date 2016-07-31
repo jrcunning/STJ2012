@@ -53,7 +53,8 @@ pick_otus.py -i ../data/clustered_97/all_rep_set.fasta -s 1.0 -o ../data/cluster
 
 # Get rep set of 100% OTUs and assign taxonomy
 pick_rep_set.py -i ../data/clustered_97/all_rep_set_otus.txt -f ../data/clustered_97/all_rep_set.fasta -o ../data/clustered_97/all_rep_set_rep_set.fasta
-assign_taxonomy.py -i ../data/clustered_97/all_rep_set_rep_set.fasta -r ../data/Unaligned_ITS2_Database_23April13.fasta -t ../data/id_to_taxonomy_subtype_mod.txt -m blast -o ../data/clustered_97/blast_taxonomy
+# Assign taxonomy
+assign_taxonomy.py -i ../data/clustered_97/all_rep_set_rep_set.fasta -r ../data/Unaligned_ITS2_Database_31July16.fasta -t ../data/id_to_taxonomy_31July16.txt -m blast -o ../data/clustered_97/blast_taxonomy
 
 # Make list of "no blast hits"
 awk '/No blast hit/' ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt > ../data/clustered_97/blast_taxonomy/no_blast_hits.txt
@@ -62,7 +63,7 @@ awk '/No blast hit/' ../data/clustered_97/blast_taxonomy/all_rep_set_rep_set_tax
 cat ../data/clustered_97/*_otus.txt > ../data/clustered_97/all_97_otus.txt
 merge_otu_maps.py -i ../data/clustered_97/all_97_otus.txt,../data/clustered_97/all_rep_set_otus.txt -o ../data/clustered_97/merged_otu_map.txt
 
-# Remove singletons before picking rep set and assigning taxonomy (to save time)
+# Remove singletons
 awk '$3 ~ /./ {print}' ../data/clustered_97/merged_otu_map.txt > ../data/clustered_97/nosingles_otus.txt
 
 # Make OTU table excluding no blast hits
@@ -83,7 +84,7 @@ awk '$3 ~ /./ {print}' ../data/clustered_100/seqs_chimera_filtered_otus.txt > ..
 # Get rep set of 100% OTUs
 pick_rep_set.py -i ../data/clustered_100/nosingles_otus.txt -f ../data/merged/seqs_chimera_filtered.fasta -o ../data/clustered_100/rep_set.fasta
 # Assign taxonomy
-assign_taxonomy.py -i ../data/clustered_100/rep_set.fasta -r ../data/Unaligned_ITS2_Database_23April13.fasta -t ../data/id_to_taxonomy_subtype_mod.txt -m blast -o ../data/clustered_100/blast_taxonomy
+assign_taxonomy.py -i ../data/clustered_100/rep_set.fasta -r ../data/Unaligned_ITS2_Database_31July16.fasta -t ../data/id_to_taxonomy_31July16.txt -m blast -o ../data/clustered_100/blast_taxonomy
 # Make list of "no blast hits"
 awk '/No blast hit/' ../data/clustered_100/blast_taxonomy/rep_set_tax_assignments.txt > ../data/clustered_100/blast_taxonomy/no_blast_hits.txt
 # Make OTU table excluding no blast hits
