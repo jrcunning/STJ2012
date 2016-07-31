@@ -4,7 +4,6 @@ author: "Ross Cunning"
 date: "July 28, 2016"
 output: 
   html_document: 
-    self_contained: no
     toc: yes
 ---
 
@@ -21,9 +20,20 @@ taxcolors <- matrix(c(rgb(141, 211, 199, maxColorValue=255), rgb(255, 255, 179, 
                     dimnames=list(c("CladeA", "CladeB", "CladeC", "CladeD", "CladeF")))
 ```
 
+# Overview
+  This project investigates *Symbiodinium* communities in scleractinian corals sampled at various sites on the north and south shores of St. John, US Virgin Islands in August 2012. The ITS2 region of nrDNA isolated from coral samples was amplified and sequenced by paired-end 300bp reads on an Illumina MiSeq platform. Sequence data is processed through a custom bioinformatic pipeline and resulting OTU tables are analyzed by various multivariate statistical approaches to ask questions regarding alpha and beta diversity of *Symbiodinium* communities within and across coral species. The major aims of this work are to 1) characterize *Symbiodinium* communities in a range of coral species using high-throughput sequencing (many for the first time), and 2) to forward novel bioinformatic and statistical approaches to better understand *Symbiodinium* ecology. 
+
+# Bioinformatics
+  A [custom pipeline](sequence_processing.txt) is used here to process ITS2 sequence data. Briefly, paired reads were merged using the [illumina-utils](http://www.github.com/meren/illumina-utils) and filtered to keep only those with 3 mismatches or less. Chimeras were then removed by [usearch](http://www.drive5.com/usearch). From here, sequence data was processed using both of two approaches:
+  
+1. __97% OTU clustering within samples.__ With this approach, sequences from each individual sample were clustered at 97% similarity and the most abundant sequence from each cluster was selected as the representative sequence and assigned taxonomy by BLAST using a [custom ITS2 reference database](../data/Unaligned_ITS2_Database_23April13.fasta). Singletons were excluded. Identical OTUs across samples were then merged to create a global OTU table. By clustering at 97% _within_ samples, as opposed to across the entire dataset, OTUs from different samples that have _different representative sequences_ (i.e., different most abundant sequence within the 97% cluster) will remain separate even if these sequences are >97% similar to each other. This approach is used because _Symbiodinium_ ITS2 sequences are know to be multi-copy and vary intragenomically, and distinct _Symbiodinium_ types may contain identical sets of ITS2 sequences that occur in different relative proportions within the genome; therefore, selecting the most abundant sequence variant _within_ a sample prevents a potentially distinct _Symbiodinium_ type from being collapsed into an OTU with a different representative sequence that happens to be more abundant in other samples within the dataset.
+2. __100% OTU clustering.__ All ITS2 sequences were clustered at 100% identity and assigned taxonomy by BLAST to the [custom reference database](../data/Unaligned_ITS2_Database_23April13.fasta). Singletons were excluded.
+  
+OTU tables and taxonomic assignments from both of these bioinformatic approaches are used in comparative downstream analyses.
+
 # Data pre-processing
 ## Import dataset
-
+The [phyloseq](https://joey711.github.io/phyloseq/) package is used here to combine the OTU table, taxonomic assignments, and sample metadata into a single R data object to facilitate downstream analyses.
 ```{r data_import, cache=T}
 # Import OTU tables
 OTU97 <- otu_table(read.table("data/97_otu_table.tsv", header=T, check.names=F, row.names=1,
@@ -106,7 +116,7 @@ phy100.f <- prune_samples(sample_sums(phy100)>=sn, phy100)
 #### Filter OTUs by minimum count
 ```{r filter_taxa}
 # Set threshold count
-n <- 1
+n <- 3
 # Identify OTUs below threshold count
 taxa97 <- taxa_sums(phy97.f)[which(taxa_sums(phy97.f) >= n)]  
 taxa100 <- taxa_sums(phy100.f)[which(taxa_sums(phy100.f) >= n)]
