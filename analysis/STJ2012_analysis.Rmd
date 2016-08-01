@@ -53,7 +53,7 @@ phy100 <- phyloseq(OTU100, TAX100, SAM)
 ```
 
 #### Descriptive statistics and distribution of OTU counts
-```{r phy_stats, fig.height=4, fig.width=8}
+```{r phy_stats, cache=T, fig.height=4, fig.width=8}
 # Compute summary statistics
 stats <- function(phy) {
   return(
@@ -101,7 +101,7 @@ plot(samhist100, col="black", main="100% OTU reads per sample", xlim=c(0, 5), la
 
 ## Filter dataset
 #### Filter samples by minimum count
-```{r filter_samples}
+```{r filter_samples, cache=T}
 # Set threshold number of reads
 sn <- 10
 # Remove samples with fewer reads than threshold
@@ -123,6 +123,10 @@ taxa100 <- taxa_sums(phy100.f)[which(taxa_sums(phy100.f) >= n)]
 # Remove taxa below threshold count
 phy97.f <- prune_taxa(names(taxa97), phy97.f)  
 phy100.f <- prune_taxa(names(taxa100), phy100.f)  
+
+# Refilter samples in case removal of OTUs caused any samples to drop below threshold
+phy97.f <- prune_samples(sample_sums(phy97.f)>=sn, phy97.f)
+phy100.f <- prune_samples(sample_sums(phy100.f)>=sn, phy100.f)
 ```
 
 * Number of OTUs remaining in 97% dataset: `r ntaxa(phy97.f)`
@@ -317,83 +321,202 @@ knitr::kable(shorestats100, row.names=F, caption="100% OTU data: differences wit
 
 ## Beta diversity
 Beta diversity is evaluated here as the multivariate dispersion of samples within a coral species group. Principal coordinate analysis on Bray-Curtis dissimilarities is used to calculate average distance-to-centroid values for each species group, which are then compared statistically by a permutation test. This analysis is implemented using betadisper() in the vegan package, based on [Anderson (2006)](dx.doi.org/10.1111/j.1541-0420.2005.00440.x).
-```{r betadisper, cache=T, fig.width=4, fig.height=4}
-# Calculate distances to species centroids for each sample in principal coordinate space
-sambd <- betadisper(d=vegdist(t(otu_table(phy97.f.t)), method="bray"), 
-                    group=data.frame(sample_data(phy97.f.t))$Species, type="centroid",
-                    bias.adjust=TRUE)
-# Calculate each species' mean distance to centroid and standard error
-sambdsumm <- aggregate(data.frame(mean=sambd$distances), by=list(group=sambd$group), FUN=mean)
-sambdsumm$se <- aggregate(sambd$distances, by=list(group=sambd$group), 
-                      FUN=function(x) sd(x)/sqrt(length(x)))$x
-# Determine order of decreasing mean dispersion
-sambdsumm.ord <- sambdsumm[order(sambdsumm$mean, decreasing=T), ]
-# Update betadisper object with species in decreasing order of mean dispersion
-sambd <- betadisper(d=vegdist(t(otu_table(phy97.f.t)), method="bray"), 
-                    group=factor(data.frame(sample_data(phy97.f.t))$Species, levels=as.character(sambdsumm.ord$group)), type="centroid", bias.adjust=TRUE)
-# Use permutations to perform pairwise comparisons of group mean dispersions
-sampt <- permutest(sambd, pairwise=T)
-saml <- multcompLetters(sampt$pairwise$permuted)
+```{r betadisper, cache=T, fig.width=8, fig.height=4}
+betad <- function(phy) {
+  # Calculate distances to species centroids for each sample in principal coordinate space
+  sambd <- betadisper(d=vegdist(t(otu_table(phy)), method="bray"), 
+                      group=data.frame(sample_data(phy))$Species, type="centroid",
+                      bias.adjust=TRUE)
+  # Calculate each species' mean distance to centroid and standard error
+  sambdsumm <- aggregate(data.frame(mean=sambd$distances), by=list(group=sambd$group), FUN=mean)
+  sambdsumm$se <- aggregate(sambd$distances, by=list(group=sambd$group), 
+                            FUN=function(x) sd(x)/sqrt(length(x)))$x
+  # Determine order of decreasing mean dispersion
+  sambdsumm.ord <- sambdsumm[order(sambdsumm$mean, decreasing=T), ]
+  # Update betadisper object with species in decreasing order of mean dispersion
+  sambd <- betadisper(d=vegdist(t(otu_table(phy)), method="bray"), 
+                      group=factor(data.frame(sample_data(phy))$Species,
+                                   levels=as.character(sambdsumm.ord$group)), 
+                      type="centroid", bias.adjust=TRUE)
+  # Use permutations to perform pairwise comparisons of group mean dispersions
+  sampt <- permutest(sambd, pairwise=T)
+  saml <- multcompLetters(sampt$pairwise$permuted)
+  # Return results as a list
+  return(list(sambdsumm.ord=sambdsumm.ord, sambdsumm=sambdsumm, saml=saml))
+}
+
+betad97 <- betad(phy97.f.t)
+betad100 <- betad(phy100.f.t)
 
 # Figure: Distance to centroids
-par(mfrow=c(1,1), mar=c(3.5,4,1,1), lwd=1)
-with(sambdsumm.ord, {
-  plot(mean, type="n", ylim=c(0, 0.75), ylab="Distance to centroid", xaxt="n", xlab="")
+par(mfrow=c(1,2), mar=c(3.5,4,2,1), lwd=1)
+with(betad97$sambdsumm.ord, {
+  plot(mean, type="n", main="97% OTUs",
+       ylim=c(0, 0.75), ylab="Distance to centroid", xaxt="n", xlab="")
   arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
   points(1:10, mean, cex=1, pch=21, bg="white")
   text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75, 
-       labels=levels(SAM$Species)[order(sambdsumm$mean, decreasing=T)])
-  text(1:10, mean + se + 0.03, labels=saml$Letters[as.character(group)], cex=0.5)
+       labels=levels(SAM$Species)[order(betad97$sambdsumm$mean, decreasing=T)])
+  text(1:10, mean + se + 0.03, labels=betad97$saml$Letters[as.character(group)], cex=0.5)
+})
+with(betad100$sambdsumm.ord, {
+  plot(mean, type="n", main="100% OTUs",
+       ylim=c(0, 0.75), ylab="Distance to centroid", xaxt="n", xlab="")
+  arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
+  points(1:10, mean, cex=1, pch=21, bg="white")
+  text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75, 
+       labels=levels(SAM$Species)[order(betad100$sambdsumm$mean, decreasing=T)])
+  text(1:10, mean + se + 0.03, labels=betad100$saml$Letters[as.character(group)], cex=0.5)
 })
 ```
 
-```{r strigosa}
-dstr97 <- subset_samples(phy97.f.p, Species=="strigosa")
-plot_bar(dstr97, x="Sample", y="Abundance", fill="OTU")
-plot_bar(dstr97, x="Sample", y="Abundance", fill="Subtype")
-# D strigosa hosted B1, B24, B35, B38, and C3 in Finney et al.... B25, B35, and B38 are missing from ref database.
-# Also try 100% OTUs -- must filter more first...
-dstr100.f <- subset_samples(phy100.f, Species=="strigosa")
-dstr100.f.p <- transform_sample_counts(dstr100.f, function(x) x/sum(x))
-#dstr100.f.p.f <- prune_taxa(rownames(otu_table(dstr100.f.p))[which(rowSums(otu_table(dstr100.f.p)) > 0.01)],
-#                            dstr100.f.p)
-#  
-#plot_bar(dstr100.f.p.f, x="Sample", y="Abundance", fill="OTU")
-#plot_bar(dstr100, x="Sample", y="Abundance", fill="Subtype")
-#sample_names(dstr100.f)
-#subset_samples(dstr100, Sample=="7")
-#otu_table(dstr100.f)
-#dstr100.f.p <- transform_sample_counts(dstr100.f, function(x) x/sum(x))
-#colSums(otu_table(dstr100.f.p)[rowSums(otu_table(dstr100.f.p)) > 0.1, ])
 
+```{r otu_barplots_custom, fig.width=8, fig.height=8}
+otubarplot <- function(phy, main) {
+  samdat <- data.frame(sample_data(phy))
+  typerelabund <- as.matrix(otu_table(phy)[order(data.frame(tax_table(phy))$Subtype), 
+                                                 rownames(samdat)])
+  typerelabund <- typerelabund[, rownames(sample_data(phy)[with(sample_data(phy), 
+                                                                order(Shore, Site, InputFileName))])]
+  # Get info for plotting OTU names and blast hits on top of barplot
+  blasthits <- as.character(data.frame(tax_table(phy))[order(data.frame(tax_table(phy))$Subtype), "Subtype"])
+  names <- as.character(rownames(data.frame(tax_table(phy)))[order(data.frame(tax_table(phy))$Subtype)])
+  samples <- colnames(typerelabund)
+  shores <- data.frame(sample_data(phy))[samples, "Shore"]
+  sites <- data.frame(sample_data(phy))[samples, "Site"]
+  divides <- apply(typerelabund, 2, cumsum)
+  heights <- diff(divides)
+  heights[heights < 0.04] <- NA
+  # Plot barplot and OTU names and blast hits
+  bars <- barplot(typerelabund, col=rainbow(ntaxa(phy)), las=1, space=0.1, xaxs="i",
+                  xlab="", ylab="", cex.axis=0.75, cex.names=0.75, xaxt="n")
+  text(bars, -0.06, labels=samples, xpd=T, cex=0.75)
+  text(bars, -0.10, labels=shores, xpd=T, cex=0.75)
+  text(bars, -0.14, labels=substr(sites, 1, 2), xpd=T, cex=0.75)
+  text(bars[1]/4, c(-0.06, -0.10, -0.14), labels=c("sample:", "shore:", "site:"), xpd=T, cex=0.75, pos=2)
+  mtext(side=2, text = "Relative Abundance", line=2)
+  for (i in 1:length(bars)) {
+    text(rep(bars[i], length(heights[which(!is.na(heights[,i])),i])), 
+         divides[which(!is.na(heights[,i])),i] + heights[which(!is.na(heights[,i])),i] / 2, 
+         labels=paste(names[which(!is.na(heights[,i]))+1],blasthits[which(!is.na(heights[,i]))+1],sep="\n"),
+         cex=0.5)
+  }
+  mtext(side=3, main, xpd=T, adj=0, line=0.5, font=2)
+}
 ```
 
-```{r otu_barplots_custom}
-# 100%-OTUs barplot 
-par(mar=c(2,3,4,1))
-samdat <- data.frame(sample_data(dstr100.f.p))
-typerelabund <- as.matrix(otu_table(dstr100.f.p)[order(data.frame(tax_table(dstr100.f.p))$Subtype), 
-                                                 rownames(samdat)])
+## Individual coral species
+### *Diploria strigosa*
+```{r dstr, cache=T, fig.height=8, fig.width=8}
+# Create subsetted phyloseq objects for Diploria strigosa
+dstr97.f.p <- subset_samples(phy97.f.p, Species=="strigosa")
+dstr100.f.p <- subset_samples(phy100.f.p, Species=="strigosa")
+# Plot custom barplots for Diploria strigosa
+par(mfrow=c(2,1), mar=c(2.2,3,2,1), lwd=0.1)
+otubarplot(dstr97.f.p, main="97% OTUs")
+otubarplot(dstr100.f.p, main="100% OTUs")
+```
 
-# Get info for plotting OTU names and blast hits on top of barplot
-blasthits <- as.character(data.frame(tax_table(dstr100.f.p))[order(data.frame(tax_table(dstr100.f.p))$Subtype)
-                                                             , "Subtype"])
-names <- as.character(rownames(data.frame(tax_table(dstr100.f.p)))[order(data.frame(tax_table(dstr100.f.p))$Subtype)])
-divides <- apply(typerelabund, 2, cumsum)
-heights <- diff(divides)
-heights[heights < 0.04] <- NA
+### *Porites furcata*
+```{r pfur, cache=T, fig.height=8, fig.width=8}
+# Create subsetted phyloseq objects for Porites furcata
+pfur97.f.p <- subset_samples(phy97.f.p, Species=="furcata")
+pfur100.f.p <- subset_samples(phy100.f.p, Species=="furcata")
+# Plot custom barplots for Porites furcata
+par(mfrow=c(2,1), mar=c(2.2,3,2,1), lwd=0.1)
+otubarplot(pfur97.f.p, main="97% OTUs")
+otubarplot(pfur100.f.p, main="100% OTUs")
+```
 
-# Plot barplot and OTU names and blast hits
-bars <- barplot(typerelabund, col=rainbow(941), border=NA, las=1, xlab="Sample", ylab="", cex.axis=0.75, cex.names=0.75)
-mtext(side=2, text = "Relative Abundance", line=2)
-for (i in 1:length(bars)) {
-  text(rep(bars[i], length(heights[which(!is.na(heights[,i])),i])), 
-       divides[which(!is.na(heights[,i])),i] + heights[which(!is.na(heights[,i])),i] / 2, 
-       labels=paste(names[which(!is.na(heights[,i]))+1],blasthits[which(!is.na(heights[,i]))+1],sep="\n"),
-       cex=0.6)
-}
+### *Orbicella annularis*
+```{r oann, cache=T, fig.height=8, fig.width=8}
+# Create subsetted phyloseq objects for Orbicella annularis
+oann97.f.p <- subset_samples(phy97.f.p, Species=="annularis")
+oann100.f.p <- subset_samples(phy100.f.p, Species=="annularis")
+# Plot custom barplots for Orbicella annularis
+par(mfrow=c(2,1), mar=c(2.2,3,2,1), lwd=0.1)
+otubarplot(oann97.f.p, main="97% OTUs")
+otubarplot(oann100.f.p, main="100% OTUs")
+```
 
-mtext(side=3, "B.) 100% OTUs", xpd=T, adj=0, line=2.5, font=2)
+### *Millepora alcicornis*
+```{r malc, cache=T, fig.height=8, fig.width=8}
+# Create subsetted phyloseq objects for Millepora alcicornis
+malc97.f.p <- subset_samples(phy97.f.p, Species=="alcicornis")
+malc100.f.p <- subset_samples(phy100.f.p, Species=="alcicornis")
+# Plot custom barplots for Millepora alcicornis
+par(mfrow=c(2,1), mar=c(2.2,3,2,1), lwd=0.1)
+otubarplot(malc97.f.p, main="97% OTUs")
+otubarplot(malc100.f.p, main="100% OTUs")
+```
+
+### *Siderastrea siderea*
+```{r ssid, cache=T, fig.height=8, fig.width=8}
+# Create subsetted phyloseq objects for Siderastrea siderea
+ssid97.f.p <- subset_samples(phy97.f.p, Species=="siderea")
+ssid100.f.p <- subset_samples(phy100.f.p, Species=="siderea")
+# Plot custom barplots for Siderastrea siderea
+par(mfrow=c(2,1), mar=c(2.2,3,2,1), lwd=0.1)
+otubarplot(ssid97.f.p, main="97% OTUs")
+otubarplot(ssid100.f.p, main="100% OTUs")
+```
+
+### *Favia fragum*
+```{r ffra, cache=T, fig.height=8, fig.width=8}
+# Create subsetted phyloseq objects for Favia fragum
+ffra97.f.p <- subset_samples(phy97.f.p, Species=="fragum")
+ffra100.f.p <- subset_samples(phy100.f.p, Species=="fragum")
+# Plot custom barplots for Favia fragum
+par(mfrow=c(2,1), mar=c(2.2,3,2,1), lwd=0.1)
+otubarplot(ffra97.f.p, main="97% OTUs")
+otubarplot(ffra100.f.p, main="100% OTUs")
+```
+
+### *Siderastrea radians*
+```{r srad, cache=T, fig.height=8, fig.width=8}
+# Create subsetted phyloseq objects for Siderastrea radians
+srad97.f.p <- subset_samples(phy97.f.p, Species=="radians")
+srad100.f.p <- subset_samples(phy100.f.p, Species=="radians")
+# Plot custom barplots for Siderastrea radians
+par(mfrow=c(2,1), mar=c(2.2,3,2,1), lwd=0.1)
+otubarplot(srad97.f.p, main="97% OTUs")
+otubarplot(srad100.f.p, main="100% OTUs")
+```
+
+### *Porites astreoides*
+```{r past, cache=T, fig.height=8, fig.width=8}
+# Create subsetted phyloseq objects for Porites astreoides
+past97.f.p <- subset_samples(phy97.f.p, Species=="astreoides")
+past100.f.p <- subset_samples(phy100.f.p, Species=="astreoides")
+# Plot custom barplots for Porites astreoides
+par(mfrow=c(2,1), mar=c(2.2,3,2,1), lwd=0.1)
+otubarplot(past97.f.p, main="97% OTUs")
+otubarplot(past100.f.p, main="100% OTUs")
+```
+
+### *Dendrogyra cylindrus*
+```{r dcyl, cache=T, fig.height=8, fig.width=8}
+# Create subsetted phyloseq objects for Dendrogyra cylindrus
+dcyl97.f.p <- subset_samples(phy97.f.p, Species=="cylindrus")
+dcyl100.f.p <- subset_samples(phy100.f.p, Species=="cylindrus")
+# Plot custom barplots for Dendrogyra cylindrus
+par(mfrow=c(2,1), mar=c(2.2,3,2,1), lwd=0.1)
+otubarplot(dcyl97.f.p, main="97% OTUs")
+otubarplot(dcyl100.f.p, main="100% OTUs")
+```
+
+### *Montastraea cavernosa*
+```{r mcav, cache=T, fig.height=8, fig.width=8}
+# Create subsetted phyloseq objects for Montastraea cavernosa
+mcav97.f.p <- subset_samples(phy97.f.p, Species=="cavernosa")
+mcav100.f.p <- subset_samples(phy100.f.p, Species=="cavernosa")
+# Plot custom barplots for Montastraea cavernosa
+par(mfrow=c(2,1), mar=c(2.2,3,2,1), lwd=0.1)
+otubarplot(mcav97.f.p, main="97% OTUs")
+otubarplot(mcav100.f.p, main="100% OTUs")
+```
+
+
 
 ```
 
