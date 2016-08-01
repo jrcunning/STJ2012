@@ -275,36 +275,44 @@ knitr::kable(sppdiffs, caption="Species not sharing a letter are significantly d
 Whether *Symbiodinium* communities differ between north vs. south shores within species is tested here using PERMANOVA.
 
 ```{r shorediffs, cache=T}
-# Compute within- and between-shore statistics for each Species
-shorestats <- data.frame(matrix(dimnames=list(levels(data.frame(sample_data(phy97.f.t))$Species), 
-                                              c("Species", "n", "overall", "within", 
-                                                "between", "R2", "bd", "p")), ncol=8, nrow=10))
-for (i in 1:nlevels(data.frame(sample_data(phy97.f.t))$Species)) {
-  sp <- levels(data.frame(sample_data(phy97.f.t))$Species)[i]
-  shorestats$Species[i] <- sp
-  phy97.f.t.species <- subset_samples(phy97.f.t, Species==sp)  # Set temp phyloseq object
-  shorestats$n[i] <- nsamples(phy97.f.t.species)
-  md <- meandist(phyloseq::distance(phy97.f.t.species, "bray"), 
-                 sample_data(phy97.f.t.species)$Shore)
-  shorestats$within[i] <- summary(md)$W  # Weighted mean dissimilarity within both Pools
-  shorestats$between[i] <- summary(md)$B  # Mean dissimilarity between Pools
-  shorestats$overall[i] <- summary(md)$D  # Overall dissimilarity
-  if (nlevels(as(sample_data(phy97.f.t.species), "data.frame")$Shore) > 1) {
-    set.seed(70235)
-    permanova <- adonis(phyloseq::distance(phy97.f.t.species, "bray") ~ Shore, 
-                        data=as(sample_data(phy97.f.t.species), "data.frame"), permutations=999)
-    shorestats$R2[i] <- permanova$aov.tab$"R2"[1]  # PERMANOVA partial R-squared
-    shorestats$p[i] <- permanova$aov.tab$"Pr(>F)"[1]  # PERMANOVA p-value
-    bd <- betadisper(phyloseq::distance(phy97.f.t.species, "bray"),
-                     group=as(sample_data(phy97.f.t.species), "data.frame")$Shore)
-    shorestats$bd[i] <- TukeyHSD(bd)$group[4]
-  } else {
-    shorestats$R2[i] <- NA
-    shorestats$p[i] <- NA
-    shorestats$bd[i] <- NA
+shorediffs <- function(phy) {
+  # Compute within- and between-shore statistics for each Species
+  shorestats <- data.frame(matrix(dimnames=list(levels(data.frame(sample_data(phy))$Species), 
+                                                c("Species", "n", "overall", "within", 
+                                                  "between", "R2", "bd", "p")), ncol=8, nrow=10))
+  for (i in 1:nlevels(data.frame(sample_data(phy))$Species)) {
+    sp <<- levels(data.frame(sample_data(phy))$Species)[i]
+    shorestats$Species[i] <- sp
+    phy.species <- subset_samples(phy, Species==sp)  # Set temp phyloseq object
+    shorestats$n[i] <- nsamples(phy.species)
+    md <- meandist(phyloseq::distance(phy.species, "bray"), 
+                   sample_data(phy.species)$Shore)
+    shorestats$within[i] <- summary(md)$W  # Weighted mean dissimilarity within both Pools
+    shorestats$between[i] <- summary(md)$B  # Mean dissimilarity between Pools
+    shorestats$overall[i] <- summary(md)$D  # Overall dissimilarity
+    if (nlevels(as(sample_data(phy.species), "data.frame")$Shore) > 1) {
+      set.seed(70235)
+      permanova <- adonis(phyloseq::distance(phy.species, "bray") ~ Shore, 
+                          data=as(sample_data(phy.species), "data.frame"), permutations=999)
+      shorestats$R2[i] <- permanova$aov.tab$"R2"[1]  # PERMANOVA partial R-squared
+      shorestats$p[i] <- permanova$aov.tab$"Pr(>F)"[1]  # PERMANOVA p-value
+      bd <- betadisper(phyloseq::distance(phy.species, "bray"),
+                       group=as(sample_data(phy.species), "data.frame")$Shore)
+      shorestats$bd[i] <- TukeyHSD(bd)$group[4]
+    } else {
+      shorestats$R2[i] <- NA
+      shorestats$p[i] <- NA
+      shorestats$bd[i] <- NA
+    }
   }
+  return(shorestats)
 }
-knitr::kable(shorestats)  # dendrogyra, porites furcata, and siderastrea siderea differ by shore
+
+shorestats97 <- shorediffs(phy97.f.t)
+shorestats100 <- shorediffs(phy100.f.t)
+
+knitr::kable(shorestats97, row.names=F, caption="97% OTU data: differences within and between shore for each species")
+knitr::kable(shorestats100, row.names=F, caption="100% OTU data: differences within and between shore for each species")
 ```
 
 ## Beta diversity
