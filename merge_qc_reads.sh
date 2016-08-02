@@ -5,7 +5,7 @@ unzip data/*.zip -d data/fastq
 
 # Generate config files for merging reads with illumina-utils
 mkdir -p data/merge
-mv data/fastq_list.txt data/fastq/fastq_list.txt
+cp data/fastq_list.txt data/fastq/fastq_list.txt
 iu-gen-configs data/fastq/fastq_list.txt -o data/merge
 
 # Merge paired reads for each sample (in parallel)
