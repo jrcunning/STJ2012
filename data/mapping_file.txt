@@ -1,0 +1,84 @@
+#SampleID	BarcodeSequence	LinkerPrimerSequence	InputFileName	Genus	Species	Site	Shore	Date
+1			1_MERGED-MAX-MISMATCH-3	Porites	furcata	Booby Rock	S	7-Aug-12
+2			2_MERGED-MAX-MISMATCH-3	Montastraea	cavernosa	Booby Rock	S	7-Aug-12
+3			3_MERGED-MAX-MISMATCH-3	Favia	fragum	Booby Rock	S	7-Aug-12
+4			4_MERGED-MAX-MISMATCH-3	Siderastrea	siderea	Booby Rock	S	7-Aug-12
+5			5_MERGED-MAX-MISMATCH-3	Dendrogyra	cylindrus	Booby Rock	S	7-Aug-12
+6			6_MERGED-MAX-MISMATCH-3	Siderastrea	radians	Booby Rock	S	7-Aug-12
+7			7_MERGED-MAX-MISMATCH-3	Diploria	strigosa	Booby Rock	S	7-Aug-12
+8			8_MERGED-MAX-MISMATCH-3	Millepora	alcicornis	Booby Rock	S	7-Aug-12
+9			9_MERGED-MAX-MISMATCH-3	Porites	furcata	Tektite	S	7-Aug-12
+10			10_MERGED-MAX-MISMATCH-3	Diploria	strigosa	Tektite	S	7-Aug-12
+11			11_MERGED-MAX-MISMATCH-3	Dendrogyra	cylindrus	Tektite	S	7-Aug-12
+12			12_MERGED-MAX-MISMATCH-3	Favia	fragum	Tektite	S	7-Aug-12
+13			13_MERGED-MAX-MISMATCH-3	Millepora	alcicornis	Tektite	S	7-Aug-12
+14			14_MERGED-MAX-MISMATCH-3	Siderastrea	radians	Tektite	S	7-Aug-12
+15			15_MERGED-MAX-MISMATCH-3	Siderastrea	siderea	Tektite	S	7-Aug-12
+16			16_MERGED-MAX-MISMATCH-3	Montastraea	cavernosa	Tektite	S	7-Aug-12
+18			18_MERGED-MAX-MISMATCH-3	Favia	fragum	Kiddel	S	7-Aug-12
+19			19_MERGED-MAX-MISMATCH-3	Dendrogyra	cylindrus	Kiddel	S	7-Aug-12
+20			20_MERGED-MAX-MISMATCH-3	Montastraea	cavernosa	Kiddel	S	7-Aug-12
+21			21_MERGED-MAX-MISMATCH-3	Porites	furcata	Kiddel	S	7-Aug-12
+23			23_MERGED-MAX-MISMATCH-3	Siderastrea	radians	Kiddel	S	7-Aug-12
+24			24_MERGED-MAX-MISMATCH-3	Siderastrea	siderea	Kiddel	S	7-Aug-12
+25			25_MERGED-MAX-MISMATCH-3	Millepora	alcicornis	Kiddel	S	7-Aug-12
+26			26_MERGED-MAX-MISMATCH-3	Millepora	alcicornis	Groot Pan	S	7-Aug-12
+27			27_MERGED-MAX-MISMATCH-3	Favia	fragum	Groot Pan	S	7-Aug-12
+29			29_MERGED-MAX-MISMATCH-3	Diploria	strigosa	Groot Pan	S	7-Aug-12
+30			30_MERGED-MAX-MISMATCH-3	Dendrogyra	cylindrus	Groot Pan	S	7-Aug-12
+31			31_MERGED-MAX-MISMATCH-3	Siderastrea	radians	Groot Pan	S	7-Aug-12
+32			32_MERGED-MAX-MISMATCH-3	Siderastrea	siderea	Groot Pan	S	7-Aug-12
+33			33_MERGED-MAX-MISMATCH-3	Porites	furcata	Groot Pan	S	7-Aug-12
+34			34_MERGED-MAX-MISMATCH-3	Siderastrea	siderea	Yawzi	S	7-Aug-12
+36			36_MERGED-MAX-MISMATCH-3	Diploria	strigosa	Yawzi	S	7-Aug-12
+37			37_MERGED-MAX-MISMATCH-3	Millepora	alcicornis	Yawzi	S	7-Aug-12
+38			38_MERGED-MAX-MISMATCH-3	Porites	furcata	Yawzi	S	7-Aug-12
+39			39_MERGED-MAX-MISMATCH-3	Siderastrea	radians	Yawzi	S	7-Aug-12
+40			40_MERGED-MAX-MISMATCH-3	Dendrogyra	cylindrus	Yawzi	S	7-Aug-12
+41			41_MERGED-MAX-MISMATCH-3	Favia	fragum	Yawzi	S	7-Aug-12
+42			42_MERGED-MAX-MISMATCH-3	Dendrogyra	cylindrus	Anna's Point	N	9-Aug-12
+43			43_MERGED-MAX-MISMATCH-3	Porites	astreoides	Anna's Point	N	9-Aug-12
+44			44_MERGED-MAX-MISMATCH-3	Diploria	strigosa	Anna's Point	N	9-Aug-12
+45			45_MERGED-MAX-MISMATCH-3	Porites	furcata	Anna's Point	N	9-Aug-12
+46			46_MERGED-MAX-MISMATCH-3	Siderastrea	radians	Anna's Point	N	9-Aug-12
+47			47_MERGED-MAX-MISMATCH-3	Millepora	alcicornis	Anna's Point	N	9-Aug-12
+48			48_MERGED-MAX-MISMATCH-3	Siderastrea	siderea	Anna's Point	N	9-Aug-12
+49			49_MERGED-MAX-MISMATCH-3	Orbicella	annularis	Anna's Point	N	9-Aug-12
+50			50_MERGED-MAX-MISMATCH-3	Montastraea	cavernosa	Anna's Point	N	9-Aug-12
+51			51_MERGED-MAX-MISMATCH-3	Dendrogyra	cylindrus	Haulover Bay	N	9-Aug-12
+52			52_MERGED-MAX-MISMATCH-3	Porites	astreoides	Haulover Bay	N	9-Aug-12
+53			53_MERGED-MAX-MISMATCH-3	Millepora	alcicornis	Haulover Bay	N	9-Aug-12
+54			54_MERGED-MAX-MISMATCH-3	Diploria	strigosa	Haulover Bay	N	9-Aug-12
+55			55_MERGED-MAX-MISMATCH-3	Favia	fragum	Haulover Bay	N	9-Aug-12
+56			56_MERGED-MAX-MISMATCH-3	Montastraea	cavernosa	Haulover Bay	N	9-Aug-12
+57			57_MERGED-MAX-MISMATCH-3	Siderastrea	siderea	Haulover Bay	N	9-Aug-12
+58			58_MERGED-MAX-MISMATCH-3	Porites	furcata	Haulover Bay	N	9-Aug-12
+59			59_MERGED-MAX-MISMATCH-3	Orbicella	annularis	Haulover Bay	N	9-Aug-12
+60			60_MERGED-MAX-MISMATCH-3	Siderastrea	radians	Haulover Bay	N	9-Aug-12
+61			61_MERGED-MAX-MISMATCH-3	Porites	astreoides	Anna's Point	N	9-Aug-12
+62			62_MERGED-MAX-MISMATCH-3	Montastraea	cavernosa	Anna's Point	N	9-Aug-12
+63			63_MERGED-MAX-MISMATCH-3	Siderastrea	radians	Anna's Point	N	9-Aug-12
+64			64_MERGED-MAX-MISMATCH-3	Diploria	strigosa	Anna's Point	N	9-Aug-12
+65			65_MERGED-MAX-MISMATCH-3	Millepora	alcicornis	Anna's Point	N	9-Aug-12
+66			66_MERGED-MAX-MISMATCH-3	Siderastrea	siderea	Anna's Point	N	9-Aug-12
+67			67_MERGED-MAX-MISMATCH-3	Orbicella	annularis	Anna's Point	N	9-Aug-12
+68			68_MERGED-MAX-MISMATCH-3	Dendrogyra	cylindrus	Anna's Point	N	9-Aug-12
+69			69_MERGED-MAX-MISMATCH-3	Porites	furcata	Anna's Point	N	9-Aug-12
+70			70_MERGED-MAX-MISMATCH-3	Siderastrea	siderea	Haulover Bay	N	9-Aug-12
+71			71_MERGED-MAX-MISMATCH-3	Montastraea	cavernosa	Haulover Bay	N	9-Aug-12
+72			72_MERGED-MAX-MISMATCH-3	Diploria	strigosa	Haulover Bay	N	9-Aug-12
+73			73_MERGED-MAX-MISMATCH-3	Porites	furcata	Haulover Bay	N	9-Aug-12
+74			74_MERGED-MAX-MISMATCH-3	Millepora	alcicornis	Haulover Bay	N	9-Aug-12
+75			75_MERGED-MAX-MISMATCH-3	Orbicella	annularis	Haulover Bay	N	9-Aug-12
+76			76_MERGED-MAX-MISMATCH-3	Siderastrea	radians	Haulover Bay	N	9-Aug-12
+77			77_MERGED-MAX-MISMATCH-3	Favia	fragum	Haulover Bay	N	9-Aug-12
+78			78_MERGED-MAX-MISMATCH-3	Porites	astreoides	Haulover Bay	N	9-Aug-12
+79			79_MERGED-MAX-MISMATCH-3	Orbicella	annularis	Haulover Bay	N	9-Aug-12
+80			80_MERGED-MAX-MISMATCH-3	Diploria	strigosa	Haulover Bay	N	9-Aug-12
+81			81_MERGED-MAX-MISMATCH-3	Millepora	alcicornis	Haulover Bay	N	9-Aug-12
+82			82_MERGED-MAX-MISMATCH-3	Siderastrea	radians	Haulover Bay	N	9-Aug-12
+83			83_MERGED-MAX-MISMATCH-3	Siderastrea	siderea	Haulover Bay	N	9-Aug-12
+84			84_MERGED-MAX-MISMATCH-3	Porites	furcata	Haulover Bay	N	9-Aug-12
+85			85_MERGED-MAX-MISMATCH-3	Montastraea	cavernosa	Haulover Bay	N	9-Aug-12
+86			86_MERGED-MAX-MISMATCH-3	Porites	astreoides	Haulover Bay	N	9-Aug-12
+87			87_MERGED-MAX-MISMATCH-3	Favia	fragum	Haulover Bay	N	9-Aug-12
