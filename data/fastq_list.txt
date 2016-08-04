@@ -15,7 +15,6 @@ sample	r1	r2
 14	3967-14-MS-ITSdino_R1.fastq	3967-14-MS-ITSdino_R2.fastq
 15	3967-15-MS-ITSdino_R1.fastq	3967-15-MS-ITSdino_R2.fastq
 16	3967-16-MS-ITSdino_R1.fastq	3967-16-MS-ITSdino_R2.fastq
-17	3967-17-MS-ITSdino_R1.fastq	3967-17-MS-ITSdino_R2.fastq
 18	3967-18-MS-ITSdino_R1.fastq	3967-18-MS-ITSdino_R2.fastq
 19	3967-19-MS-ITSdino_R1.fastq	3967-19-MS-ITSdino_R2.fastq
 20	3967-20-MS-ITSdino_R1.fastq	3967-20-MS-ITSdino_R2.fastq
@@ -32,7 +31,6 @@ sample	r1	r2
 32	3967-32-MS-ITSdino_R1.fastq	3967-32-MS-ITSdino_R2.fastq
 33	3967-33-MS-ITSdino_R1.fastq	3967-33-MS-ITSdino_R2.fastq
 34	3967-34-MS-ITSdino_R1.fastq	3967-34-MS-ITSdino_R2.fastq
-35	3967-35-MS-ITSdino_R1.fastq	3967-35-MS-ITSdino_R2.fastq
 36	3967-36-MS-ITSdino_R1.fastq	3967-36-MS-ITSdino_R2.fastq
 37	3967-37-MS-ITSdino_R1.fastq	3967-37-MS-ITSdino_R2.fastq
 38	3967-38-MS-ITSdino_R1.fastq	3967-38-MS-ITSdino_R2.fastq

@@ -24,6 +24,7 @@
 25			25_MERGED-MAX-MISMATCH-3	Millepora	alcicornis	Kiddel	S	7-Aug-12
 26			26_MERGED-MAX-MISMATCH-3	Millepora	alcicornis	Groot Pan	S	7-Aug-12
 27			27_MERGED-MAX-MISMATCH-3	Favia	fragum	Groot Pan	S	7-Aug-12
+28			28_MERGED-MAX-MISMATCH-3	Montastraea	cavernosa	Groot Pan	S	7-Aug-12
 29			29_MERGED-MAX-MISMATCH-3	Diploria	strigosa	Groot Pan	S	7-Aug-12
 30			30_MERGED-MAX-MISMATCH-3	Dendrogyra	cylindrus	Groot Pan	S	7-Aug-12
 31			31_MERGED-MAX-MISMATCH-3	Siderastrea	radians	Groot Pan	S	7-Aug-12
