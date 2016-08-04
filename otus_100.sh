@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Cluster entire dataset at 100% similarity
-pick_otus.py -i data/fasta/combined_seqs_chimera_filtered.fasta -s 1.0 -o data/otus_100/
+pick_otus.py -i data/fasta/combined_seqs_chimera_filtered.fasta -s 1.0 --optimal_uclust -o data/otus_100/
 
 # Remove singletons before picking rep set and assigning taxonomy (to save time)
 awk '$3 ~ /./ {print}' data/otus_100/combined_seqs_chimera_filtered_otus.txt > data/otus_100/nosingles_otus.txt

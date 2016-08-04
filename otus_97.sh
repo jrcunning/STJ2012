@@ -7,7 +7,7 @@ split_sequence_file_on_sample_ids.py -i data/fasta/combined_seqs_chimera_filtere
 # OTU clustering at 97% similarity for each sample (in parallel)
 clust97() {
 	s=`echo $1 | grep -Eoh '/[0-9]{1,4}' | cut -c 2-`
-	pick_otus.py -i $1 -s 0.97 --denovo_otu_id_prefix $s'_denovo' -o data/otus_97
+	pick_otus.py -i $1 -s 0.97 --denovo_otu_id_prefix $s'_denovo' --optimal_uclust -o data/otus_97
 }
 export -f clust97
 parallel clust97 ::: data/fasta/bysample/*.fasta
@@ -25,7 +25,7 @@ parallel repset97 ::: data/otus_97/[0-9]*_otus.txt
 cat data/otus_97/[0-9]*_rep_set.fasta > data/otus_97/all_rep_set.fasta
 
 # Cluster all 97% rep sets at 100% identity
-pick_otus.py -i data/otus_97/all_rep_set.fasta -s 1.0 -o data/otus_97
+pick_otus.py -i data/otus_97/all_rep_set.fasta -s 1.0 --optimal_uclust -o data/otus_97
 
 # Get rep set of 100% OTUs and assign taxonomy
 pick_rep_set.py -i data/otus_97/all_rep_set_otus.txt -f data/otus_97/all_rep_set.fasta \
