@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Unzip sequence data archive
-unzip data/Cunning_3967Raw10232015.zip -d data/fastq
+unzip -j data/Cunning_3967Raw10232015.zip -d data/fastq
 
 # Generate config files for merging reads with illumina-utils
 mkdir -p data/merge
