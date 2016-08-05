@@ -1,295 +1,309 @@
-N	denovo59	No blast hit	None	None
-B	denovo27	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	5e-141	B1d_GU907633.1
-B	denovo26	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	6e-165	B1d_GU907633.1
-B	denovo25	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
-A	denovo24	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	5e-88	A4_AF333509
-B	denovo23	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	7e-72	B1d_GU907633.1
-N	denovo22	No blast hit	None	None
-B	denovo21	Symbiodiniaceae;Symbiodinium;CladeB;B125;_;_	8e-115	B125_EU074865
-G	denovo20	Symbiodiniaceae;Symbiodinium;CladeG;G100;_;_	1e-150	G100_AB253788
-B	denovo29	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	7e-134	B34_GU907649.1
-A	denovo28	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-143	A4_AF333509
-N	denovo92	No blast hit	None	None
-B	denovo93	Symbiodiniaceae;Symbiodinium;CladeB;B119;_;_	9e-87	B119_EU099825
-G	denovo260	Symbiodiniaceae;Symbiodinium;CladeG;G100;_;_	2e-159	G100_AB253788
-D	denovo91	Symbiodiniaceae;Symbiodinium;CladeD;D1a.1;_;_	9e-155	D1a.1_JF683338
-C	denovo288	Symbiodiniaceae;Symbiodinium;CladeC;C31;_;_	4e-160	C31_AY258496
-B	denovo289	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	7e-137	B34_GU907649.1
-N	denovo284	No blast hit	None	None
-C	denovo266	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	1e-113	C131_JF320826
-C	denovo286	Symbiodiniaceae;Symbiodinium;CladeC;C45a;_;_	2e-128	C45a_AY765404
-B	denovo287	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
-G	denovo280	Symbiodiniaceae;Symbiodinium;CladeG;G3.2;_;_	3e-154	G3.2_KC597694
-A	denovo281	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	9e-124	A4_AF333509
-C	denovo282	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	3e-164	C1cstar_AY239364
-A	denovo283	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	3e-145	A4_AF333509
-B	denovo264	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	3e-139	B19_GU907641.1
+A	denovo27	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	5e-88	A4_AF333509
+B	denovo26	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	7e-72	B1d_GU907633.1
+N	denovo25	No blast hit	None	None
+B	denovo24	Symbiodiniaceae;Symbiodinium;CladeB;B125;_;_	8e-115	B125_EU074865
+G	denovo23	Symbiodiniaceae;Symbiodinium;CladeG;G100;_;_	1e-150	G100_AB253788
+C	denovo22	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	6e-162	C1cstar_AY239364
+F	denovo21	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+G	denovo20	Symbiodiniaceae;Symbiodinium;CladeG;G100;_;_	2e-152	G100_AB253788
+B	denovo29	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	6e-165	B1d_GU907633.1
+B	denovo28	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
+C	denovo262	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	2e-128	C1cstar_AY239364
+B	denovo93	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	4e-126	B34_GU907649.1
+N	denovo90	No blast hit	None	None
+N	denovo91	No blast hit	None	None
+N	denovo288	No blast hit	None	None
+G	denovo289	Symbiodiniaceae;Symbiodinium;CladeG;G3.2;_;_	3e-154	G3.2_KC597694
+D	denovo284	Symbiodiniaceae;Symbiodinium;CladeD;D1;_;_	9e-155	D1_AF334660
+C	denovo285	Symbiodiniaceae;Symbiodinium;CladeC;C1002;_;_	4e-157	C1002_DQ838544
+N	denovo286	No blast hit	None	None
+B	denovo287	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-119	B1d_GU907633.1
+N	denovo280	No blast hit	None	None
+F	denovo281	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+F	denovo282	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	6e-11	F5.2_AM748594
+F	denovo283	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+B	denovo264	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	2e-162	B34_GU907649.1
+C	denovo265	Symbiodiniaceae;Symbiodinium;CladeC;C45a;_;_	6e-162	C45a_AY765404
+B	denovo268	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	5e-150	B34_GU907649.1
+C	denovo149	Symbiodiniaceae;Symbiodinium;CladeC;C45a;_;_	4e-157	C45a_AY765404
+B	denovo148	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	6e-156	B1d_GU907633.1
+C	denovo143	Symbiodiniaceae;Symbiodinium;CladeC;C67;_;_	9e-158	C66_AY589771
+F	denovo142	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+B	denovo141	Symbiodiniaceae;Symbiodinium;CladeB;B1j;_;_	4e-135	B1j_GU907637.1
+B	denovo140	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	2e-134	B19_GU907641.1
+N	denovo147	No blast hit	None	None
+B	denovo146	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	2e-158	B1d_GU907633.1
+C	denovo145	Symbiodiniaceae;Symbiodinium;CladeC;C31.1;_;_	4e-160	C31.1_HQ630876
+D	denovo144	Symbiodiniaceae;Symbiodinium;CladeD;D1a;_;_	9e-155	D1a_AF499802
+B	denovo41	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	8e-149	B1d_GU907633.1
+C	denovo308	Symbiodiniaceae;Symbiodinium;CladeC;C20;_;_	2e-16	C20_AY239371
+B	denovo305	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	3e-148	B19_GU907641.1
+B	denovo304	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	2e-158	B1d_GU907633.1
+F	denovo307	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+B	denovo306	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	5e-144	B34_GU907649.1
+B	denovo301	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
+B	denovo300	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	2e-158	B19_GU907641.1
+B	denovo303	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	7e-137	B34_GU907649.1
+C	denovo302	Symbiodiniaceae;Symbiodinium;CladeC;C31;_;_	4e-160	C31_AY258496
+C	denovo92	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	1e-159	C1cstar_AY239364
+B	denovo263	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	3e-139	B34_GU907649.1
+B	denovo260	Symbiodiniaceae;Symbiodinium;CladeB;B16;_;_	9e-155	B16_AY258469
+C	denovo261	Symbiodiniaceae;Symbiodinium;CladeC;C3.22;_;_	6e-156	C3.22_HE579010
+F	denovo266	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+G	denovo267	Symbiodiniaceae;Symbiodinium;CladeG;G100;_;_	7e-103	G100_AB253788
+D	denovo94	Symbiodiniaceae;Symbiodinium;CladeD;D1a.1;_;_	9e-155	D1a.1_JF683338
 N	denovo95	No blast hit	None	None
-C	denovo268	Symbiodiniaceae;Symbiodinium;CladeC;C3.22;_;_	6e-156	C3.22_HE579010
-N	denovo149	No blast hit	None	None
-B	denovo148	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
-C	denovo143	Symbiodiniaceae;Symbiodinium;CladeC;C45a;_;_	4e-157	C45a_AY765404
-B	denovo142	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	6e-156	B1d_GU907633.1
-N	denovo141	No blast hit	None	None
-B	denovo140	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	2e-158	B1d_GU907633.1
-C	denovo147	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	4e-157	C1cstar_AY239364
-A	denovo146	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	3e-145	A4_AF333509
-C	denovo145	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	5e-147	C1cstar_AY239364
-N	denovo144	No blast hit	None	None
-B	denovo129	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	3e-127	B1d_GU907633.1
-B	denovo128	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	7e-103	B19_GU907641.1
-N	denovo41	No blast hit	None	None
-B	denovo262	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	2e-127	B19_GU907641.1
-B	denovo263	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	8e-149	B34_GU907649.1
-B	denovo90	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	4e-126	B34_GU907649.1
-G	denovo261	Symbiodiniaceae;Symbiodinium;CladeG;G3.1;_;_	1e-70	G3.1_KC597688
-A	denovo96	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-143	A4_AF333509
-B	denovo267	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	8e-140	B1d_GU907633.1
-C	denovo94	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	6e-162	C1cstar_AY239364
-C	denovo265	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	4e-157	C1cstar_AY239364
-B	denovo98	Symbiodiniaceae;Symbiodinium;CladeB;B119;_;_	4e-98	B119_EU099825
-N	denovo99	No blast hit	None	None
-N	denovo40	No blast hit	None	None
-A	denovo78	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	2e-121	A4_AF333509
-F	denovo79	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
-N	denovo70	No blast hit	None	None
-B	denovo71	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	9e-152	B1d_GU907633.1
-B	denovo72	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	1e-160	B19_GU907641.1
-A	denovo73	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	5e-88	A4_AF333509
-C	denovo74	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	3e-148	C1cstar_AY239364
-C	denovo75	Symbiodiniaceae;Symbiodinium;CladeC;C22;_;_	5e-122	C22_AY239373
-C	denovo76	Symbiodiniaceae;Symbiodinium;CladeC;C15.26;_;_	1e-159	C15.26_KC597686
-B	denovo77	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	3e-130	B1d_GU907633.1
-C	denovo248	Symbiodiniaceae;Symbiodinium;CladeC;C31;_;_	4e-160	C31_AY258496
-N	denovo249	No blast hit	None	None
-B	denovo240	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	7e-137	B19_GU907641.1
-C	denovo241	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	2e-128	C1cstar_AY239364
-C	denovo242	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	1e-159	C1cstar_AY239364
-C	denovo243	Symbiodiniaceae;Symbiodinium;CladeC;C45a;_;_	1e-122	C45a_AY765404
-C	denovo244	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	6e-125	C1cstar_AY239364
-C	denovo245	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	4e-126	C1cstar_AY239364
-C	denovo246	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	2e-128	C1cstar_AY239364
-C	denovo247	Symbiodiniaceae;Symbiodinium;CladeC;C1027;_;_	2e-152	C1027_DQ335360
-D	denovo138	Symbiodiniaceae;Symbiodinium;CladeD;D1a;_;_	9e-155	D1a_AF499802
-C	denovo139	Symbiodiniaceae;Symbiodinium;CladeC;C31.1;_;_	4e-160	C31.1_HQ630876
-C	denovo132	Symbiodiniaceae;Symbiodinium;CladeC;C1190;_;_	1e-135	C1190_EU099841
-B	denovo133	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	7e-140	B34_GU907649.1
-B	denovo130	Symbiodiniaceae;Symbiodinium;CladeB;B16;_;_	8e-143	B16_AY258469
-B	denovo131	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	5e-107	B19_GU907641.1
-F	denovo136	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
-C	denovo137	Symbiodiniaceae;Symbiodinium;CladeC;C67;_;_	9e-158	C66_AY589771
-C	denovo134	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	8e-146	C1cstar_AY239364
-B	denovo135	Symbiodiniaceae;Symbiodinium;CladeB;B1j;_;_	4e-135	B1j_GU907637.1
-B	denovo58	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
-N	denovo285	No blast hit	None	None
-B	denovo56	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	8e-143	B1d_GU907633.1
-N	denovo57	No blast hit	None	None
-C	denovo54	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	2e-131	C1cstar_AY239364
-C	denovo55	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	3e-133	C1cstar_AY239364
+N	denovo98	No blast hit	None	None
+A	denovo99	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-143	A4_AF333509
+C	denovo78	Symbiodiniaceae;Symbiodinium;CladeC;C22;_;_	5e-122	C22_AY239373
+C	denovo79	Symbiodiniaceae;Symbiodinium;CladeC;C15.26;_;_	1e-159	C15.26_KC597686
+C	denovo70	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	1e-159	C1cstar_AY239364
+B	denovo71	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	4e-160	B34_GU907649.1
+N	denovo72	No blast hit	None	None
+N	denovo73	No blast hit	None	None
+B	denovo74	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	9e-152	B1d_GU907633.1
+B	denovo75	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	1e-160	B19_GU907641.1
+A	denovo76	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	5e-88	A4_AF333509
+C	denovo77	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	3e-148	C1cstar_AY239364
+B	denovo248	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	1e-160	B19_GU907641.1
+B	denovo249	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	7e-137	B19_GU907641.1
+A	denovo240	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	3e-145	A4_AF333509
+C	denovo241	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	1e-147	C131_JF320826
+B	denovo242	Symbiodiniaceae;Symbiodinium;CladeB;B24;_;_	8e-146	B24_GU907643.1
+A	denovo243	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-103	A4_AF333509
+C	denovo244	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	6e-159	C1cstar_AY239364
+B	denovo245	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	9e-158	B1d_GU907633.1
+N	denovo246	No blast hit	None	None
+B	denovo247	Symbiodiniaceae;Symbiodinium;CladeB;B125;_;_	8e-115	B125_EU074865
+C	denovo138	Symbiodiniaceae;Symbiodinium;CladeC;C1190;_;_	1e-135	C1190_EU099841
+B	denovo139	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	7e-140	B34_GU907649.1
+N	denovo132	No blast hit	None	None
+B	denovo133	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	7e-103	B19_GU907641.1
+N	denovo130	No blast hit	None	None
+N	denovo131	No blast hit	None	None
+N	denovo136	No blast hit	None	None
+B	denovo137	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	5e-107	B19_GU907641.1
+B	denovo134	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	3e-127	B1d_GU907633.1
+B	denovo135	Symbiodiniaceae;Symbiodinium;CladeB;B16;_;_	8e-143	B16_AY258469
+C	denovo58	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	3e-133	C1cstar_AY239364
+B	denovo59	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	8e-143	B1d_GU907633.1
+C	denovo56	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	5e-138	C1cstar_AY239364
+C	denovo57	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	2e-131	C1cstar_AY239364
+N	denovo54	No blast hit	None	None
+N	denovo55	No blast hit	None	None
 N	denovo52	No blast hit	None	None
-C	denovo53	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	5e-138	C1cstar_AY239364
-C	denovo50	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	1e-135	C1cstar_AY239364
-N	denovo51	No blast hit	None	None
-N	denovo187	No blast hit	None	None
-B	denovo186	Symbiodiniaceae;Symbiodinium;CladeB;B1b;_;_	5e-39	B1b_AF499780
-B	denovo185	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	3e-130	B19_GU907641.1
-B	denovo184	Symbiodiniaceae;Symbiodinium;CladeB;B1k;_;_	7e-38	B1k_GU907638.1
-N	denovo183	No blast hit	None	None
-B	denovo182	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	3e-142	B19_GU907641.1
-B	denovo181	Symbiodiniaceae;Symbiodinium;CladeB;B1k;_;_	1e-36	B1k_GU907638.1
-N	denovo180	No blast hit	None	None
-A	denovo189	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-143	A4_AF333509
-C	denovo188	Symbiodiniaceae;Symbiodinium;CladeC;C22;_;_	6e-122	C22_AY239373
-C	denovo190	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	6e-162	C131_JF320826
-A	denovo191	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	1e-85	A4_AF333509
+C	denovo53	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	1e-135	C1cstar_AY239364
+N	denovo50	No blast hit	None	None
+C	denovo51	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	2e-155	C1cstar_AY239364
+B	denovo187	Symbiodiniaceae;Symbiodinium;CladeB;B1k;_;_	7e-38	B1k_GU907638.1
+A	denovo186	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	2e-140	A4_AF333509
+A	denovo185	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-143	A4_AF333509
+F	denovo184	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	6e-11	F5.2_AM748594
+C	denovo183	Symbiodiniaceae;Symbiodinium;CladeC;C15;_;_	6e-159	C15_AY239369
+N	denovo182	No blast hit	None	None
+B	denovo181	Symbiodiniaceae;Symbiodinium;CladeB;B10;_;_	2e-159	B10_AF499787
+B	denovo180	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	8e-143	B34_GU907649.1
+N	denovo189	No blast hit	None	None
+C	denovo188	Symbiodiniaceae;Symbiodinium;CladeC;C31;_;_	2e-155	C31_AY258496
+C	denovo113	Symbiodiniaceae;Symbiodinium;CladeC;C3b;_;_	5e-147	C3b_AF499791
+N	denovo49	No blast hit	None	None
+C	denovo48	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	2e-125	C131_JF320826
 N	denovo0	No blast hit	None	None
-F	denovo257	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+N	denovo129	No blast hit	None	None
 B	denovo2	Symbiodiniaceae;Symbiodinium;CladeB;B1j;_;_	2e-149	B1j_GU907637.1
-C	denovo3	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	3e-164	C1cstar_AY239364
+B	denovo96	Symbiodiniaceae;Symbiodinium;CladeB;B119;_;_	9e-87	B119_EU099825
 F	denovo4	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
 C	denovo5	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	7e-137	C1cstar_AY239364
 C	denovo6	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	4e-157	C1cstar_AY239364
-A	denovo229	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-143	A4_AF333509
+C	denovo229	Symbiodiniaceae;Symbiodinium;CladeC;C45a;_;_	2e-128	C45a_AY765404
 C	denovo8	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	9e-152	C1cstar_AY239364
-B	denovo227	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	4e-163	B1d_GU907633.1
-A	denovo224	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-143	A4_AF333509
-F	denovo225	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
-N	denovo222	No blast hit	None	None
-B	denovo223	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-135	B1d_GU907633.1
-B	denovo220	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	7e-137	B1d_GU907633.1
-N	denovo221	No blast hit	None	None
-C	denovo110	Symbiodiniaceae;Symbiodinium;CladeC;C3b;_;_	5e-147	C3b_AF499791
+B	denovo227	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	5e-85	B19_GU907641.1
+B	denovo224	Symbiodiniaceae;Symbiodinium;CladeB;B119;_;_	6e-91	B119_EU099825
+D	denovo225	Symbiodiniaceae;Symbiodinium;CladeD;D1a.1;_;_	1e-153	D1a.1_JF683338
+B	denovo222	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	4e-163	B19_GU907641.1
+B	denovo223	Symbiodiniaceae;Symbiodinium;CladeB;B1b;_;_	2e-41	B1b_AF499780
+C	denovo220	Symbiodiniaceae;Symbiodinium;CladeC;C45a;_;_	4e-157	C45a_AY765404
+B	denovo221	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	7e-137	B34_GU907649.1
+N	denovo110	No blast hit	None	None
 N	denovo111	No blast hit	None	None
-F	denovo112	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
-F	denovo113	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+N	denovo112	No blast hit	None	None
+N	denovo86	No blast hit	None	None
 N	denovo114	No blast hit	None	None
-N	denovo115	No blast hit	None	None
-N	denovo116	No blast hit	None	None
-B	denovo117	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	6e-156	B1d_GU907633.1
-B	denovo118	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-153	B1d_GU907633.1
-C	denovo81	Symbiodiniaceae;Symbiodinium;CladeC;C1089;_;_	7e-134	C1089_AJ278598
-B	denovo80	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-156	B1d_GU907633.1
-C	denovo97	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	2e-155	C131_JF320826
-B	denovo251	Symbiodiniaceae;Symbiodinium;CladeB;B16;_;_	9e-155	B16_AY258469
+F	denovo115	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+F	denovo116	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+C	denovo117	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	2e-143	C1cstar_AY239364
+N	denovo118	No blast hit	None	None
+A	denovo81	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	2e-121	A4_AF333509
+B	denovo80	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	3e-130	B1d_GU907633.1
+C	denovo97	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	6e-162	C1cstar_AY239364
+C	denovo251	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	1e-159	C1cstar_AY239364
 N	denovo1	No blast hit	None	None
-C	denovo82	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	6e-162	C1cstar_AY239364
-N	denovo34	No blast hit	None	None
-B	denovo35	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
-B	denovo36	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	2e-134	B34_GU907649.1
-D	denovo37	Symbiodiniaceae;Symbiodinium;CladeD;D1a;_;_	5e-150	D1a_AF499802
-G	denovo30	Symbiodiniaceae;Symbiodinium;CladeG;G3.2;_;_	7e-140	G3.2_KC597694
-C	denovo31	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	2e-140	C1cstar_AY239364
-B	denovo32	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	4e-64	B1d_GU907633.1
-D	denovo33	Symbiodiniaceae;Symbiodinium;CladeD;D1a;_;_	2e-152	D1a_AF499802
-B	denovo38	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	8e-149	B1d_GU907633.1
-B	denovo39	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	5e-144	B1d_GU907633.1
-C	denovo228	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	6e-162	C1cstar_AY239364
-C	denovo89	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	1e-159	C1cstar_AY239364
+C	denovo250	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	2e-128	C1cstar_AY239364
+C	denovo34	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	2e-140	C1cstar_AY239364
+B	denovo35	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	4e-64	B1d_GU907633.1
+D	denovo36	Symbiodiniaceae;Symbiodinium;CladeD;D1a;_;_	2e-152	D1a_AF499802
+C	denovo3	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	3e-164	C1cstar_AY239364
+B	denovo30	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	5e-141	B1d_GU907633.1
+A	denovo31	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-143	A4_AF333509
+B	denovo32	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	7e-134	B34_GU907649.1
+G	denovo33	Symbiodiniaceae;Symbiodinium;CladeG;G3.2;_;_	7e-140	G3.2_KC597694
+N	denovo38	No blast hit	None	None
+B	denovo39	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	2e-134	B34_GU907649.1
+B	denovo228	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	7e-137	B1d_GU907633.1
+F	denovo125	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
 C	denovo7	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	5e-150	C1cstar_AY239364
-A	denovo124	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	3e-145	A4_AF333509
-B	denovo226	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	8e-143	B34_GU907649.1
-B	denovo259	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	5e-150	B34_GU907649.1
+N	denovo88	No blast hit	None	None
+B	denovo226	Symbiodiniaceae;Symbiodinium;CladeB;B9;_;_	2e-78	B9_AF499786
+B	denovo299	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	2e-155	B34_GU907649.1
+B	denovo298	Symbiodiniaceae;Symbiodinium;CladeB;B101;_;_	8e-115	B101_AY074986
+B	denovo127	Symbiodiniaceae;Symbiodinium;CladeB;B124;_;_	3e-142	B124_EU074874
 N	denovo9	No blast hit	None	None
-F	denovo293	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
-B	denovo292	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	5e-144	B34_GU907649.1
-B	denovo291	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	3e-148	B19_GU907641.1
-B	denovo290	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	2e-158	B1d_GU907633.1
-N	denovo126	No blast hit	None	None
-C	denovo294	Symbiodiniaceae;Symbiodinium;CladeC;C20;_;_	2e-16	C20_AY239371
-B	denovo204	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	1e-160	B19_GU907641.1
-C	denovo205	Symbiodiniaceae;Symbiodinium;CladeC;C45a;_;_	1e-159	C45a_AY765404
-N	denovo206	No blast hit	None	None
+N	denovo293	No blast hit	None	None
+A	denovo292	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	3e-145	A4_AF333509
+C	denovo291	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	3e-164	C1cstar_AY239364
+N	denovo258	No blast hit	None	None
+B	denovo297	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	8e-146	B34_GU907649.1
+B	denovo296	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-144	B1d_GU907633.1
+B	denovo295	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	2e-143	B1d_GU907633.1
+C	denovo294	Symbiodiniaceae;Symbiodinium;CladeC;C7;_;_	1e-159	C7_AF499797
+C	denovo204	Symbiodiniaceae;Symbiodinium;CladeC;C21.2;_;_	1e-125	C21.2_JF683324
+C	denovo205	Symbiodiniaceae;Symbiodinium;CladeC;C7;_;_	6e-162	C7_AF499797
+F	denovo206	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	4e-12	F5.2_AM748594
 B	denovo207	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
-G	denovo200	Symbiodiniaceae;Symbiodinium;CladeG;G100;_;_	4e-157	G100_AB253788
-I	denovo201	Symbiodiniaceae;Symbiodinium;CladeI;I4;_;_	4e-12	I4_FN561562
+C	denovo200	Symbiodiniaceae;Symbiodinium;CladeC;C32.2;_;_	2e-155	C32.2_JF683336
+C	denovo201	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	1e-159	C1cstar_AY239364
 N	denovo202	No blast hit	None	None
-B	denovo203	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
-C	denovo208	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	4e-154	C131_JF320826
-N	denovo209	No blast hit	None	None
-A	denovo176	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-143	A4_AF333509
-A	denovo177	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	2e-140	A4_AF333509
-N	denovo174	No blast hit	None	None
-C	denovo175	Symbiodiniaceae;Symbiodinium;CladeC;C15;_;_	6e-159	C15_AY239369
-B	denovo172	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	8e-143	B34_GU907649.1
-B	denovo173	Symbiodiniaceae;Symbiodinium;CladeB;B10;_;_	2e-159	B10_AF499787
-B	denovo170	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	6e-153	B19_GU907641.1
-F	denovo171	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
-B	denovo178	Symbiodiniaceae;Symbiodinium;CladeB;B1k;_;_	7e-38	B1k_GU907638.1
-C	denovo179	Symbiodiniaceae;Symbiodinium;CladeC;C31;_;_	2e-155	C31_AY258496
-F	denovo18	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
-C	denovo19	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	6e-162	C1cstar_AY239364
+B	denovo203	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	8e-53	B1d_GU907633.1
+G	denovo208	Symbiodiniaceae;Symbiodinium;CladeG;G100;_;_	4e-157	G100_AB253788
+I	denovo209	Symbiodiniaceae;Symbiodinium;CladeI;I4;_;_	4e-12	I4_FN561562
+B	denovo176	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	9e-152	B1d_GU907633.1
+B	denovo177	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	7e-118	B1d_GU907633.1
+B	denovo174	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	2e-125	B1d_GU907633.1
+C	denovo175	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	5e-153	C131_JF320826
+B	denovo172	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	2e-165	B1d_GU907633.1
+B	denovo173	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	3e-127	B1d_GU907633.1
+C	denovo170	Symbiodiniaceae;Symbiodinium;CladeC;C31;_;_	2e-155	C31_AY258496
+C	denovo171	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	6e-162	C1cstar_AY239364
+B	denovo178	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	6e-153	B19_GU907641.1
+F	denovo179	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+C	denovo18	Symbiodiniaceae;Symbiodinium;CladeC;C31.1;_;_	2e-155	C31.1_HQ630876
+C	denovo19	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	1e-156	C1cstar_AY239364
 C	denovo12	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	3e-145	C1cstar_AY239364
-N	denovo13	No blast hit	None	None
+B	denovo13	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	5e-144	B34_GU907649.1
 D	denovo10	Symbiodiniaceae;Symbiodinium;CladeD;D2;_;_	2e-146	D2_AY686649
 C	denovo11	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	4e-160	C131_JF320826
-C	denovo16	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	1e-156	C1cstar_AY239364
-G	denovo17	Symbiodiniaceae;Symbiodinium;CladeG;G100;_;_	2e-152	G100_AB253788
-B	denovo14	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	2e-134	B19_GU907641.1
-C	denovo15	Symbiodiniaceae;Symbiodinium;CladeC;C31.1;_;_	2e-155	C31.1_HQ630876
+B	denovo16	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	4e-160	B34_GU907649.1
+N	denovo17	No blast hit	None	None
+C	denovo14	Symbiodiniaceae;Symbiodinium;CladeC;C1144;_;_	6e-159	C1144_DQ182637
+B	denovo15	Symbiodiniaceae;Symbiodinium;CladeB;B31;_;_	1e-116	B31_GU907645.1
 N	denovo119	No blast hit	None	None
-N	denovo271	No blast hit	None	None
-N	denovo270	No blast hit	None	None
-F	denovo273	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	6e-11	F5.2_AM748594
-F	denovo272	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
-D	denovo275	Symbiodiniaceae;Symbiodinium;CladeD;D1;_;_	9e-155	D1_AF334660
-F	denovo274	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
-N	denovo277	No blast hit	None	None
-C	denovo276	Symbiodiniaceae;Symbiodinium;CladeC;C1002;_;_	4e-157	C1002_DQ838544
+B	denovo271	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	2e-127	B19_GU907641.1
+G	denovo270	Symbiodiniaceae;Symbiodinium;CladeG;G3.1;_;_	1e-70	G3.1_KC597688
+B	denovo273	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	3e-139	B19_GU907641.1
+B	denovo272	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	8e-149	B34_GU907649.1
+C	denovo275	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	1e-113	C131_JF320826
+C	denovo274	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	4e-157	C1cstar_AY239364
+C	denovo277	Symbiodiniaceae;Symbiodinium;CladeC;C3.22;_;_	6e-156	C3.22_HE579010
+B	denovo276	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	8e-140	B1d_GU907633.1
 N	denovo279	No blast hit	None	None
-B	denovo278	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-119	B1d_GU907633.1
-F	denovo158	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
-B	denovo159	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	7e-72	B1d_GU907633.1
-C	denovo154	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	1e-159	C131_JF320826
+N	denovo278	No blast hit	None	None
+N	denovo37	No blast hit	None	None
+A	denovo290	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	9e-124	A4_AF333509
+C	denovo158	Symbiodiniaceae;Symbiodinium;CladeC;C17.2;_;_	8e-152	C17.2_FJ461513
+C	denovo159	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	7e-131	C1cstar_AY239364
+B	denovo154	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
 N	denovo155	No blast hit	None	None
-F	denovo156	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	6e-11	F5.2_AM748594
-C	denovo157	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	2e-143	C1cstar_AY239364
-F	denovo150	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
-C	denovo151	Symbiodiniaceae;Symbiodinium;CladeC;C45a;_;_	7e-137	C45a_AY765404
-C	denovo152	Symbiodiniaceae;Symbiodinium;CladeC;C17.2;_;_	8e-152	C17.2_FJ461513
-C	denovo153	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	7e-131	C1cstar_AY239364
-N	denovo85	No blast hit	None	None
-B	denovo84	Symbiodiniaceae;Symbiodinium;CladeB;B125;_;_	8e-115	B125_EU074865
-N	denovo87	No blast hit	None	None
-B	denovo254	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	3e-139	B34_GU907649.1
-C	denovo253	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	2e-128	C1cstar_AY239364
-C	denovo252	Symbiodiniaceae;Symbiodinium;CladeC;C3.22;_;_	6e-156	C3.22_HE579010
-N	denovo83	No blast hit	None	None
-A	denovo250	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	5e-110	A4_AF333509
-F	denovo121	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
-B	denovo120	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	8e-149	B34_GU907649.1
-B	denovo123	Symbiodiniaceae;Symbiodinium;CladeB;B124;_;_	3e-142	B124_EU074874
-B	denovo122	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	7e-137	B19_GU907641.1
-N	denovo125	No blast hit	None	None
-N	denovo88	No blast hit	None	None
-N	denovo127	No blast hit	None	None
-G	denovo258	Symbiodiniaceae;Symbiodinium;CladeG;G100;_;_	7e-103	G100_AB253788
-N	denovo69	No blast hit	None	None
-B	denovo68	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	4e-160	B34_GU907649.1
-B	denovo86	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	2e-155	B34_GU907649.1
+F	denovo156	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+C	denovo157	Symbiodiniaceae;Symbiodinium;CladeC;C45a;_;_	7e-137	C45a_AY765404
+N	denovo150	No blast hit	None	None
+C	denovo151	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	5e-147	C1cstar_AY239364
+A	denovo152	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	3e-145	A4_AF333509
+C	denovo153	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	4e-157	C1cstar_AY239364
+C	denovo84	Symbiodiniaceae;Symbiodinium;CladeC;C1089;_;_	7e-134	C1089_AJ278598
+C	denovo85	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	6e-162	C1cstar_AY239364
+A	denovo128	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	3e-145	A4_AF333509
+B	denovo87	Symbiodiniaceae;Symbiodinium;CladeB;B125;_;_	8e-115	B125_EU074865
+C	denovo254	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	4e-126	C1cstar_AY239364
+C	denovo253	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	6e-125	C1cstar_AY239364
+C	denovo252	Symbiodiniaceae;Symbiodinium;CladeC;C45a;_;_	1e-122	C45a_AY765404
+B	denovo83	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-156	B1d_GU907633.1
+F	denovo82	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+B	denovo121	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-153	B1d_GU907633.1
+B	denovo120	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	6e-156	B1d_GU907633.1
+N	denovo123	No blast hit	None	None
+B	denovo122	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
+B	denovo89	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	2e-155	B34_GU907649.1
+B	denovo124	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	8e-149	B34_GU907649.1
+A	denovo259	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	5e-110	A4_AF333509
+B	denovo126	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	7e-137	B19_GU907641.1
+C	denovo69	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	4e-157	C1cstar_AY239364
+C	denovo68	Symbiodiniaceae;Symbiodinium;CladeC;C1002;_;_	4e-157	C1002_DQ838544
 N	denovo63	No blast hit	None	None
 N	denovo62	No blast hit	None	None
-N	denovo61	No blast hit	None	None
+B	denovo61	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
 N	denovo60	No blast hit	None	None
-C	denovo67	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	1e-159	C1cstar_AY239364
-C	denovo66	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	4e-157	C1cstar_AY239364
-C	denovo65	Symbiodiniaceae;Symbiodinium;CladeC;C1002;_;_	4e-157	C1002_DQ838544
+N	denovo67	No blast hit	None	None
+N	denovo66	No blast hit	None	None
+N	denovo65	No blast hit	None	None
 N	denovo64	No blast hit	None	None
-N	denovo269	No blast hit	None	None
-B	denovo239	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	1e-160	B19_GU907641.1
-B	denovo238	Symbiodiniaceae;Symbiodinium;CladeB;B125;_;_	8e-115	B125_EU074865
-C	denovo235	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	6e-159	C1cstar_AY239364
-A	denovo234	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-103	A4_AF333509
-N	denovo237	No blast hit	None	None
-B	denovo236	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	9e-158	B1d_GU907633.1
-A	denovo231	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	3e-145	A4_AF333509
+C	denovo257	Symbiodiniaceae;Symbiodinium;CladeC;C31;_;_	4e-160	C31_AY258496
+G	denovo269	Symbiodiniaceae;Symbiodinium;CladeG;G100;_;_	2e-159	G100_AB253788
+A	denovo199	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	1e-85	A4_AF333509
+N	denovo239	No blast hit	None	None
+A	denovo238	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-143	A4_AF333509
+B	denovo235	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	8e-143	B34_GU907649.1
+F	denovo234	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+C	denovo237	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	6e-162	C1cstar_AY239364
+B	denovo236	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	4e-163	B1d_GU907633.1
+N	denovo231	No blast hit	None	None
 N	denovo230	No blast hit	None	None
-B	denovo233	Symbiodiniaceae;Symbiodinium;CladeB;B24;_;_	8e-146	B24_GU907643.1
-C	denovo232	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	1e-147	C131_JF320826
-N	denovo109	No blast hit	None	None
-N	denovo108	No blast hit	None	None
+A	denovo233	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-143	A4_AF333509
+B	denovo232	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-135	B1d_GU907633.1
+B	denovo109	Symbiodiniaceae;Symbiodinium;CladeB;B1e;_;_	8e-149	B1e_GU907634.1
+C	denovo108	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	7e-140	C1cstar_AY239364
 N	denovo107	No blast hit	None	None
-B	denovo106	Symbiodiniaceae;Symbiodinium;CladeB;B1e;_;_	8e-149	B1e_GU907634.1
-C	denovo105	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	7e-140	C1cstar_AY239364
+C	denovo106	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	1e-159	C131_JF320826
+C	denovo105	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	4e-157	C1cstar_AY239364
 N	denovo104	No blast hit	None	None
-C	denovo103	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	1e-159	C131_JF320826
-C	denovo102	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	4e-157	C1cstar_AY239364
-N	denovo101	No blast hit	None	None
-N	denovo100	No blast hit	None	None
-F	denovo198	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	4e-12	F5.2_AM748594
-B	denovo199	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
+N	denovo103	No blast hit	None	None
+N	denovo102	No blast hit	None	None
+B	denovo101	Symbiodiniaceae;Symbiodinium;CladeB;B119;_;_	4e-98	B119_EU099825
+C	denovo100	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	2e-155	C131_JF320826
+A	denovo198	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-143	A4_AF333509
+D	denovo40	Symbiodiniaceae;Symbiodinium;CladeD;D1a;_;_	5e-150	D1a_AF499802
 N	denovo43	No blast hit	None	None
-N	denovo42	No blast hit	None	None
-C	denovo45	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	2e-125	C131_JF320826
+B	denovo42	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	5e-144	B1d_GU907633.1
+N	denovo45	No blast hit	None	None
 N	denovo44	No blast hit	None	None
 N	denovo47	No blast hit	None	None
 N	denovo46	No blast hit	None	None
-N	denovo49	No blast hit	None	None
-C	denovo48	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	2e-155	C1cstar_AY239364
-C	denovo192	Symbiodiniaceae;Symbiodinium;CladeC;C32.2;_;_	2e-155	C32.2_JF683336
-C	denovo193	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	1e-159	C1cstar_AY239364
-N	denovo194	No blast hit	None	None
-B	denovo195	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	8e-53	B1d_GU907633.1
-C	denovo196	Symbiodiniaceae;Symbiodinium;CladeC;C21.2;_;_	1e-125	C21.2_JF683324
-C	denovo197	Symbiodiniaceae;Symbiodinium;CladeC;C7;_;_	6e-162	C7_AF499797
-C	denovo256	Symbiodiniaceae;Symbiodinium;CladeC;C45a;_;_	6e-162	C45a_AY765404
-B	denovo255	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	2e-162	B34_GU907649.1
-B	denovo213	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	7e-137	B34_GU907649.1
-C	denovo212	Symbiodiniaceae;Symbiodinium;CladeC;C45a;_;_	4e-157	C45a_AY765404
-B	denovo211	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	5e-119	B19_GU907641.1
-C	denovo210	Symbiodiniaceae;Symbiodinium;CladeC;C17.2;_;_	3e-154	C17.2_FJ461513
-D	denovo217	Symbiodiniaceae;Symbiodinium;CladeD;D1a.1;_;_	1e-153	D1a.1_JF683338
-B	denovo216	Symbiodiniaceae;Symbiodinium;CladeB;B119;_;_	6e-91	B119_EU099825
-B	denovo215	Symbiodiniaceae;Symbiodinium;CladeB;B1b;_;_	2e-41	B1b_AF499780
-B	denovo214	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	4e-163	B19_GU907641.1
-B	denovo219	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	5e-85	B19_GU907641.1
-B	denovo218	Symbiodiniaceae;Symbiodinium;CladeB;B9;_;_	2e-78	B9_AF499786
-B	denovo165	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	3e-127	B1d_GU907633.1
-B	denovo164	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	2e-165	B1d_GU907633.1
-C	denovo167	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	5e-153	C131_JF320826
-B	denovo166	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	2e-125	B1d_GU907633.1
-A	denovo161	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	3e-145	A4_AF333509
-B	denovo160	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	2e-134	B34_GU907649.1
-C	denovo163	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	6e-162	C1cstar_AY239364
-C	denovo162	Symbiodiniaceae;Symbiodinium;CladeC;C31;_;_	2e-155	C31_AY258496
-B	denovo169	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	7e-118	B1d_GU907633.1
-B	denovo168	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	9e-152	B1d_GU907633.1
+B	denovo190	Symbiodiniaceae;Symbiodinium;CladeB;B1k;_;_	1e-36	B1k_GU907638.1
+B	denovo191	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	3e-142	B19_GU907641.1
+N	denovo192	No blast hit	None	None
+B	denovo193	Symbiodiniaceae;Symbiodinium;CladeB;B1k;_;_	7e-38	B1k_GU907638.1
+B	denovo194	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	3e-130	B19_GU907641.1
+B	denovo195	Symbiodiniaceae;Symbiodinium;CladeB;B1b;_;_	5e-39	B1b_AF499780
+N	denovo196	No blast hit	None	None
+C	denovo197	Symbiodiniaceae;Symbiodinium;CladeC;C22;_;_	6e-122	C22_AY239373
+C	denovo256	Symbiodiniaceae;Symbiodinium;CladeC;C1027;_;_	2e-152	C1027_DQ335360
+C	denovo255	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	2e-128	C1cstar_AY239364
+C	denovo213	Symbiodiniaceae;Symbiodinium;CladeC;C45a;_;_	1e-159	C45a_AY765404
+B	denovo212	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	1e-160	B19_GU907641.1
+B	denovo211	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
+N	denovo210	No blast hit	None	None
+N	denovo217	No blast hit	None	None
+C	denovo216	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	4e-154	C131_JF320826
+B	denovo215	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	1e-160	B1d_GU907633.1
+N	denovo214	No blast hit	None	None
+B	denovo219	Symbiodiniaceae;Symbiodinium;CladeB;B19;_;_	5e-119	B19_GU907641.1
+C	denovo218	Symbiodiniaceae;Symbiodinium;CladeC;C17.2;_;_	3e-154	C17.2_FJ461513
+F	denovo165	Symbiodiniaceae;Symbiodinium;CladeF;F5.2;_;_	2e-10	F5.2_AM748594
+C	denovo164	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	6e-162	C131_JF320826
+B	denovo167	Symbiodiniaceae;Symbiodinium;CladeB;B34;_;_	2e-134	B34_GU907649.1
+B	denovo166	Symbiodiniaceae;Symbiodinium;CladeB;B1d;_;_	7e-72	B1d_GU907633.1
+N	denovo161	No blast hit	None	None
+C	denovo160	Symbiodiniaceae;Symbiodinium;CladeC;C131;_;_	1e-159	C131_JF320826
+A	denovo163	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	7e-143	A4_AF333509
+N	denovo162	No blast hit	None	None
+C	denovo169	Symbiodiniaceae;Symbiodinium;CladeC;Cstar;_;_	8e-146	C1cstar_AY239364
+A	denovo168	Symbiodiniaceae;Symbiodinium;CladeA;A4;_;_	3e-145	A4_AF333509
