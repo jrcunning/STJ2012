@@ -31,7 +31,8 @@ cutadapt -a AAGCATATAAGTAAGCGGAGG -e 0.15 data/ITS2_Database_trimF2.fasta -o dat
 cutadapt -a AAGCATATAAGTAAGCGGAGG -e 0.15 data/ITS2_Database_trimF2_trimR.fasta -o data/ITS2db.fasta
 
 # Generate id_to_taxonomy file
-sed -e 's/>\([A-Z]\)\(.*\)\(_[A-Z][A-Z][0-9][0-9][0-9][0-9][0-9][0-9]\)/\1\2\3 Symbiodiniaceae;Symbiodinium;Clade\1;\1\2;_;_/' -e 'tx' -e 'd' -e ':x' data/ITS2db.fasta > data/id_to_taxonomy.txt
+TAB=$'\t'  # ( because \t is not recognized by sed on mac os x )
+sed -e 's/>\([A-Z]\)\(.*\)\(_[A-Z][A-Z][0-9][0-9][0-9][0-9][0-9][0-9]\)/\1\2\3'"${TAB}"'Symbiodiniaceae;Symbiodinium;Clade\1;\1\2;_;_/' -e 'tx' -e 'd' -e ':x' data/ITS2db.fasta > data/id_to_taxonomy.txt
 
 # Clean up intermediate files
 rm data/seqIDs1.txt
