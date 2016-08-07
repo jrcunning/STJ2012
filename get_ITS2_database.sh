@@ -1,6 +1,7 @@
 #!/bin/bash
 
-awk '/>/ {print}' data/Unaligned_ITS2_Database_31July16.fasta > data/seqIDs.txt
+awk '/>/ {print}' data/Unaligned_ITS2_Database_31July16.fasta > data/seqIDs1.txt
+sed 's/\.1$//' data/seqIDs1.txt > data/seqIDs.txt  # remove trailing '.1' on some accession numbers
 cat data/addseqs.txt >> data/seqIDs.txt
 
 # Get Subtype and Accession number links from old database and use accession number to download sequences from NCBI
@@ -29,7 +30,11 @@ cutadapt -a AAGCATATAAGTAAGCGGAGG -e 0.15 data/ITS2_Database_trimF2.fasta -o dat
 # Trim reverse primers again for any remaining internally
 cutadapt -a AAGCATATAAGTAAGCGGAGG -e 0.15 data/ITS2_Database_trimF2_trimR.fasta -o data/ITS2db.fasta
 
+# Generate id_to_taxonomy file
+sed -e 's/>\([A-Z]\)\(.*\)\(_[A-Z][A-Z][0-9][0-9][0-9][0-9][0-9][0-9]\)/\1\2\3 Symbiodiniaceae;Symbiodinium;Clade\1;\1\2;_;_/' -e 'tx' -e 'd' -e ':x' data/ITS2db.fasta > data/id_to_taxonomy.txt
+
 # Clean up intermediate files
+rm data/seqIDs1.txt
 rm data/seqIDs.txt
 rm data/ITS2_Database.fasta
 rm data/ITS2_Database_inline.fasta
