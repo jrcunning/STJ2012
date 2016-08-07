@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Cluster entire dataset at 100% similarity
-pick_otus.py -i data/fasta/combined_seqs_chimera_filtered.fasta -s 1.0 -o data/otus_100/
+pick_otus.py -i data/fasta/combined_seqs_trimmed.fasta -s 1.0 -o data/otus_100/
 
 # Remove singletons before picking rep set and assigning taxonomy (to save time)
 awk '$3 ~ /./ {print}' data/otus_100/combined_seqs_chimera_filtered_otus.txt > data/otus_100/nosingles_otus.txt
@@ -13,7 +13,7 @@ pick_rep_set.py -i data/otus_100/nosingles_otus.txt \
 
 # Assign taxonomy
 assign_taxonomy.py -i data/otus_100/rep_set.fasta -m blast \
--r data/Unaligned_ITS2_Database_31July16.fasta \
+-r data/ITS2db.fasta \
 -t data/id_to_taxonomy_31July16.txt \
 -o data/otus_100/blast_taxonomy
 

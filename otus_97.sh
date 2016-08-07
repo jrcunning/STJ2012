@@ -2,7 +2,7 @@
 
 # Split into individual sample files
 rm -r data/fasta/bysample
-split_sequence_file_on_sample_ids.py -i data/fasta/combined_seqs_chimera_filtered.fasta -o data/fasta/bysample
+split_sequence_file_on_sample_ids.py -i data/fasta/combined_seqs_trimmed.fasta -o data/fasta/bysample
 
 # OTU clustering at 97% similarity for each sample (in parallel)
 clust97() {
@@ -32,7 +32,7 @@ pick_rep_set.py -i data/otus_97/all_rep_set_otus.txt -f data/otus_97/all_rep_set
 -o data/otus_97/all_rep_set_rep_set.fasta
 
 # Assign taxonomy
-assign_taxonomy.py -i data/otus_97/all_rep_set_rep_set.fasta -r data/Unaligned_ITS2_Database_31July16.fasta -t data/id_to_taxonomy_31July16.txt -m blast -o data/otus_97/blast_taxonomy
+assign_taxonomy.py -i data/otus_97/all_rep_set_rep_set.fasta -r data/ITS2db.fasta -t data/id_to_taxonomy_31July16.txt -m blast -o data/otus_97/blast_taxonomy
 
 # Make list of "no blast hits"
 awk '/No blast hit/' data/otus_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt > data/otus_97/blast_taxonomy/no_blast_hits.txt
