@@ -14,7 +14,7 @@ pick_rep_set.py -i data/otus_100/nosingles_otus.txt \
 # Assign taxonomy
 assign_taxonomy.py -i data/otus_100/rep_set.fasta -m blast \
 -r data/ITS2db.fasta \
--t data/id_to_taxonomy_31July16.txt \
+-t data/id_to_taxonomy.txt \
 -o data/otus_100/blast_taxonomy
 
 # Make list of "no blast hits"
