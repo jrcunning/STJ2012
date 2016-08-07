@@ -1,7 +1,10 @@
 #!/bin/bash
 
+awk '/>/ {print}' data/Unaligned_ITS2_Database_31July16.fasta > data/seqIDs.txt
+cat data/addseqs.txt >> data/seqIDs.txt
+
 # Get Subtype and Accession number links from old database and use accession number to download sequences from NCBI
-cat data/Unaligned_ITS2_Database_31July16.fasta | awk '/>/ {print}' | \
+cat data/seqIDs.txt | \
 while read n
 do
 	acn=${n##*_}
@@ -27,6 +30,7 @@ cutadapt -a AAGCATATAAGTAAGCGGAGG -e 0.15 data/ITS2_Database_trimF2.fasta -o dat
 cutadapt -a AAGCATATAAGTAAGCGGAGG -e 0.15 data/ITS2_Database_trimF2_trimR.fasta -o data/ITS2db.fasta
 
 # Clean up intermediate files
+rm data/seqIDs.txt
 rm data/ITS2_Database.fasta
 rm data/ITS2_Database_inline.fasta
 rm data/ITS2_Database_ready.fasta
