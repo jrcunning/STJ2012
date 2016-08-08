@@ -32,10 +32,10 @@ pick_rep_set.py -i data/otus_97/all_rep_set_otus.txt -f data/otus_97/all_rep_set
 -o data/otus_97/all_rep_set_rep_set.fasta
 
 # Assign taxonomy
-assign_taxonomy.py -i data/otus_97/all_rep_set_rep_set.fasta -r data/ITS2db.fasta -t data/id_to_taxonomy.txt -m blast -o data/otus_97/blast_taxonomy
+#assign_taxonomy.py -i data/otus_97/all_rep_set_rep_set.fasta -r data/ITS2db.fasta -t data/id_to_taxonomy.txt -m blast -o data/otus_97/blast_taxonomy
 
 # Make list of "no blast hits"
-awk '/No blast hit/' data/otus_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt > data/otus_97/blast_taxonomy/no_blast_hits.txt
+#awk '/No blast hit/' data/otus_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt > data/otus_97/blast_taxonomy/no_blast_hits.txt
  
 # Concatenate 97% OTU maps and merge with 100% OTU map
 cat data/otus_97/*_otus.txt > data/otus_97/all_97_otus.txt
@@ -45,11 +45,11 @@ merge_otu_maps.py -i data/otus_97/all_97_otus.txt,data/otus_97/all_rep_set_otus.
 awk '$3 ~ /./ {print}' data/otus_97/merged_otu_map.txt > data/otus_97/nosingles_otus.txt
 
 # Make OTU table excluding no blast hits
-make_otu_table.py -i data/otus_97/nosingles_otus.txt \
--t data/otus_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt \
--e data/otus_97/blast_taxonomy/no_blast_hits.txt -o data/otus_97/97_otu_table.biom
-rm data/97_otu_table.tsv  # delete old OTU .tsv if present
-biom convert -i data/otus_97/97_otu_table.biom -o data/97_otu_table.tsv --to-tsv
+#make_otu_table.py -i data/otus_97/nosingles_otus.txt \
+#-t data/otus_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt \
+#-e data/otus_97/blast_taxonomy/no_blast_hits.txt -o data/otus_97/97_otu_table.biom
+#rm data/97_otu_table.tsv  # delete old OTU .tsv if present
+#biom convert -i data/otus_97/97_otu_table.biom -o data/97_otu_table.tsv --to-tsv
 
 # Add clade to tax table and copy to data directory
-cut -d$'\t' -f4- data/otus_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt | cut -c-1 | paste - data/otus_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt > data/97_tax_assignments.txt
+#cut -d$'\t' -f4- data/otus_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt | cut -c-1 | paste - data/otus_97/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt > data/97_tax_assignments.txt
