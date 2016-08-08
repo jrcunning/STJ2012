@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR=dirname $1
+DIR=$(dirname $1)
 
 
 # Assign taxonomy
