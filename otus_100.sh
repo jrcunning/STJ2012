@@ -12,21 +12,21 @@ pick_rep_set.py -i data/otus_100/nosingles_otus.txt \
 -o data/otus_100/rep_set.fasta
 
 # Assign taxonomy
-assign_taxonomy.py -i data/otus_100/rep_set.fasta -m blast \
--r data/ITS2db.fasta \
--t data/id_to_taxonomy.txt \
--o data/otus_100/blast_taxonomy
+#assign_taxonomy.py -i data/otus_100/rep_set.fasta -m blast \
+#-r data/ITS2db.fasta \
+#-t data/id_to_taxonomy.txt \
+#-o data/otus_100/blast_taxonomy
 
-# Make list of "no blast hits"
-awk '/No blast hit/' data/otus_100/blast_taxonomy/rep_set_tax_assignments.txt > data/otus_100/blast_taxonomy/no_blast_hits.txt
+## Make list of "no blast hits"
+#awk '/No blast hit/' data/otus_100/blast_taxonomy/rep_set_tax_assignments.txt > data/otus_100/blast_taxonomy/no_blast_hits.txt
 
-# Make OTU table excluding no blast hits
-make_otu_table.py -i data/otus_100/nosingles_otus.txt \
--t data/otus_100/blast_taxonomy/rep_set_tax_assignments.txt \
--e data/otus_100/blast_taxonomy/no_blast_hits.txt \
--o data/otus_100/100_otu_table.biom
-rm data/100_otu_table.tsv  # Delete old OTU .tsv if present
-biom convert -i data/otus_100/100_otu_table.biom -o data/100_otu_table.tsv --to-tsv
+## Make OTU table excluding no blast hits
+#make_otu_table.py -i data/otus_100/nosingles_otus.txt \
+#-t data/otus_100/blast_taxonomy/rep_set_tax_assignments.txt \
+#-e data/otus_100/blast_taxonomy/no_blast_hits.txt \
+#-o data/otus_100/100_otu_table.biom
+#rm data/100_otu_table.tsv  # Delete old OTU .tsv if present
+#biom convert -i data/otus_100/100_otu_table.biom -o data/100_otu_table.tsv --to-tsv
 
-# Add clade to tax table and copy to data directory
-cut -d$'\t' -f4- data/otus_100/blast_taxonomy/rep_set_tax_assignments.txt | cut -c-1 | paste - data/otus_100/blast_taxonomy/rep_set_tax_assignments.txt > data/100_tax_assignments.txt
+## Add clade to tax table and copy to data directory
+#cut -d$'\t' -f4- data/otus_100/blast_taxonomy/rep_set_tax_assignments.txt | cut -c-1 | paste - data/otus_100/blast_taxonomy/rep_set_tax_assignments.txt > data/100_tax_assignments.txt

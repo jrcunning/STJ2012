@@ -1,6 +1,7 @@
 #!/bin/bash
 
 DIR=$(dirname $1)
+OUT=$2
 
 
 # Assign taxonomy
@@ -11,10 +12,10 @@ awk '/No blast hit/' $DIR/blast_taxonomy/*_tax_assignments.txt > $DIR/blast_taxo
 
 # Make OTU table excluding no blast hits
 make_otu_table.py -i $DIR/nosingles_otus.txt \
--t $DIR/blast_taxonomy/all_rep_set_rep_set_tax_assignments.txt \
--e $DIR/blast_taxonomy/no_blast_hits.txt -o $DIR/$2.biom
+-t $DIR/blast_taxonomy/*_tax_assignments.txt \
+-e $DIR/blast_taxonomy/no_blast_hits.txt -o $DIR/$OUT.biom
 rm $DIR/*.tsv  # delete old OTU .tsv if present
-biom convert -i $DIR/$2.biom -o data/$2.tsv --to-tsv
+biom convert -i $DIR/$OUT.biom -o data/$OUT.tsv --to-tsv
 
 # Add clade to tax table and copy to data directory
-cut -d$'\t' -f4- $DIR/blast_taxonomy/*_tax_assignments.txt | cut -c-1 | paste - $DIR/blast_taxonomy/*_tax_assignments.txt > data/$2_tax_assignments.txt
+cut -d$'\t' -f4- $DIR/blast_taxonomy/*_tax_assignments.txt | cut -c-1 | paste - $DIR/blast_taxonomy/*_tax_assignments.txt > data/$OUT_tax_assignments.txt
