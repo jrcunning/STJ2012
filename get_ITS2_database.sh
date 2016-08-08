@@ -1,17 +1,23 @@
 #!/bin/bash
 
+# Get Subtype and Accession number links from old database and new ones in addseqs
+
 awk '/>/ {print}' data/Unaligned_ITS2_Database_31July16.fasta > data/seqIDs1.txt
 sed 's/\.1$//' data/seqIDs1.txt > data/seqIDs.txt  # remove trailing '.1' on some accession numbers
 cat data/addseqs.txt >> data/seqIDs.txt
 
-# Get Subtype and Accession number links from old database and use accession number to download sequences from NCBI
-cat data/seqIDs.txt | \
-while read n
-do
+# use accession number to download sequences from NCBI in parallel
+getseq() {
+	n=$1
 	acn=${n##*_}
-	echo $n
-	curl "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=${acn}&rettype=fasta"
-done > data/ITS2_Database.fasta
+	echo $1 > data/dbseqs/${acn}.fasta
+	curl "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=${acn}&rettype=fasta" >> data/dbseqs/${acn}.fasta
+}
+export -f getseq
+rm -r data/dbseqs; mkdir data/dbseqs
+parallel -a data/seqIDs.txt getseq 
+cat data/dbseqs/*.fasta > data/ITS2_Database.fasta
+
 	
 # Reformat names of new database to be only accession numbers & subtypes and put sequences on one line
 awk '!/^>/ { printf "%s", $0; n = "\n" } /^>/ { print n $0; n = "" } END { printf "%s", n }' data/ITS2_Database.fasta > data/ITS2_Database_inline.fasta
@@ -37,6 +43,7 @@ sed -e 's/>\([A-Z]\)\(.*\)\(_[A-Z][A-Z][0-9][0-9][0-9][0-9][0-9][0-9]\)/\1\2\3'"
 # Clean up intermediate files
 rm data/seqIDs1.txt
 rm data/seqIDs.txt
+rm -r data/dbseqs
 rm data/ITS2_Database.fasta
 rm data/ITS2_Database_inline.fasta
 rm data/ITS2_Database_ready.fasta
