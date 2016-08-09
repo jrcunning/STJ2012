@@ -138,7 +138,7 @@ C11_AF499800	Symbiodiniaceae;Symbiodinium;CladeC;C11;_;_
 C12_AF499801	Symbiodiniaceae;Symbiodinium;CladeC;C12;_;_
 D1a_AF499802	Symbiodiniaceae;Symbiodinium;CladeD;D1a;_;_
 C1089_AJ278598	Symbiodiniaceae;Symbiodinium;CladeC;C1089;_;_
-F107_AJ291512	Symbiodiniaceae;Symbiodinium;CladeF;F107;_;_
+F5.2f_AJ291512	Symbiodiniaceae;Symbiodinium;CladeF;F5.2f;_;_
 H100_AJ291513	Symbiodiniaceae;Symbiodinium;CladeH;H100;_;_
 C1094_AJ291514	Symbiodiniaceae;Symbiodinium;CladeC;C1094;_;_
 H6_AJ291520	Symbiodiniaceae;Symbiodinium;CladeH;H6;_;_
@@ -149,7 +149,7 @@ F109_AJ291527	Symbiodiniaceae;Symbiodinium;CladeF;F109;_;_
 F112_AJ291528	Symbiodiniaceae;Symbiodinium;CladeF;F112;_;_
 F5.2d_AJ291530	Symbiodiniaceae;Symbiodinium;CladeF;F5.2d;_;_
 F104_AJ291531	Symbiodiniaceae;Symbiodinium;CladeF;F104;_;_
-F113_AJ291533	Symbiodiniaceae;Symbiodinium;CladeF;F113;_;_
+F5.2e_AJ291533	Symbiodiniaceae;Symbiodinium;CladeF;F5.2e;_;_
 F102_AJ291534	Symbiodiniaceae;Symbiodinium;CladeF;F102;_;_
 F5.1b_AJ291535	Symbiodiniaceae;Symbiodinium;CladeF;F5.1b;_;_
 G101_AJ291539	Symbiodiniaceae;Symbiodinium;CladeG;G101;_;_
@@ -462,7 +462,7 @@ C1236_EF473656	Symbiodiniaceae;Symbiodinium;CladeC;C1236;_;_
 C35.3_EF541145	Symbiodiniaceae;Symbiodinium;CladeC;C35.3;_;_
 C33a_EF541147	Symbiodiniaceae;Symbiodinium;CladeC;C33a;_;_
 C3t_EF541149	Symbiodiniaceae;Symbiodinium;CladeC;C3t;_;_
-C1145_EF634157	Symbiodiniaceae;Symbiodinium;CladeC;C1145;_;_
+C1.5_EF634157	Symbiodiniaceae;Symbiodinium;CladeC;C1.5;_;_
 A130_EF656428	Symbiodiniaceae;Symbiodinium;CladeA;A130;_;_
 A127_EF656429	Symbiodiniaceae;Symbiodinium;CladeA;A127;_;_
 A128_EF656430	Symbiodiniaceae;Symbiodinium;CladeA;A128;_;_
@@ -529,7 +529,7 @@ C1209_EU074950	Symbiodiniaceae;Symbiodinium;CladeC;C1209;_;_
 C1210_EU074951	Symbiodiniaceae;Symbiodinium;CladeC;C1210;_;_
 C1211_EU074952	Symbiodiniaceae;Symbiodinium;CladeC;C1211;_;_
 C1212_EU074954	Symbiodiniaceae;Symbiodinium;CladeC;C1212;_;_
-C1213_EU074955	Symbiodiniaceae;Symbiodinium;CladeC;C1213;_;_
+C1.8_EU074955	Symbiodiniaceae;Symbiodinium;CladeC;C1.8;_;_
 C1214_EU074956	Symbiodiniaceae;Symbiodinium;CladeC;C1214;_;_
 C1215_EU074957	Symbiodiniaceae;Symbiodinium;CladeC;C1215;_;_
 C1216_EU074959	Symbiodiniaceae;Symbiodinium;CladeC;C1216;_;_
