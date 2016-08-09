@@ -8,10 +8,10 @@
 
 
 # -------------------------------
-# Cluster 97% OTUs within samples
+# Cluster 97% OTUs
 ./otus_97.sh
 
-# Assign taxonomy and generate OTU table for 97% within-sample OTUs
+# Assign taxonomy and generate OTU table for 97% OTUs
 ./tax_results.sh data/otus_97/97_otus_rep_set.fasta 97_otus
 # -------------------------------
 
@@ -22,7 +22,7 @@
 ./otus_97_bysample.sh
 
 # Assign taxonomy and generate OTU table for 97% within-sample OTUs
-./tax_results.sh data/otus_97_bysample/all_rep_set_rep_set.fasta 97_otus
+./tax_results.sh data/otus_97_bysample/all_rep_set_rep_set.fasta 97_otus_bysample
 # -------------------------------
 
 
@@ -31,6 +31,6 @@
 # Cluster 100% OTUs
 ./otus_100.sh
 
-# Assign taxonomy and generate OTU table for 97% OTUs
+# Assign taxonomy and generate OTU table for 100% OTUs
 ./tax_results.sh data/otus_100/100_otus_rep_set.fasta 100_otus
 # -------------------------------
