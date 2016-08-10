@@ -59,6 +59,7 @@ C1170_AB294661	Symbiodiniaceae;Symbiodinium;CladeC;C1170;_;_
 C1173_AB294662	Symbiodiniaceae;Symbiodinium;CladeC;C1173;_;_
 C1171_AB294663	Symbiodiniaceae;Symbiodinium;CladeC;C1171;_;_
 C1172_AB294665	Symbiodiniaceae;Symbiodinium;CladeC;C1172;_;_
+C3_AB778606	Symbiodiniaceae;Symbiodinium;CladeC;C3;_;_
 D117_AF174542	Symbiodiniaceae;Symbiodinium;CladeD;D117;_;_
 D114_AF174549	Symbiodiniaceae;Symbiodinium;CladeD;D114;_;_
 D113_AF174557	Symbiodiniaceae;Symbiodinium;CladeD;D113;_;_
