@@ -5,7 +5,7 @@ OUT=$2
 
 
 # Assign taxonomy
-assign_taxonomy.py -i $1 -r data/ITS2db.fasta -t data/id_to_taxonomy.txt -m blast -o $DIR/blast_taxonomy
+assign_taxonomy.py -i $1 -r data/ITS2db_trimmed.fasta -t data/id_to_taxonomy.txt -m blast -o $DIR/blast_taxonomy
 
 # Make list of "no blast hits"
 awk '/No blast hit/' $DIR/blast_taxonomy/*_tax_assignments.txt > $DIR/blast_taxonomy/no_blast_hits.txt
