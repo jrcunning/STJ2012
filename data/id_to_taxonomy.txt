@@ -561,7 +561,6 @@ C1190_EU099841	Symbiodiniaceae;Symbiodinium;CladeC;C1190;_;_
 C1232_EU118163	Symbiodiniaceae;Symbiodinium;CladeC;C1232;_;_
 C1234_EU118165	Symbiodiniaceae;Symbiodinium;CladeC;C1234;_;_
 C1233_EU118166	Symbiodiniaceae;Symbiodinium;CladeC;C1233;_;_
-C1235_EU118167	Symbiodiniaceae;Symbiodinium;CladeC;C1235;_;_
 A9_EU449028	Symbiodiniaceae;Symbiodinium;CladeA;A9;_;_
 A1a_EU449030	Symbiodiniaceae;Symbiodinium;CladeA;A1a;_;_
 A11_EU449041	Symbiodiniaceae;Symbiodinium;CladeA;A11;_;_
