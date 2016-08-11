@@ -211,7 +211,7 @@ composition <- function(phy, col, legend=T) {
   # Add legend
   if (legend==T) {
     legend(x=par("usr")[2]/2, y=par("usr")[4], xjust=0.5, yjust=0.25, horiz=T, bty="n", xpd=T, 
-           cex=0.7, legend=c("A", "B", "C", "D", "F"), fill=taxcolors, x.intersp=0.5)
+           cex=0.7, legend=c("A", "B", "C", "D", "F", "G"), fill=taxcolors, x.intersp=0.5)
     legend(x=par("usr")[2]-0.03, y=par("usr")[4], xjust=0, yjust=0.1, bty="n", xpd=T, cex=0.6, 
            pt.cex=0.6, legend=c("N Shore", "S Shore"), fill=c(0, "gray40"), y.intersp=0.7, 
            x.intersp=0.3)
@@ -240,7 +240,7 @@ composition(phy97.f.p, col=taxcolors[data.frame(tax_table(phy97.f.p))[order(data
 composition(phy97.f.p, col=rainbow(ntaxa(phy97.f.p)), legend=F)
 
 # Plot composition of 97% within-sample OTUs colored by clade
-composition(phy97bs.f.p, col=taxcolors[data.frame(tax_table(phy97bs.f.p))[order(data.frame(tax_table(phy97bs.f.p))$Subtype), ]$Clade], legend=T)
+composition(phy97bs.f.p, col=taxcolors[factor(data.frame(tax_table(phy97bs.f.p))[order(data.frame(tax_table(phy97bs.f.p))$Subtype), ]$Clade, levels=c("A","B","C","D","F","G"))], legend=T)
 
 # Plot composition of 97% within-sample OTUs colored by OTU
 composition(phy97bs.f.p, col=rainbow(ntaxa(phy97bs.f.p)), legend=F)
@@ -568,7 +568,7 @@ otubarplot(mcav97bs.f.p, main="97% within-sample OTUs")
 otubarplot(mcav100.f.p, main="100% OTUs")
 ```
 
-```
+
 
 # Network analysis from tutorial
 ```{r networks}
@@ -589,73 +589,73 @@ make.net <- function(physeq, n) {
   net <- graph_from_data_frame(d=edges, vertices=nodes, directed=F)
   return(net)
 }
-dstr.net <- make.net(dstr97.f.p, 0)
+dstr.net <- make.net(dstr97bs.f.p, 0)
 
-
+set.seed(5453890)
 plot(dstr.net,
      edge.curved=0.1, 
      edge.width=10*(E(dstr.net)$weight)^0.2,
      vertex.label=substr(V(dstr.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(dstr.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-pfur.net <- make.net(pfur97.f.p, 0)
+pfur.net <- make.net(pfur97bs.f.p, 0)
 plot(pfur.net,
      edge.curved=0.1, 
      edge.width=10*(E(pfur.net)$weight)^0.2,
      vertex.label=substr(V(pfur.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(pfur.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-oann97.f.p <- prune_taxa(rowSums(otu_table(oann97.f.p))!=0, oann97.f.p)
-oann.net <- make.net(oann97.f.p, 0)
+oann.net <- make.net(oann97bs.f.p, 0)
 plot(oann.net,
      edge.curved=0.1, 
      edge.width=10*(E(oann.net)$weight)^0.2,
      vertex.label=substr(V(oann.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(oann.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-malc.net <- make.net(malc97.f.p, 0)
+malc.net <- make.net(malc97bs.f.p, 0)
 plot(malc.net,
      edge.curved=0.1, 
      edge.width=10*(E(malc.net)$weight)^0.2,
      vertex.label=substr(V(malc.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(malc.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-ssid.net <- make.net(ssid97.f.p, 0)
+set.seed(9147)
+ssid.net <- make.net(ssid97bs.f.p, 0)
 plot(ssid.net,
      edge.curved=0.1, 
      edge.width=10*(E(ssid.net)$weight)^0.2,
      vertex.label=substr(V(ssid.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(ssid.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-ffra.net <- make.net(ffra97.f.p, 0)
+ffra.net <- make.net(ffra97bs.f.p, 0)
 plot(ffra.net,
      edge.curved=0.1, 
      edge.width=10*(E(ffra.net)$weight)^0.2,
      vertex.label=substr(V(ffra.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(ffra.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-srad.net <- make.net(srad97.f.p, 0)
+srad.net <- make.net(srad97bs.f.p, 0)
 plot(srad.net,
      edge.curved=0.1, 
      edge.width=10*(E(srad.net)$weight)^0.2,
      vertex.label=substr(V(srad.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(srad.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-past.net <- make.net(past97.f.p, 0)
+past.net <- make.net(past97bs.f.p, 0)
 plot(past.net,
      edge.curved=0.1, 
      edge.width=10*(E(past.net)$weight)^0.2,
      vertex.label=substr(V(past.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(past.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-dcyl.net <- make.net(dcyl97.f.p, 0)
+dcyl.net <- make.net(dcyl97bs.f.p, 0)
 plot(dcyl.net,
      edge.curved=0.1, 
      edge.width=10*(E(dcyl.net)$weight)^0.2,
-     vertex.label=substr(V(dcyl.net)$Shore, 1, 4),
+     vertex.label=substr(V(dcyl.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(dcyl.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-mcav.net <- make.net(mcav97.f.p, 0)
+mcav.net <- make.net(mcav97bs.f.p, 0)
 plot(mcav.net,
      edge.curved=0.1, 
      edge.width=10*(E(mcav.net)$weight)^0.2,
@@ -672,11 +672,11 @@ plot(mcav.net, layout=layout_with_fr(mcav.net))
 # Get network with one node for each species.
 # Edge weight is the mean relative abundance of OTU.
 # Convert OTU table to "edges" table (weight = relative abundance)
-  otudf <- data.frame(t(otu_table(phy97.f.p)), check.names=F)
+  otudf <- data.frame(t(otu_table(phy97bs.f.p)), check.names=F)
   # Average relative abundance of OTU within species
   #sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97.f.p))$Species), FUN=mean)
   # Percent of samples of species that contain OTU at more than 1% relative abundance
-  sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97.f.p))$Species), 
+  sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p))$Species), 
                      FUN=function(x) length(x[x>0.01])/length(x))
 
   rownames(sp.ag) <- sp.ag$Species
@@ -684,8 +684,8 @@ plot(mcav.net, layout=layout_with_fr(mcav.net))
   edges <- setNames(melt(as.matrix(sp.ag)), nm=c("source", "target", "weight"))  # Melt data
   edges <- droplevels(edges[edges$weight>0, ])
   # Create "nodes" table from sample and tax data
-  sdf <- data.frame(id=levels(data.frame(sample_data(phy97.f.p))$Species))
-  tdf <- data.frame(tax_table(phy97.f.p))[rownames(data.frame(tax_table(phy97.f.p))) %in% edges$target, ]
+  sdf <- data.frame(id=levels(data.frame(sample_data(phy97bs.f.p))$Species))
+  tdf <- data.frame(tax_table(phy97bs.f.p))[rownames(data.frame(tax_table(phy97bs.f.p))) %in% edges$target, ]
   tdf$id <- rownames(tdf)
   nodes <- merge(sdf, tdf, all=T)
   nodes$type <- ifelse(is.na(nodes$Clade), 1, 2)
@@ -707,15 +707,17 @@ plot(mcav.net, layout=layout_with_fr(mcav.net))
   E(net)$color <- "gray60"
   E(net)$width <- 15 * E(net)$weight
   set.seed(12347)
+  set.seed(12364)
+  set.seed(12374)
   l <- layout.fruchterman.reingold(net)
   l <- norm_coords(l, ymin=-1, ymax=1, xmin=-1, xmax=1)
+  par(mar=c(0,0,0,0))
   plot(net, rescale=F, layout=l*1, edge.curved=0.1, vertex.label.cex=V(net)$size/20,
        vertex.label.color="black")
-  legend(x=-1.05, y=-0.92, c("CladeA", "CladeB", "CladeC", "CladeD", "CladeF", "CladeG"), pch=21,
-       col="#777777", pt.bg=taxcolors, pt.cex=1.1, cex=.6, bty="n", ncol=2, text.width=0.2)
-  # --------------------------
-  
+  #legend(x=-1.05, y=1.1, c("CladeA", "CladeB", "CladeC", "CladeD", "CladeF", "CladeG"), pch=21,
+  #     col="#777777", pt.bg=taxcolors, pt.cex=1.1, cex=.6, bty="n", ncol=2, text.width=0.2)
 ```
+
 
 
     
