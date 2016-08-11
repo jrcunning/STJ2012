@@ -40,40 +40,40 @@ sed -e 's/>\([A-Z]\)\(.*\)\(_[A-Z][A-Z][0-9][0-9][0-9][0-9][0-9][0-9]\)/\1\2\3'"
 
 
 awk '/>A/ {print; getline; print}' data/ITS2db.fasta | muscle -out data/cladeA_align.fasta
-o-smart-trim --min-percent 80 -E -o data/cladeA_align_trimE.fasta data/cladeA_align.fasta
-o-smart-trim --min-percent 80 -S -o data/cladeA_align_trimES.fasta data/cladeA_align_trimE.fasta
+o-smart-trim --min-percent 90 -E -o data/cladeA_align_trimE.fasta data/cladeA_align.fasta
+o-smart-trim --min-percent 90 -S -o data/cladeA_align_trimES.fasta data/cladeA_align_trimE.fasta
 
 awk '/>B/ {print; getline; print}' data/ITS2db.fasta | muscle -out data/cladeB_align.fasta
-o-smart-trim --min-percent 80 -E -o data/cladeB_align_trimE.fasta data/cladeB_align.fasta
-o-smart-trim --min-percent 80 -S -o data/cladeB_align_trimES.fasta data/cladeB_align_trimE.fasta
+o-smart-trim --min-percent 90 -E -o data/cladeB_align_trimE.fasta data/cladeB_align.fasta
+o-smart-trim --min-percent 90 -S -o data/cladeB_align_trimES.fasta data/cladeB_align_trimE.fasta
 
 awk '/>C/ {print; getline; print}' data/ITS2db.fasta | muscle -out data/cladeC_align.fasta
-o-smart-trim --min-percent 80 -E -o data/cladeC_align_trimE.fasta data/cladeC_align.fasta
-o-smart-trim --min-percent 80 -S -o data/cladeC_align_trimES.fasta data/cladeC_align_trimE.fasta
+o-smart-trim --min-percent 90 -E -o data/cladeC_align_trimE.fasta data/cladeC_align.fasta
+o-smart-trim --min-percent 90 -S -o data/cladeC_align_trimES.fasta data/cladeC_align_trimE.fasta
 
 awk '/>D/ {print; getline; print}' data/ITS2db.fasta | muscle -out data/cladeD_align.fasta
-o-smart-trim --min-percent 80 -E -o data/cladeD_align_trimE.fasta data/cladeD_align.fasta
-o-smart-trim --min-percent 80 -S -o data/cladeD_align_trimES.fasta data/cladeD_align_trimE.fasta
+o-smart-trim --min-percent 90 -E -o data/cladeD_align_trimE.fasta data/cladeD_align.fasta
+o-smart-trim --min-percent 90 -S -o data/cladeD_align_trimES.fasta data/cladeD_align_trimE.fasta
 
 awk '/>E/ {print; getline; print}' data/ITS2db.fasta | muscle -out data/cladeE_align.fasta
-o-smart-trim --min-percent 80 -E -o data/cladeE_align_trimE.fasta data/cladeE_align.fasta
-o-smart-trim --min-percent 80 -S -o data/cladeE_align_trimES.fasta data/cladeE_align_trimE.fasta
+o-smart-trim --min-percent 90 -E -o data/cladeE_align_trimE.fasta data/cladeE_align.fasta
+o-smart-trim --min-percent 90 -S -o data/cladeE_align_trimES.fasta data/cladeE_align_trimE.fasta
 
 awk '/>F/ {print; getline; print}' data/ITS2db.fasta | muscle -out data/cladeF_align.fasta
-o-smart-trim --min-percent 80 -E -o data/cladeF_align_trimE.fasta data/cladeF_align.fasta
-o-smart-trim --min-percent 80 -S -o data/cladeF_align_trimES.fasta data/cladeF_align_trimE.fasta
+o-smart-trim --min-percent 90 -E -o data/cladeF_align_trimE.fasta data/cladeF_align.fasta
+o-smart-trim --min-percent 90 -S -o data/cladeF_align_trimES.fasta data/cladeF_align_trimE.fasta
 
 awk '/>G/ {print; getline; print}' data/ITS2db.fasta | muscle -out data/cladeG_align.fasta
-o-smart-trim --min-percent 80 -E -o data/cladeG_align_trimE.fasta data/cladeG_align.fasta
-o-smart-trim --min-percent 80 -S -o data/cladeG_align_trimES.fasta data/cladeG_align_trimE.fasta
+o-smart-trim --min-percent 90 -E -o data/cladeG_align_trimE.fasta data/cladeG_align.fasta
+o-smart-trim --min-percent 90 -S -o data/cladeG_align_trimES.fasta data/cladeG_align_trimE.fasta
 
 awk '/>H/ {print; getline; print}' data/ITS2db.fasta | muscle -out data/cladeH_align.fasta
-o-smart-trim --min-percent 80 -E -o data/cladeH_align_trimE.fasta data/cladeH_align.fasta
-o-smart-trim --min-percent 80 -S -o data/cladeH_align_trimES.fasta data/cladeH_align_trimE.fasta
+o-smart-trim --min-percent 90 -E -o data/cladeH_align_trimE.fasta data/cladeH_align.fasta
+o-smart-trim --min-percent 90 -S -o data/cladeH_align_trimES.fasta data/cladeH_align_trimE.fasta
 
 awk '/>I/ {print; getline; print}' data/ITS2db.fasta | muscle -out data/cladeI_align.fasta
-o-smart-trim --min-percent 80 -E -o data/cladeI_align_trimE.fasta data/cladeI_align.fasta
-o-smart-trim --min-percent 80 -S -o data/cladeI_align_trimES.fasta data/cladeI_align_trimE.fasta
+o-smart-trim --min-percent 90 -E -o data/cladeI_align_trimE.fasta data/cladeI_align.fasta
+o-smart-trim --min-percent 90 -S -o data/cladeI_align_trimES.fasta data/cladeI_align_trimE.fasta
 
 cat data/*_trimES.fasta | sed 's/-//g' > data/ITS2db_trimmed.fasta
 
