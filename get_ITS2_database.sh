@@ -28,10 +28,10 @@ cutadapt -g GTGAATTGCAGAACTCCGTG -e 0.15 data/ITS2_Database_trimF.fasta -o data/
 #   Do not remove sequences that do not have reverse primer sequence
 cutadapt -a AAGCATATAAGTAAGCGGAGG -e 0.15 data/ITS2_Database_trimF2.fasta -o data/ITS2_Database_trimF2_trimR.fasta
 # Trim reverse primers again for any remaining internally
-cutadapt -a AAGCATATAAGTAAGCGGAGG -e 0.15 data/ITS2_Database_trimF2_trimR.fasta -o data/ITS2db_trimmed.fasta
+cutadapt -a AAGCATATAAGTAAGCGGAGG -e 0.15 data/ITS2_Database_trimF2_trimR.fasta -o data/ITS2db_trimFR.fasta
 
 # Remove Ns if present in sequences -- noting that several were deposited in GenBank using Ns as gaps...
-awk '!/>/ { gsub("N","") }; { print $0 }' data/ITS2db_trimmed.fasta > data/ITS2db.fasta
+awk '!/>/ { gsub("N","") }; { print $0 }' data/ITS2db_trimFR.fasta > data/ITS2db.fasta
 
 
 # Generate id_to_taxonomy file
@@ -87,4 +87,5 @@ rm data/ITS2_Database_ready.fasta
 rm data/ITS2_Database_trimF.fasta
 rm data/ITS2_Database_trimF2.fasta
 rm data/ITS2_Database_trimF2_trimR.fasta
+rm data/ITS2db_trimFR.fasta
 rm data/clade*
