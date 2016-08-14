@@ -59,25 +59,11 @@ phy100 <- phyloseq(OTU100, TAX100, SAM)
 #### Descriptive statistics and distribution of OTU counts
 ```{r phy_stats, cache=T, fig.height=4, fig.width=8}
 # Compute summary statistics
-stats <- function(phy) {
-  return(
-    data.frame(
-      'Total count in OTU table'=sum(otu_table(phy)),
-      'Number of OTUs'=ntaxa(phy),
-      'Range of OTU counts'=paste0(range(taxa_sums(phy)), collapse=" - "),
-      'Number of singleton OTUs'=length(taxa_sums(phy)[taxa_sums(phy) <= 1]),
-      'Number of samples'=nsamples(phy),
-      'Range of reads per sample'=paste0(range(sample_sums(phy)), collapse=" - "),
-      'Arithmetic mean (±SD) reads per sample'=paste(as.integer(mean(sample_sums(phy))), 
-                                                     as.integer(sd(sample_sums(phy))), sep=" ± "),
-      'Geometric mean (±SD) reads per sample'=paste(as.integer(exp(mean(log(sample_sums(phy))))),
-                                                    as.integer(exp(sd(log(sample_sums(phy))))), sep=" ± "),
-      check.names=F)
-  )
-}
-stats97 <- data.frame(`97% OTUs`=t(stats(phy97)), check.names=F)
-stats97bs <- data.frame(`97% within-sample OTUs`=t(stats(phy97bs)), check.names=F)
-stats100 <- data.frame(`100% OTUs`=t(stats(phy100)), check.names=F)
+source("R/phystats.R")
+
+stats97 <- data.frame(`97% OTUs`=t(phystats(phy97)), check.names=F)
+stats97bs <- data.frame(`97% within-sample OTUs`=t(phystats(phy97bs)), check.names=F)
+stats100 <- data.frame(`100% OTUs`=t(phystats(phy100)), check.names=F)
 
 # Create and plot histograms
 taxhist97 <- hist(log10(taxa_sums(phy97)), plot=F)
@@ -142,9 +128,9 @@ phy100.f <- prune_samples(sample_sums(phy100.f)>=sn, phy100.f)
 #### Filtered data: descriptive statistics and distribution of OTUs
 ```{r phy.f_histograms, fig.height=4, fig.width=8}
 # Compute summary statistics
-stats97.f <- data.frame(`97% OTUs`=t(stats(phy97.f)), check.names=F)
-stats97bs.f <- data.frame(`97% within-sample OTUs`=t(stats(phy97bs.f)), check.names=F)
-stats100.f <- data.frame(`100% OTUs`=t(stats(phy100.f)), check.names=F)
+stats97.f <- data.frame(`97% OTUs`=t(phystats(phy97.f)), check.names=F)
+stats97bs.f <- data.frame(`97% within-sample OTUs`=t(phystats(phy97bs.f)), check.names=F)
+stats100.f <- data.frame(`100% OTUs`=t(phystats(phy100.f)), check.names=F)
 
 # Create and plot histograms
 taxhist97 <- hist(log10(taxa_sums(phy97.f)), plot=F)
@@ -192,44 +178,7 @@ phy100.f.t <- transform_sample_counts(phy100.f, transform)
 Here the composition of each sample is plotted as a horizontal bar, sorted by species and shore. Each segment of the bar represents an individual OTU. In the lefthand plot, all OTUs are colored by clade, in the right OTU, all OTUs are given a unique color.
 ```{r cladecomp97, cache=T, fig.height=6, fig.width=8}
 # Define function to plot Symbiodinium community composition
-composition <- function(phy, col, legend=T) {
-  samdat <- data.frame(sample_data(phy))
-  samdat$Genus <- factor(samdat$Genus, levels=rev(levels(samdat$Genus)))
-  samdat$Species <- factor(samdat$Species, levels=rev(levels(samdat$Species)))
-  samdat$Shore <- factor(samdat$Shore, levels=rev(levels(samdat$Shore)))
-  samdat <- samdat[with(samdat, order(Genus, Species, Shore)), ]
-  typerelabund <- as.matrix(otu_table(phy)[order(data.frame(tax_table(phy))$Subtype), 
-                                           rownames(samdat)])
-  shorebreaks <- c(as.character(samdat$Shore), "X")==c("X", as.character(samdat$Shore))
-  shorebreaks <- which(shorebreaks==F) - 1
-  spbreaks <- c(which(duplicated(samdat$Species)==F) - 1, nrow(samdat))
-  # Make Barplot
-  barplot(typerelabund, horiz=T, space=0, axes=F,axisnames=F, yaxs="i", col=col)
-  rect(0, 0, par("usr")[2], par("usr")[4], lwd=1, xpd=T)
-  axis(side=1, at=seq(0, 1, 0.1), line=0, tck=-0.025, mgp=c(0,0.25,0), cex.axis=0.7)
-  mtext(side=1, "Relative abundance", cex=0.7, line=1)
-  # Add legend
-  if (legend==T) {
-    legend(x=par("usr")[2]/2, y=par("usr")[4], xjust=0.5, yjust=0.25, horiz=T, bty="n", xpd=T, 
-           cex=0.7, legend=c("A", "B", "C", "D", "F", "G"), fill=taxcolors, x.intersp=0.5)
-    legend(x=par("usr")[2]-0.03, y=par("usr")[4], xjust=0, yjust=0.1, bty="n", xpd=T, cex=0.6, 
-           pt.cex=0.6, legend=c("N Shore", "S Shore"), fill=c(0, "gray40"), y.intersp=0.7, 
-           x.intersp=0.3)
-  }
-  # Add grouping bars for Shore
-  for (i in 1:length(shorebreaks)) {
-    lines(c(0, 1), c(shorebreaks[i], shorebreaks[i]), lty=2, lwd=0.25)
-    rect(1.01, shorebreaks[i], 1.04, shorebreaks[i+1], col=rep(c("gray40", 0), 50)[i], 
-         lwd=0.25, xpd=T)
-  }
-  # Add lines to separate species and species names
-  for (i in 1:length(spbreaks)) {
-    lines(c(0, 1.07), c(spbreaks[i], spbreaks[i]), xpd=T, type="l", lwd=0.4)
-    text(1.03, (spbreaks[i] + spbreaks[i+1]) / 2, xpd=T, pos=4, cex=0.6,
-        labels=paste(samdat$Genus[which(duplicated(samdat$Species)==F)][i], "\n",
-                    samdat$Species[which(duplicated(samdat$Species)==F)][i], sep=""))
-  }
-}
+source("R/composition.R")
 
 par(mfrow=c(1,2), mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7)
 
@@ -294,44 +243,11 @@ knitr::kable(sppdiffs, caption="Species not sharing a letter are significantly d
 Whether *Symbiodinium* communities differ between north vs. south shores within species is tested here using PERMANOVA.
 
 ```{r shorediffs, cache=T}
-shorediffs <- function(phy) {
-  # Compute within- and between-shore statistics for each Species
-  shorestats <- data.frame(matrix(dimnames=list(levels(data.frame(sample_data(phy))$Species), 
-                                                c("Species", "n", "overall", "within", 
-                                                  "between", "R2", "bd", "p")), ncol=8, nrow=10))
-  for (i in 1:nlevels(data.frame(sample_data(phy))$Species)) {
-    sp <<- levels(data.frame(sample_data(phy))$Species)[i]
-    shorestats$Species[i] <- sp
-    phy.species <- subset_samples(phy, Species==sp)  # Set temp phyloseq object
-    shorestats$n[i] <- nsamples(phy.species)
-    md <- meandist(phyloseq::distance(phy.species, "bray"), 
-                   sample_data(phy.species)$Shore)
-    shorestats$within[i] <- summary(md)$W  # Weighted mean dissimilarity within both Pools
-    shorestats$between[i] <- summary(md)$B  # Mean dissimilarity between Pools
-    shorestats$overall[i] <- summary(md)$D  # Overall dissimilarity
-    if (nlevels(as(sample_data(phy.species), "data.frame")$Shore) > 1) {
-      #set.seed(70235)
-      set.seed(43789)
-      permanova <- adonis(phyloseq::distance(phy.species, "bray") ~ Shore, 
-                          data=as(sample_data(phy.species), "data.frame"), permutations=999)
-      shorestats$R2[i] <- permanova$aov.tab$"R2"[1]  # PERMANOVA partial R-squared
-      shorestats$p[i] <- permanova$aov.tab$"Pr(>F)"[1]  # PERMANOVA p-value
-      bd <- betadisper(phyloseq::distance(phy.species, "bray"),
-                       group=as(sample_data(phy.species), "data.frame")$Shore)
-      shorestats$bd[i] <- TukeyHSD(bd)$group[4]
-    } else {
-      shorestats$R2[i] <- NA
-      shorestats$p[i] <- NA
-      shorestats$bd[i] <- NA
-    }
-  }
-  return(shorestats)
-}
-
-shorestats97 <- shorediffs(phy97.f.t)
-shorestats97bs <- shorediffs(phy97bs.f.t)
-shorediffs(phy97bs.f.p)
-shorestats100 <- shorediffs(phy100.f.t)
+source("R/perms.R")
+set.seed(43789)
+shorestats97 <- perms(phy97.f.t, group="Species", trt="Shore")
+shorestats97bs <- perms(phy97bs.f.t, group="Species", trt="Shore")
+shorestats100 <- perms(phy100.f.t, group="Species", trt="Shore")
 
 knitr::kable(shorestats97, row.names=F, 
              caption="97% OTU data: differences within and between shore for each species")
@@ -344,32 +260,11 @@ knitr::kable(shorestats100, row.names=F,
 ## Beta diversity
 Beta diversity is evaluated here as the multivariate dispersion of samples within a coral species group. Principal coordinate analysis on Bray-Curtis dissimilarities is used to calculate average distance-to-centroid values for each species group, which are then compared statistically by a permutation test. This analysis is implemented using betadisper() in the vegan package, based on [Anderson (2006)](dx.doi.org/10.1111/j.1541-0420.2005.00440.x).
 ```{r betadisper, cache=T, fig.width=10, fig.height=4}
-betad <- function(phy) {
-  # Calculate distances to species centroids for each sample in principal coordinate space
-  sambd <- betadisper(d=vegdist(t(otu_table(phy)), method="bray"), 
-                      group=data.frame(sample_data(phy))$Species, type="centroid",
-                      bias.adjust=TRUE)
-  # Calculate each species' mean distance to centroid and standard error
-  sambdsumm <- aggregate(data.frame(mean=sambd$distances), by=list(group=sambd$group), FUN=mean)
-  sambdsumm$se <- aggregate(sambd$distances, by=list(group=sambd$group), 
-                            FUN=function(x) sd(x)/sqrt(length(x)))$x
-  # Determine order of decreasing mean dispersion
-  sambdsumm.ord <- sambdsumm[order(sambdsumm$mean, decreasing=T), ]
-  # Update betadisper object with species in decreasing order of mean dispersion
-  sambd <- betadisper(d=vegdist(t(otu_table(phy)), method="bray"), 
-                      group=factor(data.frame(sample_data(phy))$Species,
-                                   levels=as.character(sambdsumm.ord$group)), 
-                      type="centroid", bias.adjust=TRUE)
-  # Use permutations to perform pairwise comparisons of group mean dispersions
-  sampt <- permutest(sambd, pairwise=T)
-  saml <- multcompLetters(sampt$pairwise$permuted)
-  # Return results as a list
-  return(list(sambdsumm.ord=sambdsumm.ord, sambdsumm=sambdsumm, saml=saml))
-}
+source("R/betad.R")
 
-betad97 <- betad(phy97.f.t)
-betad97bs <- betad(phy97bs.f.t)
-betad100 <- betad(phy100.f.t)
+betad97 <- betad(phy97.f.t, group="Species")
+betad97bs <- betad(phy97bs.f.t, group="Species")
+betad100 <- betad(phy100.f.t, group="Species")
 
 # Figure: Distance to centroids
 par(mfrow=c(1,3), mar=c(3.5,4,2,1), lwd=1)
@@ -402,40 +297,6 @@ with(betad100$sambdsumm.ord, {
 })
 ```
 
-
-```{r otu_barplots_custom, fig.width=8, fig.height=8}
-otubarplot <- function(phy, main) {
-  samdat <- data.frame(sample_data(phy))
-  typerelabund <- as.matrix(otu_table(phy)[order(data.frame(tax_table(phy))$Subtype), 
-                                                 rownames(samdat)])
-  typerelabund <- typerelabund[, rownames(sample_data(phy)[with(sample_data(phy), 
-                                                                order(Shore, Site, InputFileName))])]
-  # Get info for plotting OTU names and blast hits on top of barplot
-  blasthits <- as.character(data.frame(tax_table(phy))[order(data.frame(tax_table(phy))$Subtype), "Subtype"])
-  names <- as.character(rownames(data.frame(tax_table(phy)))[order(data.frame(tax_table(phy))$Subtype)])
-  samples <- colnames(typerelabund)
-  shores <- data.frame(sample_data(phy))[samples, "Shore"]
-  sites <- data.frame(sample_data(phy))[samples, "Site"]
-  divides <- apply(typerelabund, 2, cumsum)
-  heights <- diff(divides)
-  heights[heights < 0.04] <- NA
-  # Plot barplot and OTU names and blast hits
-  bars <- barplot(typerelabund, col=rainbow(ntaxa(phy)), las=1, space=0.1, xaxs="i",
-                  xlab="", ylab="", xaxt="n")
-  text(bars, -0.06, labels=samples, xpd=T)
-  text(bars, -0.10, labels=shores, xpd=T)
-  text(bars, -0.14, labels=substr(sites, 1, 2), xpd=T)
-  text(bars[1]/4, c(-0.06, -0.10, -0.14), labels=c("sample:", "shore:", "site:"), xpd=T, pos=2)
-  mtext(side=2, text = "Relative Abundance", line=2)
-  for (i in 1:length(bars)) {
-    text(rep(bars[i], length(heights[which(!is.na(heights[,i])),i])), 
-         divides[which(!is.na(heights[,i])),i] + heights[which(!is.na(heights[,i])),i] / 2, 
-         labels=paste(names[which(!is.na(heights[,i]))+1],blasthits[which(!is.na(heights[,i]))+1],sep="\n"),
-         cex=0.75)
-  }
-  mtext(side=3, main, xpd=T, adj=0, line=0.5, font=2)
-}
-```
 
 ## Individual coral species
 ### *Diploria strigosa*
@@ -572,24 +433,8 @@ otubarplot(mcav100.f.p, main="100% OTUs")
 
 # Network analysis from tutorial
 ```{r networks}
-make.net <- function(physeq, n) {
-  # Remove taxa that are not present in subset
-  physeq <- prune_taxa(rowSums(otu_table(physeq))!=0, physeq)
-  # Convert OTU table to "edges" table (weight = relative abundance)
-  otudf <- data.frame(t(otu_table(physeq)), check.names=F)
-  edges <- setNames(melt(as.matrix(otudf)), nm=c("source", "target", "weight"))  # Melt data
-  edges <- edges[edges$weight>n, ]
-  # Create "nodes" table from sample and tax data
-  sdf <- data.frame(sample_data(physeq))
-  sdf$id <- rownames(sdf)
-  tdf <- data.frame(tax_table(physeq))
-  tdf$id <- rownames(tdf)
-  nodes <- merge(sdf, tdf, all=T)
-  # Create network
-  net <- graph_from_data_frame(d=edges, vertices=nodes, directed=F)
-  return(net)
-}
-dstr.net <- make.net(dstr97bs.f.p, 0)
+
+dstr.net <- makenet(dstr97bs.f.p, 0)
 
 set.seed(5453890)
 plot(dstr.net,
@@ -598,21 +443,21 @@ plot(dstr.net,
      vertex.label=substr(V(dstr.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(dstr.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-pfur.net <- make.net(pfur97bs.f.p, 0)
+pfur.net <- makenet(pfur97bs.f.p, 0)
 plot(pfur.net,
      edge.curved=0.1, 
      edge.width=10*(E(pfur.net)$weight)^0.2,
      vertex.label=substr(V(pfur.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(pfur.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-oann.net <- make.net(oann97bs.f.p, 0)
+oann.net <- makenet(oann97bs.f.p, 0)
 plot(oann.net,
      edge.curved=0.1, 
      edge.width=10*(E(oann.net)$weight)^0.2,
      vertex.label=substr(V(oann.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(oann.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-malc.net <- make.net(malc97bs.f.p, 0)
+malc.net <- makenet(malc97bs.f.p, 0)
 plot(malc.net,
      edge.curved=0.1, 
      edge.width=10*(E(malc.net)$weight)^0.2,
@@ -620,42 +465,42 @@ plot(malc.net,
      vertex.color=taxcolors[factor(V(malc.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
 set.seed(9147)
-ssid.net <- make.net(ssid97bs.f.p, 0)
+ssid.net <- makenet(ssid97bs.f.p, 0)
 plot(ssid.net,
      edge.curved=0.1, 
      edge.width=10*(E(ssid.net)$weight)^0.2,
      vertex.label=substr(V(ssid.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(ssid.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-ffra.net <- make.net(ffra97bs.f.p, 0)
+ffra.net <- makenet(ffra97bs.f.p, 0)
 plot(ffra.net,
      edge.curved=0.1, 
      edge.width=10*(E(ffra.net)$weight)^0.2,
      vertex.label=substr(V(ffra.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(ffra.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-srad.net <- make.net(srad97bs.f.p, 0)
+srad.net <- makenet(srad97bs.f.p, 0)
 plot(srad.net,
      edge.curved=0.1, 
      edge.width=10*(E(srad.net)$weight)^0.2,
      vertex.label=substr(V(srad.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(srad.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-past.net <- make.net(past97bs.f.p, 0)
+past.net <- makenet(past97bs.f.p, 0)
 plot(past.net,
      edge.curved=0.1, 
      edge.width=10*(E(past.net)$weight)^0.2,
      vertex.label=substr(V(past.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(past.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-dcyl.net <- make.net(dcyl97bs.f.p, 0)
+dcyl.net <- makenet(dcyl97bs.f.p, 0)
 plot(dcyl.net,
      edge.curved=0.1, 
      edge.width=10*(E(dcyl.net)$weight)^0.2,
      vertex.label=substr(V(dcyl.net)$Subtype, 1, 4),
      vertex.color=taxcolors[factor(V(dcyl.net)$Clade, levels=c("A","B","C","D","F","G"))])
 
-mcav.net <- make.net(mcav97bs.f.p, 0)
+mcav.net <- makenet(mcav97bs.f.p, 0)
 plot(mcav.net,
      edge.curved=0.1, 
      edge.width=10*(E(mcav.net)$weight)^0.2,
