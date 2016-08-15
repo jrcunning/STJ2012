@@ -611,3 +611,9 @@ with(betad97$sambdsumm.ord, {
   text(1:10, mean + se + 0.03, labels=betad97$saml$Letters[as.character(group)], cex=0.5)
 })
 ```
+
+# Main findings
+1. Symbiont communities are generally consistent with previous work on these species in the Caribbean, but high-throughput sequencing provides a much **more complete picture** of these communities’ composition.
+2. South shore *P. furcata* are more likely to have clade A instead of C, and *S. siderea* more likely to have clade D instead of C.
+3. **Within-sample OTU clustering** is more appropriate than clustering across samples.
+4. We can apply **new types of analysis** with this much data, including network analysis and statistical tests on beta diversity.
