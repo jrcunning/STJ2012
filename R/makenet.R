@@ -1,4 +1,7 @@
 makenet <- function(physeq, n) {
+  require(phyloseq)
+  require(reshape2)
+  require(igraph)
   # Remove taxa that are not present in subset
   physeq <- prune_taxa(rowSums(otu_table(physeq))!=0, physeq)
   # Convert OTU table to "edges" table (weight = relative abundance)
