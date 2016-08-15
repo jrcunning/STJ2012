@@ -188,7 +188,8 @@ phy100.f.t <- transform_sample_counts(phy100.f, transform)
 # *Symbiodinium* in each coral
 For each coral species, barplots are presented showing the relative abundance of OTUs obtained by 100%, 97%, and 97%-within-sample clustering. OTUs comprising more than 4% of a sample are labeled with the unique OTU number and the *Symbiodinium* subtype and NCBI GenBank accession number of the closest BLAST hit for that OTU in the reference database. OTU numbers and barplot colors are NOT comparable across the three clustering methods.
 
-## *Diploria strigosa*
+## *Diploria strigosa*  
+Notice how 97% OTUs and 97% within-sample OTUs are **NOT THE SAME!** Specifically, notice how in the 97% OTU dataset, all samples except two are dominated by the same OTU, denovo235. In the 97% within-sample OTU dataset, those samples are dominated by three different OTUs -- denovo73, denovo231, and denovo10. Look at the 100% OTU dataset to see the composition of unique sequence variants in these samples. Indeed, these samples are dominated by **different sequence variants**. However, in the 97% OTU approach, they have all been collapsed into the same OTU, while in the 97% within-sample clustering approach, samples with different dominant sequence variants are maintained as separate OTUs, even though these different sequence variants are more than 97% similar to each other. I suggest that the  within-sample clustering approach is a better way of treating *Symbiodinium* ITS2 sequence data.
 ```{r dstr, cache=T, fig.height=12, fig.width=8}
 # Create subsetted phyloseq objects for Diploria strigosa
 dstr97.f.p <- subset_samples(phy97.f.p, Species=="strigosa")
@@ -441,7 +442,7 @@ composition(phy97bs.f.p, col=taxcolors[factor(data.frame(tax_table(phy97bs.f.p))
 ```
 
 # All species network analysis
-In this network, each coral species is collapsed into a single node (white squares), and connected to every *Symbiodinium* OTU (colored circles) that comprises at least 1% relative abundance within at least one individual of that species. Thus, very low abundance OTUs are not represented. The thickness of connections between coral species and OTUs is scaled by the relative proportion of samples of that species in which that OTU was present at ≥ 1% relative abundance. The size of *Symbiodinium* OTU nodes in the network is scaled by the number of species in which they occur.
+In this network, each coral species is collapsed into a single node (white squares), and connected to every *Symbiodinium* OTU (colored circles) that comprises at least 1% relative abundance within at least one individual of that species. Thus, very low abundance OTUs are not represented. The thickness of connections between coral species and OTUs is scaled by the relative proportion of samples of that species in which that OTU was present at ≥1% relative abundance (i.e., the frequency of presence at ≥1%). The size of *Symbiodinium* OTU nodes in the network is scaled by the number of species in which they occur, and colored according to clade.
 ```{r networks}
 # Get network with one node for each species.
 # Edge weight is the mean relative abundance of OTU.
@@ -527,14 +528,19 @@ sppdiffs <- data.frame("97% within-sample OTUs"=sppdiffs97bs$Letters,
 knitr::kable(sppdiffs, caption="Species not sharing a letter are significantly different (p < 0.05)")
 ```
 
+##### Results:
+- At the 97% within-sample OTU scale, *Symbiodinium* communities are **not significantly different** in the corals *M. alcicornis*, *O. annularis*, and *F. fragum*, as these corals are all dominantly associated with the same *Symbiodinium* OTU (BLAST identity=B1). These corals are **also not different** from *D. cylindrus* or *D. strigosa*, which also dominantly associated with the same B1 OTU, although the latter two species are different from each other. Meanwhile, *M. cavernosa* and *S. siderea* also share similar symbiont communities dominated by *Symbiodinium* C3. Finally, *S. radians*, *P. furcata*, and *P. astreoides* each have distinct, **significantly different** *Symbiodinium* communities.  
+- At the 100% OTU scale, *Symbiodinium* communities were **significantly differentiated** in all species except for *O. annularis* and *D. strigosa* (sharing B1-dominated communities), and *S. siderea* and *M. cavernosa* (sharing C3-dominated communities).
+
 # Differences between shores {.tabset}
 Whether *Symbiodinium* communities differ between north vs. south shores within species is tested here using PERMANOVA.
 
 ## 97% within-sample OTUs
 ```{r shorediffs97bs, cache=T}
 set.seed(43789)
+set.seed(43789)
 shorestats97bs <- perms(phy97bs.f.t, group="Species", trt="Shore")
-knitr::kable(shorestats97bs, row.names=F, 
+knitr::kable(shorestats97bs, digits=3, row.names=F, 
              caption="97% within-sample OTU data: differences within and between shore for each species")
 ```
 
@@ -542,7 +548,7 @@ knitr::kable(shorestats97bs, row.names=F,
 ```{r shorediffs100, cache=T}
 set.seed(43789)
 shorestats100 <- perms(phy100.f.t, group="Species", trt="Shore")
-knitr::kable(shorestats100, row.names=F, 
+knitr::kable(shorestats100, digits=3, row.names=F, 
              caption="100% OTU data: differences within and between shore for each species")
 ```
 
@@ -550,13 +556,18 @@ knitr::kable(shorestats100, row.names=F,
 ```{r shorediffs97, cache=T}
 set.seed(43789)
 shorestats97 <- perms(phy97.f.t, group="Species", trt="Shore")
-knitr::kable(shorestats97, row.names=F, 
+knitr::kable(shorestats97, digits=3, row.names=F, 
              caption="97% OTU data: differences within and between shore for each species")
 ```
 
+##### Results:
+- __*P. furcata* is the only species whose symbiont communities are significantly different between the north and south shores__, at both the 97% within-sample OTU and 100% OTU scales. 
+
+
 # Beta diversity {.tabset}
-Beta diversity is evaluated here as the multivariate dispersion of samples within a coral species. Principal coordinate analysis on Bray-Curtis dissimilarities is used to calculate average distance-to-centroid values for each species group, which are then compared statistically by a permutation test. This analysis is implemented using betadisper() in the vegan package, based on [Anderson (2006)](dx.doi.org/10.1111/j.1541-0420.2005.00440.x).
-In this context, beta diveristy is analogous to 'flexibility' in symbiosis -- how different can corals of the same species be in terms of their symbiont communities?
+- Beta diversity is evaluated here as the multivariate dispersion of samples within a coral species. Principal coordinate analysis on Bray-Curtis dissimilarities is used to calculate average distance-to-centroid values for each species group, which are then compared statistically by a permutation test. This analysis is implemented using betadisper() in the vegan package, based on [Anderson (2006)](dx.doi.org/10.1111/j.1541-0420.2005.00440.x).
+- In this context, beta diveristy is analogous to 'flexibility' in symbiosis -- how different can corals of the same species be in terms of their symbiont communities? 
+- The species with **highest beta diversity** are *D. strigosa*, *P. furcata*, and *M. alcicornis*, followed by *O. annularis* and *S. siderea*. Species with the **lowest beta diversity** are *F. fragum*, *D. cylindrus*, *S. radians*, *P. astreoides*, and *M. cavernosa*.
 
 ## 97% within-sample OTUs
 ```{r betad97bs, cache=T, fig.width=6, fig.height=6}
