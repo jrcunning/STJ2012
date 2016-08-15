@@ -1,38 +1,56 @@
 ---
-title: "STJ2012 analysis"
+title: "*Symbiodinium* communities in reef corals of St. John, U.S.V.I. (2012)"
+subtitle: "Data analysis report"
 author: "Ross Cunning"
-date: "July 28, 2016"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   html_document: 
     toc: yes
+    toc_depth: 2
+    toc_float:
+      collapsed: true
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir = normalizePath(".."))
 knitr::opts_chunk$set(echo = TRUE)
-
 options(scipen = 3, digits = 2)
+```
 
+```{r setup_2, include=FALSE}
+# Load all R scripts in "R/" directory
+sapply(list.files(path="R", pattern="*.R", full.names=TRUE), source, .GlobalEnv)
+# Load package libraries
 library(phyloseq); library(vegan); library(multcompView); library(reshape2); library(igraph); library(stringr)
-
+# Set colors for plotting clades
 taxcolors <- matrix(c("#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462"), 
                     dimnames=list(c("CladeA", "CladeB", "CladeC", "CladeD", "CladeF", "CladeG")))
 ```
 
 # Overview
-  This project investigates *Symbiodinium* communities in scleractinian corals sampled at various sites on the north and south shores of St. John, US Virgin Islands in August 2012. The ITS2 region of nrDNA isolated from coral samples was amplified and sequenced by paired-end 300bp reads on an Illumina MiSeq platform. Sequence data is processed through a custom bioinformatic pipeline and resulting OTU tables are analyzed by various multivariate statistical approaches to ask questions regarding alpha and beta diversity of *Symbiodinium* communities within and across coral species. The major aims of this work are to 1) characterize *Symbiodinium* communities in a range of coral species using high-throughput sequencing (many for the first time), and 2) to forward novel bioinformatic and statistical approaches to better understand *Symbiodinium* ecology. 
+  This project investigates *Symbiodinium* communities in scleractinian and milleporine corals sampled at various sites on the north and south shores of St. John, US Virgin Islands in August 2012. The ITS2 region of nrDNA isolated from coral samples was amplified and sequenced by paired-end 300 bp reads on an Illumina MiSeq platform. Sequence data is processed through a custom bioinformatic pipeline and resulting OTU tables are statistically analyzed to ask questions regarding diversity and community structure of *Symbiodinium* within and across coral species and between shores. 
+  The major aims of this work are to:
+  
+1. characterize *Symbiodinium* communities in a range of coral species using high-throughput sequencing (many for the first time)
+2. forward novel bioinformatic (within-sample clustering) and statistical (beta diversity/distance to centroid, network analysis) approaches for the use of ITS2 data in *Symbiodinium* ecology. 
+
+```{r STJmap, echo=F, message=F, cache=T, fig.height=3, fig.width=4, fig.align="center", fig.cap="Sampling locations in St. John"}
+source("R/STJ_map.R")
+```
 
 # Bioinformatics
-  A [custom pipeline](sequence_processing.txt) is used here to process ITS2 sequence data. Briefly, paired reads were merged using the [illumina-utils](http://www.github.com/meren/illumina-utils) and filtered to keep only those with 3 mismatches or less. Chimeras were then removed by [usearch](http://www.drive5.com/usearch). From here, sequence data was processed using both of two approaches:
-  
-1. __97% OTU clustering within samples.__ With this approach, sequences from each individual sample were clustered at 97% similarity and the most abundant sequence from each cluster was selected as the representative sequence and assigned taxonomy by BLAST using a [custom ITS2 reference database](../data/Unaligned_ITS2_Database_23April13.fasta). Singletons were excluded. Identical OTUs across samples were then merged to create a global OTU table. By clustering at 97% _within_ samples, as opposed to across the entire dataset, OTUs from different samples that have _different representative sequences_ (i.e., different most abundant sequence within the 97% cluster) will remain separate even if these sequences are >97% similar to each other. This approach is used because _Symbiodinium_ ITS2 sequences are know to be multi-copy and vary intragenomically, and distinct _Symbiodinium_ types may contain identical sets of ITS2 sequences that occur in different relative proportions within the genome; therefore, selecting the most abundant sequence variant _within_ a sample prevents a potentially distinct _Symbiodinium_ type from being collapsed into an OTU with a different representative sequence that happens to be more abundant in other samples within the dataset.
-2. __100% OTU clustering.__ All ITS2 sequences were clustered at 100% identity and assigned taxonomy by BLAST to the [custom reference database](../data/Unaligned_ITS2_Database_23April13.fasta). Singletons were excluded.
-  
-OTU tables and taxonomic assignments from both of these bioinformatic approaches are used in comparative downstream analyses.
+  A custom pipeline is used here to process ITS2 sequence data. Briefly, paired reads were merged using [illumina-utils](http://www.github.com/meren/illumina-utils) and filtered to keep only those with 3 mismatches or less. Chimeras were then removed by [usearch](http://www.drive5.com/usearch), and singletons were removed. From here, sequence data was processed using each of three approaches:
+
+1. __100% OTU clustering.__ All ITS2 sequences from all samples were clustered at 100% identity using *uclust* and assigned taxonomy by BLAST to the [custom reference database](../data/ITS2db_trimmed.fasta).
+2. __97% OTU clustering.__ All ITS2 sequences from all samples were clustered at 97% identity using *uclust* and the most abundant sequence within each OTU was selected as the representative sequence and assigned taxonomy by BLAST to the [custom reference database](../data/ITS2db_trimmed.fasta).
+3. __97% OTU clustering within samples.__ Sequences from each individual sample were clustered separately at 97% similarity and the most abundant sequence from each cluster was selected as the representative sequence and assigned taxonomy by BLAST to the [custom reference database](../data/ITS2db_trimmed.fasta). OTUs with identical representative sequences were then merged across samples to create a global OTU table. By clustering at 97% _within_ samples, as opposed to across the entire dataset, OTUs from different samples that have _different representative sequences_ (i.e., different most abundant sequence within the 97% cluster) will remain separate even if these sequences are >97% similar to each other. This approach is used because _Symbiodinium_ ITS2 sequences are know to be multi-copy and intragenomically variable, and distinct _Symbiodinium_ types may contain some of the same ITS2 sequence variants in different relative proportions. Therefore, selecting the most abundant sequence variant _within_ a sample prevents a potentially distinct _Symbiodinium_ type from being collapsed into an OTU with a different representative sequence that happens to be more abundant in other samples within the dataset. For more discussion on this approach, see [this entry in my lab notebook](http://jrcunning.github.io/labnotebook//2016/02/12/ITS2_clustering.html).
+
+OTU tables and taxonomic assignments from each of these bioinformatic approaches are used in comparative downstream analyses.
 
 # Data pre-processing
-## Import dataset
-The [phyloseq](https://joey711.github.io/phyloseq/) package is used here to combine the OTU table, taxonomic assignments, and sample metadata into a single R data object to facilitate downstream analyses.
+### Import dataset
+The [phyloseq](https://joey711.github.io/phyloseq/) package is used here to combine the OTU table, taxonomic assignments, and sample metadata into a single R data object (class 'phyloseq') to facilitate downstream analyses.
 ```{r data_import, cache=T}
 # Import OTU tables
 OTU97 <- otu_table(read.table("data/97_otus.tsv", header=T, check.names=F, row.names=1,
@@ -56,11 +74,69 @@ phy97bs <- phyloseq(OTU97bs, TAX97bs, SAM)
 phy100 <- phyloseq(OTU100, TAX100, SAM)
 ```
 
-#### Descriptive statistics and distribution of OTU counts
+### Filter dataset
+```{r filter_dataset, cache=T}
+# Filter OTUs by minimum count
+# Set threshold count
+n <- 10
+# Identify OTUs below threshold count
+taxa97 <- taxa_sums(phy97)[which(taxa_sums(phy97) >= n)]
+taxa97bs <- taxa_sums(phy97bs)[which(taxa_sums(phy97bs) >= n)]  
+taxa100 <- taxa_sums(phy100)[which(taxa_sums(phy100) >= n)]
+# Remove taxa below threshold count
+phy97.f <- prune_taxa(names(taxa97), phy97)
+phy97bs.f <- prune_taxa(names(taxa97bs), phy97bs)
+phy100.f <- prune_taxa(names(taxa100), phy100)
+
+# Filter samples by minimum count
+# Set threshold number of reads
+sn <- 200
+# Remove samples with fewer reads than threshold
+phy97.f <- prune_samples(sample_sums(phy97.f)>=sn, phy97.f)
+phy97bs.f <- prune_samples(sample_sums(phy97bs.f)>=sn, phy97bs.f)
+phy100.f <- prune_samples(sample_sums(phy100.f)>=sn, phy100.f)
+```
+* Minimum count to retain OTU: `r n`
+* Minimum count to retain sample: `r sn`
+
+### Descriptive statistics {.tabset}
+
+#### Filtered dataset
+```{r phy.f_histograms, cache=T, fig.height=4, fig.width=8}
+# Compute summary statistics
+stats97.f <- data.frame(`97% OTUs`=t(phystats(phy97.f)), check.names=F)
+stats97bs.f <- data.frame(`97% within-sample OTUs`=t(phystats(phy97bs.f)), check.names=F)
+stats100.f <- data.frame(`100% OTUs`=t(phystats(phy100.f)), check.names=F)
+
+# Create and plot histograms
+taxhist97 <- hist(log10(taxa_sums(phy97.f)), plot=F)
+taxhist97bs <- hist(log10(taxa_sums(phy97bs.f)), plot=F)
+taxhist100 <- hist(log10(taxa_sums(phy100.f)), plot=F)
+samhist97 <- hist(log10(sample_sums(phy97.f)), plot=F)
+samhist97bs <- hist(log10(sample_sums(phy97bs.f)), plot=F)
+samhist100 <- hist(log10(sample_sums(phy100.f)), plot=F)
+
+par(mfrow=c(2, 3), mar=c(3,3,1,1))
+plot(taxhist97, col="black", main="97% OTU counts", xlim=c(0, 6), las=1, mgp=c(2,0.5,0),
+     xlab="No. sequences (log10)", ylab="No. OTUs", cex.lab=0.75, cex.axis=0.75)
+plot(taxhist97bs, col="black", main="97% OTU counts", xlim=c(0, 6), las=1, mgp=c(2,0.5,0),
+     xlab="No. sequences (log10)", ylab="No. OTUs", cex.lab=0.75, cex.axis=0.75)
+plot(taxhist100, col="black", main="100% OTU counts", xlim=c(0, 6), las=1, mgp=c(2,0.5,0),
+     xlab="No. sequences (log10)", ylab="No. OTUs", cex.lab=0.75, cex.axis=0.75)
+plot(samhist97, col="black", main="97% OTU reads per sample", xlim=c(0, 6), las=1, mgp=c(2,0.5,0),
+     xlab="No. sequences (log10)", ylab="No. samples", cex.lab=0.75, cex.axis=0.75)
+plot(samhist97bs, col="black", main="97% OTU reads per sample", xlim=c(0, 6), las=1, mgp=c(2,0.5,0),
+     xlab="No. sequences (log10)", ylab="No. samples", cex.lab=0.75, cex.axis=0.75)
+plot(samhist100, col="black", main="100% OTU reads per sample", xlim=c(0, 6), las=1, mgp=c(2,0.5,0),
+     xlab="No. sequences (log10)", ylab="No. samples", cex.lab=0.75, cex.axis=0.75)
+
+# Create stats table
+knitr::kable(cbind(stats97.f, stats97bs.f, stats100.f))
+```
+
+#### Raw dataset
 ```{r phy_stats, cache=T, fig.height=4, fig.width=8}
 # Compute summary statistics
-source("R/phystats.R")
-
 stats97 <- data.frame(`97% OTUs`=t(phystats(phy97)), check.names=F)
 stats97bs <- data.frame(`97% within-sample OTUs`=t(phystats(phy97bs)), check.names=F)
 stats100 <- data.frame(`100% OTUs`=t(phystats(phy100)), check.names=F)
@@ -93,72 +169,8 @@ plot(samhist100, col="black", main="100% OTU reads per sample", xlim=c(0, 6), la
 knitr::kable(cbind(stats97, stats97bs, stats100))
 ```
 
-## Filter dataset
-#### Filter samples by minimum count
-```{r filter_samples, cache=T}
-# Set threshold number of reads
-sn <- 0
-# Remove samples with fewer reads than threshold
-phy97.f <- prune_samples(sample_sums(phy97)>=sn, phy97)
-phy97bs.f <- prune_samples(sample_sums(phy97bs)>=sn, phy97bs)
-phy100.f <- prune_samples(sample_sums(phy100)>=sn, phy100)
- 
-```
-
-#### Filter OTUs by minimum count
-```{r filter_taxa}
-# Set threshold count
-n <- 10
-# Identify OTUs below threshold count
-taxa97 <- taxa_sums(phy97.f)[which(taxa_sums(phy97.f) >= n)]
-taxa97bs <- taxa_sums(phy97bs.f)[which(taxa_sums(phy97bs.f) >= n)]  
-taxa100 <- taxa_sums(phy100.f)[which(taxa_sums(phy100.f) >= n)]
-# Remove taxa below threshold count
-phy97.f <- prune_taxa(names(taxa97), phy97.f)
-phy97bs.f <- prune_taxa(names(taxa97bs), phy97bs.f)
-phy100.f <- prune_taxa(names(taxa100), phy100.f)
-
-# Refilter samples in case removal of OTUs caused any samples to drop below threshold
-sn <- 200
-phy97.f <- prune_samples(sample_sums(phy97.f)>=sn, phy97.f)
-phy97bs.f <- prune_samples(sample_sums(phy97bs.f)>=sn, phy97bs.f)
-phy100.f <- prune_samples(sample_sums(phy100.f)>=sn, phy100.f)
-```
-
-#### Filtered data: descriptive statistics and distribution of OTUs
-```{r phy.f_histograms, fig.height=4, fig.width=8}
-# Compute summary statistics
-stats97.f <- data.frame(`97% OTUs`=t(phystats(phy97.f)), check.names=F)
-stats97bs.f <- data.frame(`97% within-sample OTUs`=t(phystats(phy97bs.f)), check.names=F)
-stats100.f <- data.frame(`100% OTUs`=t(phystats(phy100.f)), check.names=F)
-
-# Create and plot histograms
-taxhist97 <- hist(log10(taxa_sums(phy97.f)), plot=F)
-taxhist97bs <- hist(log10(taxa_sums(phy97bs.f)), plot=F)
-taxhist100 <- hist(log10(taxa_sums(phy100.f)), plot=F)
-samhist97 <- hist(log10(sample_sums(phy97.f)), plot=F)
-samhist97bs <- hist(log10(sample_sums(phy97bs.f)), plot=F)
-samhist100 <- hist(log10(sample_sums(phy100.f)), plot=F)
-
-par(mfrow=c(2, 3), mar=c(3,3,1,1))
-plot(taxhist97, col="black", main="97% OTU counts", xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
-     xlab="No. sequences (log10)", ylab="No. OTUs", cex.lab=0.75, cex.axis=0.75)
-plot(taxhist97bs, col="black", main="97% OTU counts", xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
-     xlab="No. sequences (log10)", ylab="No. OTUs", cex.lab=0.75, cex.axis=0.75)
-plot(taxhist100, col="black", main="100% OTU counts", xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
-     xlab="No. sequences (log10)", ylab="No. OTUs", cex.lab=0.75, cex.axis=0.75)
-plot(samhist97, col="black", main="97% OTU reads per sample", xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
-     xlab="No. sequences (log10)", ylab="No. samples", cex.lab=0.75, cex.axis=0.75)
-plot(samhist97bs, col="black", main="97% OTU reads per sample", xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
-     xlab="No. sequences (log10)", ylab="No. samples", cex.lab=0.75, cex.axis=0.75)
-plot(samhist100, col="black", main="100% OTU reads per sample", xlim=c(0, 5), las=1, mgp=c(2,0.5,0),
-     xlab="No. sequences (log10)", ylab="No. samples", cex.lab=0.75, cex.axis=0.75)
-
-# Create stats table
-knitr::kable(cbind(stats97.f, stats97bs.f, stats100.f))
-```
-
-## Transform count data
+### Transform count data
+Count data are transformed to both relative abundance (proportions) and square-root proportions for downstream statistical analyses.
 ```{r transform}
 # Convert to proportion (relative abundance)
 phy97.f.p <- transform_sample_counts(phy97.f, function(x) x/sum(x))
@@ -173,39 +185,314 @@ phy100.f.t <- transform_sample_counts(phy100.f, transform)
 
 -----
 
-# Data analysis
-## Community composition barplots
-Here the composition of each sample is plotted as a horizontal bar, sorted by species and shore. Each segment of the bar represents an individual OTU. In the lefthand plot, all OTUs are colored by clade, in the right OTU, all OTUs are given a unique color.
-```{r cladecomp97, cache=T, fig.height=6, fig.width=8}
-# Define function to plot Symbiodinium community composition
-source("R/composition.R")
+# *Symbiodinium* in each coral
+For each coral species, barplots are presented showing the relative abundance of OTUs obtained by 100%, 97%, and 97%-within-sample clustering. OTUs comprising more than 4% of a sample are labeled with the unique OTU number and the *Symbiodinium* subtype and NCBI GenBank accession number of the closest BLAST hit for that OTU in the reference database. OTU numbers and barplot colors are NOT comparable across the three clustering methods.
 
-par(mfrow=c(1,2), mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7)
+## *Diploria strigosa*
+```{r dstr, cache=T, fig.height=12, fig.width=8}
+# Create subsetted phyloseq objects for Diploria strigosa
+dstr97.f.p <- subset_samples(phy97.f.p, Species=="strigosa")
+dstr97bs.f.p <- subset_samples(phy97bs.f.p, Species=="strigosa")
+dstr100.f.p <- subset_samples(phy100.f.p, Species=="strigosa")
+# Plot custom barplots for Diploria strigosa
+par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
+otubarplot(dstr97.f.p, main="97% OTUs")
+otubarplot(dstr97bs.f.p, main="97% within-sample OTUs")
+otubarplot(dstr100.f.p, main="100% OTUs")
+```
 
-# Plot composition of 97% OTUs colored by clade
-composition(phy97.f.p, col=taxcolors[data.frame(tax_table(phy97.f.p))[order(data.frame(tax_table(phy97.f.p))$Subtype), ]$Clade], legend=T)
+```{r dstr.net, cache=T, fig.height=6, fig.width=6}
+dstr.net <- makenet(dstr97bs.f.p, 0)
+set.seed(54538)
+plotnet(dstr.net)
+```
 
-# Plot composition of 97% OTUs colored by OTU
-composition(phy97.f.p, col=rainbow(ntaxa(phy97.f.p)), legend=F)
+#### Network analysis for *D. strigosa*
+#### Number of OTUs: `r table(is.na(V(dstr.net)$Clade))[[1]]`
+White circles represent coral samples, colored circles represent *Symbiodinium* OTUs (97% within-sample). Thickness of lines corresponds to the relative abundance of an OTU within a sample. 
 
+-----
+
+## *Porites furcata*
+```{r pfur, cache=T, fig.height=12, fig.width=8}
+# Create subsetted phyloseq objects for Porites furcata
+pfur97.f.p <- subset_samples(phy97.f.p, Species=="furcata")
+pfur97bs.f.p <- subset_samples(phy97bs.f.p, Species=="furcata")
+pfur100.f.p <- subset_samples(phy100.f.p, Species=="furcata")
+# Plot custom barplots for Porites furcata
+par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
+otubarplot(pfur97.f.p, main="97% OTUs")
+otubarplot(pfur97bs.f.p, main="97% within-sample OTUs")
+otubarplot(pfur100.f.p, main="100% OTUs")
+```
+```{r pfur.net, cache=T, fig.height=6, fig.width=6}
+# Network analysis
+pfur.net <- makenet(pfur97bs.f.p, 0)
+par(mar=c(0,0,0,0))
+set.seed(54538)
+plotnet(pfur.net)
+```
+
+#### Network analysis for *P. furcata*
+#### Number of OTUs: `r table(is.na(V(pfur.net)$Clade))[[1]]`
+White circles represent coral samples, colored circles represent *Symbiodinium* OTUs (97% within-sample). Thickness of lines corresponds to the relative abundance of an OTU within a sample. 
+
+## *Orbicella annularis*
+```{r oann, cache=F, fig.height=12, fig.width=8}
+# Create subsetted phyloseq objects for Orbicella annularis
+oann97.f.p <- subset_samples(phy97.f.p, Species=="annularis")
+oann97bs.f.p <- subset_samples(phy97bs.f.p, Species=="annularis")
+oann100.f.p <- subset_samples(phy100.f.p, Species=="annularis")
+# Plot custom barplots for Orbicella annularis
+par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
+otubarplot(oann97.f.p, main="97% OTUs")
+otubarplot(oann97bs.f.p, main="97% within-sample OTUs")
+otubarplot(oann100.f.p, main="100% OTUs")
+```
+```{r oann.net, cache=T, fig.height=6, fig.width=6}
+# Network analysis
+oann.net <- makenet(oann97bs.f.p, 0)
+par(mar=c(0,0,0,0))
+set.seed(54538)
+plotnet(oann.net)
+```
+
+#### Network analysis for *O. annularis*
+#### Number of OTUs: `r table(is.na(V(oann.net)$Clade))[[1]]`
+White circles represent coral samples, colored circles represent *Symbiodinium* OTUs (97% within-sample). Thickness of lines corresponds to the relative abundance of an OTU within a sample.
+
+## *Millepora alcicornis*
+```{r malc, cache=T, fig.height=12, fig.width=8}
+# Create subsetted phyloseq objects for Millepora alcicornis
+malc97.f.p <- subset_samples(phy97.f.p, Species=="alcicornis")
+malc97bs.f.p <- subset_samples(phy97bs.f.p, Species=="alcicornis")
+malc100.f.p <- subset_samples(phy100.f.p, Species=="alcicornis")
+# Plot custom barplots for Millepora alcicornis
+par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
+otubarplot(malc97.f.p, main="97% OTUs")
+otubarplot(malc97bs.f.p, main="97% within-sample OTUs")
+otubarplot(malc100.f.p, main="100% OTUs")
+```
+```{r malc.net, cache=T, fig.height=6, fig.width=6}
+# Network analysis
+malc.net <- makenet(malc97bs.f.p, 0)
+par(mar=c(0,0,0,0))
+set.seed(54538)
+plotnet(malc.net)
+```
+
+#### Network analysis for *M. alcicornis*
+#### Number of OTUs: `r table(is.na(V(malc.net)$Clade))[[1]]`
+White circles represent coral samples, colored circles represent *Symbiodinium* OTUs (97% within-sample). Thickness of lines corresponds to the relative abundance of an OTU within a sample.
+
+## *Siderastrea siderea*
+```{r ssid, cache=T, fig.height=12, fig.width=8}
+# Create subsetted phyloseq objects for Siderastrea siderea
+ssid97.f.p <- subset_samples(phy97.f.p, Species=="siderea")
+ssid97bs.f.p <- subset_samples(phy97bs.f.p, Species=="siderea")
+ssid100.f.p <- subset_samples(phy100.f.p, Species=="siderea")
+# Plot custom barplots for Siderastrea siderea
+par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
+otubarplot(ssid97.f.p, main="97% OTUs")
+otubarplot(ssid97bs.f.p, main="97% within-sample OTUs")
+otubarplot(ssid100.f.p, main="100% OTUs")
+```
+```{r ssid.net, cache=T, fig.height=6, fig.width=6}
+# Network analysis
+ssid.net <- makenet(ssid97bs.f.p, 0)
+par(mar=c(0,0,0,0))
+set.seed(834)
+plotnet(ssid.net)
+```
+
+#### Network analysis for *S. siderea*
+#### Number of OTUs: `r table(is.na(V(ssid.net)$Clade))[[1]]`
+White circles represent coral samples, colored circles represent *Symbiodinium* OTUs (97% within-sample). Thickness of lines corresponds to the relative abundance of an OTU within a sample.
+
+## *Favia fragum*
+```{r ffra, cache=T, fig.height=12, fig.width=8}
+# Create subsetted phyloseq objects for Favia fragum
+ffra97.f.p <- subset_samples(phy97.f.p, Species=="fragum")
+ffra97bs.f.p <- subset_samples(phy97bs.f.p, Species=="fragum")
+ffra100.f.p <- subset_samples(phy100.f.p, Species=="fragum")
+# Plot custom barplots for Favia fragum
+par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
+otubarplot(ffra97.f.p, main="97% OTUs")
+otubarplot(ffra97bs.f.p, main="97% within-sample OTUs")
+otubarplot(ffra100.f.p, main="100% OTUs")
+```
+```{r ffra.net, cache=T, fig.height=6, fig.width=6}
+# Network analysis
+ffra.net <- makenet(ffra97bs.f.p, 0)
+par(mar=c(0,0,0,0))
+set.seed(54538)
+plotnet(ffra.net)
+```
+
+#### Network analysis for *F. fragum*
+#### Number of OTUs: `r table(is.na(V(ffra.net)$Clade))[[1]]`
+White circles represent coral samples, colored circles represent *Symbiodinium* OTUs (97% within-sample). Thickness of lines corresponds to the relative abundance of an OTU within a sample.
+
+## *Siderastrea radians*
+```{r srad, cache=T, fig.height=12, fig.width=8}
+# Create subsetted phyloseq objects for Siderastrea radians
+srad97.f.p <- subset_samples(phy97.f.p, Species=="radians")
+srad97bs.f.p <- subset_samples(phy97bs.f.p, Species=="radians")
+srad100.f.p <- subset_samples(phy100.f.p, Species=="radians")
+# Plot custom barplots for Siderastrea radians
+par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
+otubarplot(srad97.f.p, main="97% OTUs")
+otubarplot(srad97bs.f.p, main="97% within-sample OTUs")
+otubarplot(srad100.f.p, main="100% OTUs")
+```
+```{r srad.net, cache=T, fig.height=6, fig.width=6}
+# Network analysis
+srad.net <- makenet(srad97bs.f.p, 0)
+par(mar=c(0,0,0,0))
+set.seed(54538)
+plotnet(srad.net)
+```
+
+#### Network analysis for *S. radians*
+#### Number of OTUs: `r table(is.na(V(srad.net)$Clade))[[1]]`
+White circles represent coral samples, colored circles represent *Symbiodinium* OTUs (97% within-sample). Thickness of lines corresponds to the relative abundance of an OTU within a sample.
+
+## *Porites astreoides*
+```{r past, cache=T, fig.height=12, fig.width=8}
+# Create subsetted phyloseq objects for Porites astreoides
+past97.f.p <- subset_samples(phy97.f.p, Species=="astreoides")
+past97bs.f.p <- subset_samples(phy97bs.f.p, Species=="astreoides")
+past100.f.p <- subset_samples(phy100.f.p, Species=="astreoides")
+# Plot custom barplots for Porites astreoides
+par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
+otubarplot(past97.f.p, main="97% OTUs")
+otubarplot(past97bs.f.p, main="97% within-sample OTUs")
+otubarplot(past100.f.p, main="100% OTUs")
+```
+```{r past.net, cache=T, fig.height=6, fig.width=6}
+# Network analysis
+past.net <- makenet(past97bs.f.p, 0)
+par(mar=c(0,0,0,0))
+set.seed(54538)
+plotnet(past.net)
+```
+
+#### Network analysis for *P. astreoides*
+#### Number of OTUs: `r table(is.na(V(past.net)$Clade))[[1]]`
+White circles represent coral samples, colored circles represent *Symbiodinium* OTUs (97% within-sample). Thickness of lines corresponds to the relative abundance of an OTU within a sample.
+
+## *Dendrogyra cylindrus*
+```{r dcyl, cache=T, fig.height=12, fig.width=8}
+# Create subsetted phyloseq objects for Dendrogyra cylindrus
+dcyl97.f.p <- subset_samples(phy97.f.p, Species=="cylindrus")
+dcyl97bs.f.p <- subset_samples(phy97bs.f.p, Species=="cylindrus")
+dcyl100.f.p <- subset_samples(phy100.f.p, Species=="cylindrus")
+# Plot custom barplots for Dendrogyra cylindrus
+par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
+otubarplot(dcyl97.f.p, main="97% OTUs")
+otubarplot(dcyl97bs.f.p, main="97% within-sample OTUs")
+otubarplot(dcyl100.f.p, main="100% OTUs")
+```
+```{r dcyl.net, cache=T, fig.height=6, fig.width=6}
+# Network analysis
+dcyl.net <- makenet(dcyl97bs.f.p, 0)
+par(mar=c(0,0,0,0))
+set.seed(54538)
+plotnet(dcyl.net)
+```
+
+#### Network analysis for *D. cylindrus*
+#### Number of OTUs: `r table(is.na(V(dcyl.net)$Clade))[[1]]`
+White circles represent coral samples, colored circles represent *Symbiodinium* OTUs (97% within-sample). Thickness of lines corresponds to the relative abundance of an OTU within a sample.
+
+## *Montastraea cavernosa*
+```{r mcav, cache=T, fig.height=12, fig.width=8}
+# Create subsetted phyloseq objects for Montastraea cavernosa
+mcav97.f.p <- subset_samples(phy97.f.p, Species=="cavernosa")
+mcav97bs.f.p <- subset_samples(phy97bs.f.p, Species=="cavernosa")
+mcav100.f.p <- subset_samples(phy100.f.p, Species=="cavernosa")
+# Plot custom barplots for Montastraea cavernosa
+par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
+otubarplot(mcav97.f.p, main="97% OTUs")
+otubarplot(mcav97bs.f.p, main="97% within-sample OTUs")
+otubarplot(mcav100.f.p, main="100% OTUs")
+```
+```{r mcav.net, cache=T, fig.height=6, fig.width=6}
+# Network analysis
+mcav.net <- makenet(mcav97bs.f.p, 0)
+par(mar=c(0,0,0,0))
+set.seed(54538)
+plotnet(mcav.net)
+```
+
+#### Network analysis for *M. cavernosa*
+#### Number of OTUs: `r table(is.na(V(mcav.net)$Clade))[[1]]`
+White circles represent coral samples, colored circles represent *Symbiodinium* OTUs (97% within-sample). Thickness of lines corresponds to the relative abundance of an OTU within a sample.
+
+# All species barplot
+Here the composition of each sample is plotted as a horizontal bar, sorted by species and shore. Each segment of the bar represents an individual OTU and is colored by clade. This plot is a nice overview of the whole dataset but only provides coarse information at the clade level.
+```{r cladecomp97bs, cache=T, fig.height=6, fig.width=4}
+par(mfrow=c(1,1), mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7)
 # Plot composition of 97% within-sample OTUs colored by clade
 composition(phy97bs.f.p, col=taxcolors[factor(data.frame(tax_table(phy97bs.f.p))[order(data.frame(tax_table(phy97bs.f.p))$Subtype), ]$Clade, levels=c("A","B","C","D","F","G"))], legend=T)
-
 # Plot composition of 97% within-sample OTUs colored by OTU
-composition(phy97bs.f.p, col=rainbow(ntaxa(phy97bs.f.p)), legend=F)
+#composition(phy97bs.f.p, col=rainbow(ntaxa(phy97bs.f.p)), legend=F)
 
 ```
 
-```{r cladecomp100, cache=T, fig.height=6, fig.width=8}
-par(mfrow=c(1,2), mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7)
-# Plot composition of 100% OTUs colored by clade
-composition(phy100.f.p, col=taxcolors[data.frame(tax_table(phy100.f.p))[order(data.frame(tax_table(phy100.f.p))$Subtype), ]$Clade], legend=T)
+# All species network analysis
+In this network, each coral species is collapsed into a single node (white squares), and connected to every *Symbiodinium* OTU (colored circles) that comprises at least 1% relative abundance within at least one individual of that species. Thus, very low abundance OTUs are not represented. The thickness of connections between coral species and OTUs is scaled by the relative proportion of samples of that species in which that OTU was present at ≥ 1% relative abundance. The size of *Symbiodinium* OTU nodes in the network is scaled by the number of species in which they occur.
+```{r networks}
+# Get network with one node for each species.
+# Edge weight is the mean relative abundance of OTU.
+# Convert OTU table to "edges" table (weight = relative abundance)
+otudf <- data.frame(t(otu_table(phy97bs.f.p)), check.names=F)
+# Average relative abundance of OTU within species
+#sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97.f.p))$Species), FUN=mean)
+# Percent of samples of species that contain OTU at more than 1% relative abundance
+sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p))$Species), 
+                   FUN=function(x) length(x[x>0.01])/length(x))
 
-# Plot composition of 100% OTUs colored by OTU
-composition(phy100.f.p, col=rainbow(ntaxa(phy100.f.p)), legend=F)
+rownames(sp.ag) <- sp.ag$Species
+sp.ag <- sp.ag[, -1]
+edges <- setNames(melt(as.matrix(sp.ag)), nm=c("source", "target", "weight"))  # Melt data
+edges <- droplevels(edges[edges$weight>0, ])
+# Create "nodes" table from sample and tax data
+sdf <- data.frame(id=levels(data.frame(sample_data(phy97bs.f.p))$Species))
+tdf <- data.frame(tax_table(phy97bs.f.p))[rownames(data.frame(tax_table(phy97bs.f.p))) %in% edges$target, ]
+tdf$id <- rownames(tdf)
+nodes <- merge(sdf, tdf, all=T)
+nodes$type <- ifelse(is.na(nodes$Clade), 1, 2)
+# Create network
+net <- graph_from_data_frame(d=edges, vertices=nodes, directed=F)
+
+# Best one for now ---------
+V(net)$shape <- c("square", "circle")[factor(V(net)$type)]
+V(net)$size <- ifelse(is.na(V(net)$Clade), 15, 10*sqrt(degree(net))) #5*sqrt(degree(net))
+V(net)$label <- ifelse(is.na(V(net)$Clade), names(V(net)),  
+                       unlist(lapply(strsplit(V(net)$Subtype, split="_"), "[", 1)))
+V(net)$label <- str_replace_all(V(net)$label, c("alcicornis"="M.alc.", "annularis"="O.ann",
+                                                "astreoides"="P.ast.", "cavernosa"="M.cav.",
+                                                "cylindrus"="D.cyl.", "fragum"="F.fra.", 
+                                                "furcata"="P.fur.", "radians"="S.rad.", 
+                                                "siderea"="S.sid.", "strigosa"="D.str."))
+V(net)$color <- ifelse(is.na(V(net)$Clade), "white",
+                       taxcolors[factor(V(net)$Clade, levels=c("A","B","C","D","F","G"))])
+E(net)$color <- "gray60"
+E(net)$width <- 15 * E(net)$weight
+set.seed(12347)
+set.seed(12364)
+set.seed(12374)
+l <- layout.fruchterman.reingold(net)
+l <- norm_coords(l, ymin=-1, ymax=1, xmin=-1, xmax=1)
+par(mar=c(0,0,0,0))
+plot(net, rescale=F, layout=l*1, edge.curved=0.1, vertex.label.cex=V(net)$size/20,
+     vertex.label.color="black")
+#legend(x=-1.05, y=1.1, c("CladeA", "CladeB", "CladeC", "CladeD", "CladeF", "CladeG"), pch=21,
+#     col="#777777", pt.bg=taxcolors, pt.cex=1.1, cex=.6, bty="n", ncol=2, text.width=0.2)
 ```
 
-## Differences between species
+# Differences between species
 Whether *Symbiodinium* communities differ among species is evaluated using permutational analysis of variance (PERMANOVA).
 
 ```{r permanovas, cache=T}
@@ -234,49 +521,46 @@ sppdiffs97 <- sppdiffs(phy97.f.t)
 sppdiffs97bs <- sppdiffs(phy97bs.f.t)
 sppdiffs100 <- sppdiffs(phy100.f.t)
 
-sppdiffs <- data.frame("97% OTUs"=sppdiffs97$Letters, "97% within-sample OTUs"=sppdiffs97bs$Letters,
-                       "100% OTUs"=sppdiffs100$Letters, check.names=F)
+sppdiffs <- data.frame("97% within-sample OTUs"=sppdiffs97bs$Letters,
+                       "100% OTUs"=sppdiffs100$Letters, 
+                       "97% OTUs"=sppdiffs97$Letters, check.names=F)
 knitr::kable(sppdiffs, caption="Species not sharing a letter are significantly different (p < 0.05)")
 ```
 
-## Differences between shores
+# Differences between shores {.tabset}
 Whether *Symbiodinium* communities differ between north vs. south shores within species is tested here using PERMANOVA.
 
-```{r shorediffs, cache=T}
-source("R/perms.R")
+## 97% within-sample OTUs
+```{r shorediffs97bs, cache=T}
 set.seed(43789)
-shorestats97 <- perms(phy97.f.t, group="Species", trt="Shore")
 shorestats97bs <- perms(phy97bs.f.t, group="Species", trt="Shore")
-shorestats100 <- perms(phy100.f.t, group="Species", trt="Shore")
-
-knitr::kable(shorestats97, row.names=F, 
-             caption="97% OTU data: differences within and between shore for each species")
 knitr::kable(shorestats97bs, row.names=F, 
              caption="97% within-sample OTU data: differences within and between shore for each species")
+```
+
+## 100% OTUs
+```{r shorediffs100, cache=T}
+set.seed(43789)
+shorestats100 <- perms(phy100.f.t, group="Species", trt="Shore")
 knitr::kable(shorestats100, row.names=F, 
              caption="100% OTU data: differences within and between shore for each species")
 ```
 
-## Beta diversity
-Beta diversity is evaluated here as the multivariate dispersion of samples within a coral species group. Principal coordinate analysis on Bray-Curtis dissimilarities is used to calculate average distance-to-centroid values for each species group, which are then compared statistically by a permutation test. This analysis is implemented using betadisper() in the vegan package, based on [Anderson (2006)](dx.doi.org/10.1111/j.1541-0420.2005.00440.x).
-```{r betadisper, cache=T, fig.width=10, fig.height=4}
-source("R/betad.R")
+## 97% OTUs
+```{r shorediffs97, cache=T}
+set.seed(43789)
+shorestats97 <- perms(phy97.f.t, group="Species", trt="Shore")
+knitr::kable(shorestats97, row.names=F, 
+             caption="97% OTU data: differences within and between shore for each species")
+```
 
-betad97 <- betad(phy97.f.t, group="Species")
+# Beta diversity {.tabset}
+Beta diversity is evaluated here as the multivariate dispersion of samples within a coral species. Principal coordinate analysis on Bray-Curtis dissimilarities is used to calculate average distance-to-centroid values for each species group, which are then compared statistically by a permutation test. This analysis is implemented using betadisper() in the vegan package, based on [Anderson (2006)](dx.doi.org/10.1111/j.1541-0420.2005.00440.x).
+In this context, beta diveristy is analogous to 'flexibility' in symbiosis -- how different can corals of the same species be in terms of their symbiont communities?
+
+## 97% within-sample OTUs
+```{r betad97bs, cache=T, fig.width=6, fig.height=6}
 betad97bs <- betad(phy97bs.f.t, group="Species")
-betad100 <- betad(phy100.f.t, group="Species")
-
-# Figure: Distance to centroids
-par(mfrow=c(1,3), mar=c(3.5,4,2,1), lwd=1)
-with(betad97$sambdsumm.ord, {
-  plot(mean, type="n", main="97% OTUs",
-       ylim=c(0, 0.75), ylab="Distance to centroid", xaxt="n", xlab="")
-  arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
-  points(1:10, mean, cex=1, pch=21, bg="white")
-  text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75, 
-       labels=levels(SAM$Species)[order(betad97$sambdsumm$mean, decreasing=T)])
-  text(1:10, mean + se + 0.03, labels=betad97$saml$Letters[as.character(group)], cex=0.5)
-})
 with(betad97bs$sambdsumm.ord, {
   plot(mean, type="n", main="97% within-sample OTUs",
        ylim=c(0, 0.75), ylab="Distance to centroid", xaxt="n", xlab="")
@@ -286,6 +570,11 @@ with(betad97bs$sambdsumm.ord, {
        labels=levels(SAM$Species)[order(betad97bs$sambdsumm$mean, decreasing=T)])
   text(1:10, mean + se + 0.03, labels=betad97bs$saml$Letters[as.character(group)], cex=0.5)
 })
+```
+
+## 100% OTUs
+```{r betad100, cache=T, fig.width=6, fig.height=6}
+betad100 <- betad(phy100.f.t, group="Species")
 with(betad100$sambdsumm.ord, {
   plot(mean, type="n", main="100% OTUs",
        ylim=c(0, 0.75), ylab="Distance to centroid", xaxt="n", xlab="")
@@ -297,272 +586,17 @@ with(betad100$sambdsumm.ord, {
 })
 ```
 
-
-## Individual coral species
-### *Diploria strigosa*
-```{r dstr, cache=T, fig.height=12, fig.width=8}
-# Create subsetted phyloseq objects for Diploria strigosa
-dstr97.f.p <- subset_samples(phy97.f.p, Species=="strigosa")
-dstr97bs.f.p <- subset_samples(phy97bs.f.p, Species=="strigosa")
-dstr100.f.p <- subset_samples(phy100.f.p, Species=="strigosa")
-# Plot custom barplots for Diploria strigosa
-par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
-otubarplot(dstr97.f.p, main="97% OTUs")
-otubarplot(dstr97bs.f.p, main="97% within-sample OTUs")
-otubarplot(dstr100.f.p, main="100% OTUs")
+## 97% OTUs
+```{r betad97, cache=T, fig.width=6, fig.height=6}
+betad97 <- betad(phy97.f.t, group="Species")
+# Figure: Distance to centroids
+with(betad97$sambdsumm.ord, {
+  plot(mean, type="n", main="97% OTUs",
+       ylim=c(0, 0.75), ylab="Distance to centroid", xaxt="n", xlab="")
+  arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
+  points(1:10, mean, cex=1, pch=21, bg="white")
+  text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75, 
+       labels=levels(SAM$Species)[order(betad97$sambdsumm$mean, decreasing=T)])
+  text(1:10, mean + se + 0.03, labels=betad97$saml$Letters[as.character(group)], cex=0.5)
+})
 ```
-
-### *Porites furcata*
-```{r pfur, cache=T, fig.height=12, fig.width=8}
-# Create subsetted phyloseq objects for Porites furcata
-pfur97.f.p <- subset_samples(phy97.f.p, Species=="furcata")
-pfur97bs.f.p <- subset_samples(phy97bs.f.p, Species=="furcata")
-pfur100.f.p <- subset_samples(phy100.f.p, Species=="furcata")
-# Plot custom barplots for Porites furcata
-par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
-otubarplot(pfur97.f.p, main="97% OTUs")
-otubarplot(pfur97bs.f.p, main="97% within-sample OTUs")
-otubarplot(pfur100.f.p, main="100% OTUs")
-```
-
-### *Orbicella annularis*
-```{r oann, cache=F, fig.height=12, fig.width=8}
-# Create subsetted phyloseq objects for Orbicella annularis
-oann97.f.p <- subset_samples(phy97.f.p, Species=="annularis")
-oann97bs.f.p <- subset_samples(phy97bs.f.p, Species=="annularis")
-oann100.f.p <- subset_samples(phy100.f.p, Species=="annularis")
-# Plot custom barplots for Orbicella annularis
-par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
-otubarplot(oann97.f.p, main="97% OTUs")
-otubarplot(oann97bs.f.p, main="97% within-sample OTUs")
-otubarplot(oann100.f.p, main="100% OTUs")
-```
-
-### *Millepora alcicornis*
-```{r malc, cache=T, fig.height=12, fig.width=8}
-# Create subsetted phyloseq objects for Millepora alcicornis
-malc97.f.p <- subset_samples(phy97.f.p, Species=="alcicornis")
-malc97bs.f.p <- subset_samples(phy97bs.f.p, Species=="alcicornis")
-malc100.f.p <- subset_samples(phy100.f.p, Species=="alcicornis")
-# Plot custom barplots for Millepora alcicornis
-par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
-otubarplot(malc97.f.p, main="97% OTUs")
-otubarplot(malc97bs.f.p, main="97% within-sample OTUs")
-otubarplot(malc100.f.p, main="100% OTUs")
-```
-
-### *Siderastrea siderea*
-```{r ssid, cache=T, fig.height=12, fig.width=8}
-# Create subsetted phyloseq objects for Siderastrea siderea
-ssid97.f.p <- subset_samples(phy97.f.p, Species=="siderea")
-ssid97bs.f.p <- subset_samples(phy97bs.f.p, Species=="siderea")
-ssid100.f.p <- subset_samples(phy100.f.p, Species=="siderea")
-# Plot custom barplots for Siderastrea siderea
-par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
-otubarplot(ssid97.f.p, main="97% OTUs")
-otubarplot(ssid97bs.f.p, main="97% within-sample OTUs")
-otubarplot(ssid100.f.p, main="100% OTUs")
-```
-
-### *Favia fragum*
-```{r ffra, cache=T, fig.height=12, fig.width=8}
-# Create subsetted phyloseq objects for Favia fragum
-ffra97.f.p <- subset_samples(phy97.f.p, Species=="fragum")
-ffra97bs.f.p <- subset_samples(phy97bs.f.p, Species=="fragum")
-ffra100.f.p <- subset_samples(phy100.f.p, Species=="fragum")
-# Plot custom barplots for Favia fragum
-par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
-otubarplot(ffra97.f.p, main="97% OTUs")
-otubarplot(ffra97bs.f.p, main="97% within-sample OTUs")
-otubarplot(ffra100.f.p, main="100% OTUs")
-```
-
-### *Siderastrea radians*
-```{r srad, cache=T, fig.height=12, fig.width=8}
-# Create subsetted phyloseq objects for Siderastrea radians
-srad97.f.p <- subset_samples(phy97.f.p, Species=="radians")
-srad97bs.f.p <- subset_samples(phy97bs.f.p, Species=="radians")
-srad100.f.p <- subset_samples(phy100.f.p, Species=="radians")
-# Plot custom barplots for Siderastrea radians
-par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
-otubarplot(srad97.f.p, main="97% OTUs")
-otubarplot(srad97bs.f.p, main="97% within-sample OTUs")
-otubarplot(srad100.f.p, main="100% OTUs")
-```
-
-### *Porites astreoides*
-```{r past, cache=T, fig.height=12, fig.width=8}
-# Create subsetted phyloseq objects for Porites astreoides
-past97.f.p <- subset_samples(phy97.f.p, Species=="astreoides")
-past97bs.f.p <- subset_samples(phy97bs.f.p, Species=="astreoides")
-past100.f.p <- subset_samples(phy100.f.p, Species=="astreoides")
-# Plot custom barplots for Porites astreoides
-par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
-otubarplot(past97.f.p, main="97% OTUs")
-otubarplot(past97bs.f.p, main="97% within-sample OTUs")
-otubarplot(past100.f.p, main="100% OTUs")
-```
-
-### *Dendrogyra cylindrus*
-```{r dcyl, cache=T, fig.height=12, fig.width=8}
-# Create subsetted phyloseq objects for Dendrogyra cylindrus
-dcyl97.f.p <- subset_samples(phy97.f.p, Species=="cylindrus")
-dcyl97bs.f.p <- subset_samples(phy97bs.f.p, Species=="cylindrus")
-dcyl100.f.p <- subset_samples(phy100.f.p, Species=="cylindrus")
-# Plot custom barplots for Dendrogyra cylindrus
-par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
-otubarplot(dcyl97.f.p, main="97% OTUs")
-otubarplot(dcyl97bs.f.p, main="97% within-sample OTUs")
-otubarplot(dcyl100.f.p, main="100% OTUs")
-```
-
-### *Montastraea cavernosa*
-```{r mcav, cache=T, fig.height=12, fig.width=8}
-# Create subsetted phyloseq objects for Montastraea cavernosa
-mcav97.f.p <- subset_samples(phy97.f.p, Species=="cavernosa")
-mcav97bs.f.p <- subset_samples(phy97bs.f.p, Species=="cavernosa")
-mcav100.f.p <- subset_samples(phy100.f.p, Species=="cavernosa")
-# Plot custom barplots for Montastraea cavernosa
-par(mfrow=c(3,1), mar=c(4,4,2,0), mgp=c(0,0.5,0), lwd=0.1)
-otubarplot(mcav97.f.p, main="97% OTUs")
-otubarplot(mcav97bs.f.p, main="97% within-sample OTUs")
-otubarplot(mcav100.f.p, main="100% OTUs")
-```
-
-
-
-# Network analysis from tutorial
-```{r networks}
-
-dstr.net <- makenet(dstr97bs.f.p, 0)
-
-set.seed(5453890)
-plot(dstr.net,
-     edge.curved=0.1, 
-     edge.width=10*(E(dstr.net)$weight)^0.2,
-     vertex.label=substr(V(dstr.net)$Subtype, 1, 4),
-     vertex.color=taxcolors[factor(V(dstr.net)$Clade, levels=c("A","B","C","D","F","G"))])
-
-pfur.net <- makenet(pfur97bs.f.p, 0)
-plot(pfur.net,
-     edge.curved=0.1, 
-     edge.width=10*(E(pfur.net)$weight)^0.2,
-     vertex.label=substr(V(pfur.net)$Subtype, 1, 4),
-     vertex.color=taxcolors[factor(V(pfur.net)$Clade, levels=c("A","B","C","D","F","G"))])
-
-oann.net <- makenet(oann97bs.f.p, 0)
-plot(oann.net,
-     edge.curved=0.1, 
-     edge.width=10*(E(oann.net)$weight)^0.2,
-     vertex.label=substr(V(oann.net)$Subtype, 1, 4),
-     vertex.color=taxcolors[factor(V(oann.net)$Clade, levels=c("A","B","C","D","F","G"))])
-
-malc.net <- makenet(malc97bs.f.p, 0)
-plot(malc.net,
-     edge.curved=0.1, 
-     edge.width=10*(E(malc.net)$weight)^0.2,
-     vertex.label=substr(V(malc.net)$Subtype, 1, 4),
-     vertex.color=taxcolors[factor(V(malc.net)$Clade, levels=c("A","B","C","D","F","G"))])
-
-set.seed(9147)
-ssid.net <- makenet(ssid97bs.f.p, 0)
-plot(ssid.net,
-     edge.curved=0.1, 
-     edge.width=10*(E(ssid.net)$weight)^0.2,
-     vertex.label=substr(V(ssid.net)$Subtype, 1, 4),
-     vertex.color=taxcolors[factor(V(ssid.net)$Clade, levels=c("A","B","C","D","F","G"))])
-
-ffra.net <- makenet(ffra97bs.f.p, 0)
-plot(ffra.net,
-     edge.curved=0.1, 
-     edge.width=10*(E(ffra.net)$weight)^0.2,
-     vertex.label=substr(V(ffra.net)$Subtype, 1, 4),
-     vertex.color=taxcolors[factor(V(ffra.net)$Clade, levels=c("A","B","C","D","F","G"))])
-
-srad.net <- makenet(srad97bs.f.p, 0)
-plot(srad.net,
-     edge.curved=0.1, 
-     edge.width=10*(E(srad.net)$weight)^0.2,
-     vertex.label=substr(V(srad.net)$Subtype, 1, 4),
-     vertex.color=taxcolors[factor(V(srad.net)$Clade, levels=c("A","B","C","D","F","G"))])
-
-past.net <- makenet(past97bs.f.p, 0)
-plot(past.net,
-     edge.curved=0.1, 
-     edge.width=10*(E(past.net)$weight)^0.2,
-     vertex.label=substr(V(past.net)$Subtype, 1, 4),
-     vertex.color=taxcolors[factor(V(past.net)$Clade, levels=c("A","B","C","D","F","G"))])
-
-dcyl.net <- makenet(dcyl97bs.f.p, 0)
-plot(dcyl.net,
-     edge.curved=0.1, 
-     edge.width=10*(E(dcyl.net)$weight)^0.2,
-     vertex.label=substr(V(dcyl.net)$Subtype, 1, 4),
-     vertex.color=taxcolors[factor(V(dcyl.net)$Clade, levels=c("A","B","C","D","F","G"))])
-
-mcav.net <- makenet(mcav97bs.f.p, 0)
-plot(mcav.net,
-     edge.curved=0.1, 
-     edge.width=10*(E(mcav.net)$weight)^0.2,
-     vertex.label=substr(V(mcav.net)$Subtype, 1, 4),
-     vertex.color=taxcolors[factor(V(mcav.net)$Clade, levels=c("A","B","C","D","F","G"))])
-
-# Compute node degrees (#links) and use that to set node size:
-deg <- degree(mcav.net, mode="all")
-V(mcav.net)$size <- 20
-
-plot(mcav.net, layout=layout_with_fr(mcav.net))
-
-
-# Get network with one node for each species.
-# Edge weight is the mean relative abundance of OTU.
-# Convert OTU table to "edges" table (weight = relative abundance)
-  otudf <- data.frame(t(otu_table(phy97bs.f.p)), check.names=F)
-  # Average relative abundance of OTU within species
-  #sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97.f.p))$Species), FUN=mean)
-  # Percent of samples of species that contain OTU at more than 1% relative abundance
-  sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p))$Species), 
-                     FUN=function(x) length(x[x>0.01])/length(x))
-
-  rownames(sp.ag) <- sp.ag$Species
-  sp.ag <- sp.ag[, -1]
-  edges <- setNames(melt(as.matrix(sp.ag)), nm=c("source", "target", "weight"))  # Melt data
-  edges <- droplevels(edges[edges$weight>0, ])
-  # Create "nodes" table from sample and tax data
-  sdf <- data.frame(id=levels(data.frame(sample_data(phy97bs.f.p))$Species))
-  tdf <- data.frame(tax_table(phy97bs.f.p))[rownames(data.frame(tax_table(phy97bs.f.p))) %in% edges$target, ]
-  tdf$id <- rownames(tdf)
-  nodes <- merge(sdf, tdf, all=T)
-  nodes$type <- ifelse(is.na(nodes$Clade), 1, 2)
-  # Create network
-  net <- graph_from_data_frame(d=edges, vertices=nodes, directed=F)
-
-  # Best one for now ---------
-  V(net)$shape <- c("square", "circle")[factor(V(net)$type)]
-  V(net)$size <- ifelse(is.na(V(net)$Clade), 15, 10*sqrt(degree(net))) #5*sqrt(degree(net))
-  V(net)$label <- ifelse(is.na(V(net)$Clade), names(V(net)),  
-                         unlist(lapply(strsplit(V(net)$Subtype, split="_"), "[", 1)))
-  V(net)$label <- str_replace_all(V(net)$label, c("alcicornis"="M.alc.", "annularis"="O.ann",
-                                                  "astreoides"="P.ast.", "cavernosa"="M.cav.",
-                                                  "cylindrus"="D.cyl.", "fragum"="F.fra.", 
-                                                  "furcata"="P.fur.", "radians"="S.rad.", 
-                                                  "siderea"="S.sid.", "strigosa"="D.str."))
-  V(net)$color <- ifelse(is.na(V(net)$Clade), "white",
-                         taxcolors[factor(V(net)$Clade, levels=c("A","B","C","D","F","G"))])
-  E(net)$color <- "gray60"
-  E(net)$width <- 15 * E(net)$weight
-  set.seed(12347)
-  set.seed(12364)
-  set.seed(12374)
-  l <- layout.fruchterman.reingold(net)
-  l <- norm_coords(l, ymin=-1, ymax=1, xmin=-1, xmax=1)
-  par(mar=c(0,0,0,0))
-  plot(net, rescale=F, layout=l*1, edge.curved=0.1, vertex.label.cex=V(net)$size/20,
-       vertex.label.color="black")
-  #legend(x=-1.05, y=1.1, c("CladeA", "CladeB", "CladeC", "CladeD", "CladeF", "CladeG"), pch=21,
-  #     col="#777777", pt.bg=taxcolors, pt.cex=1.1, cex=.6, bty="n", ncol=2, text.width=0.2)
-```
-
-
-
-    
