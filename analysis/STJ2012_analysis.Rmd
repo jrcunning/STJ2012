@@ -28,7 +28,7 @@ taxcolors <- matrix(c("#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#f
                     dimnames=list(c("CladeA", "CladeB", "CladeC", "CladeD", "CladeF", "CladeG")))
 ```
 
-# Overview
+# Project
   This project investigates *Symbiodinium* communities in scleractinian and milleporine corals sampled at various sites on the north and south shores of St. John, US Virgin Islands in August 2012. The ITS2 region of nrDNA isolated from coral samples was amplified and sequenced by paired-end 300 bp reads on an Illumina MiSeq platform. Sequence data is processed through a custom bioinformatic pipeline and resulting OTU tables are statistically analyzed to ask questions regarding diversity and community structure of *Symbiodinium* within and across coral species and between shores. 
   The major aims of this work are to:
   
@@ -181,6 +181,17 @@ transform <- function(x) sqrt(x/sum(x))  # Set transformation function
 phy97.f.t <- transform_sample_counts(phy97.f, transform)  # Transform data
 phy97bs.f.t <- transform_sample_counts(phy97bs.f, transform) 
 phy100.f.t <- transform_sample_counts(phy100.f, transform)
+```
+
+# Clade overview
+Here the composition of each sample is plotted as a horizontal bar, sorted by species and shore. Each segment of the bar represents an individual OTU and is colored by clade. This plot is a nice overview of the whole dataset but only provides coarse information at the clade level.
+```{r cladecomp97bs, cache=T, fig.height=6, fig.width=4}
+par(mfrow=c(1,1), mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7)
+# Plot composition of 97% within-sample OTUs colored by clade
+composition(phy97bs.f.p, col=taxcolors[factor(data.frame(tax_table(phy97bs.f.p))[order(data.frame(tax_table(phy97bs.f.p))$Subtype), ]$Clade, levels=c("A","B","C","D","F","G"))], legend=T)
+# Plot composition of 97% within-sample OTUs colored by OTU
+#composition(phy97bs.f.p, col=rainbow(ntaxa(phy97bs.f.p)), legend=F)
+
 ```
 
 -----
@@ -430,30 +441,16 @@ plotnet(mcav.net)
 #### Number of OTUs: `r table(is.na(V(mcav.net)$Clade))[[1]]`
 White circles represent coral samples, colored circles represent *Symbiodinium* OTUs (97% within-sample). Thickness of lines corresponds to the relative abundance of an OTU within a sample.
 
-# All species barplot
-Here the composition of each sample is plotted as a horizontal bar, sorted by species and shore. Each segment of the bar represents an individual OTU and is colored by clade. This plot is a nice overview of the whole dataset but only provides coarse information at the clade level.
-```{r cladecomp97bs, cache=T, fig.height=6, fig.width=4}
-par(mfrow=c(1,1), mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7)
-# Plot composition of 97% within-sample OTUs colored by clade
-composition(phy97bs.f.p, col=taxcolors[factor(data.frame(tax_table(phy97bs.f.p))[order(data.frame(tax_table(phy97bs.f.p))$Subtype), ]$Clade, levels=c("A","B","C","D","F","G"))], legend=T)
-# Plot composition of 97% within-sample OTUs colored by OTU
-#composition(phy97bs.f.p, col=rainbow(ntaxa(phy97bs.f.p)), legend=F)
-
-```
-
-# All species network analysis
-In this network, each coral species is collapsed into a single node (white squares), and connected to every *Symbiodinium* OTU (colored circles) that comprises at least 1% relative abundance within at least one individual of that species. Thus, very low abundance OTUs are not represented. The thickness of connections between coral species and OTUs is scaled by the relative proportion of samples of that species in which that OTU was present at ≥1% relative abundance (i.e., the frequency of presence at ≥1%). The size of *Symbiodinium* OTU nodes in the network is scaled by the number of species in which they occur, and colored according to clade.
+# Network analyses
+## "Resident" symbionts
+#### (>1% relative abundance)
+In this network, each coral species is collapsed into a single node (white squares), and connected to every *Symbiodinium* OTU (colored circles) that comprises **at least 1% relative abundance** within at least one individual of that species. Thus, very low abundance OTUs are not represented. The thickness of connections between coral species and OTUs is scaled by the relative proportion of samples of that species in which that OTU was present at ≥1% relative abundance (i.e., the frequency of presence at ≥1%). The size of *Symbiodinium* OTU nodes in the network is scaled by the number of species in which they occur, and colored according to clade.
 ```{r networks}
 # Get network with one node for each species.
-# Edge weight is the mean relative abundance of OTU.
-# Convert OTU table to "edges" table (weight = relative abundance)
 otudf <- data.frame(t(otu_table(phy97bs.f.p)), check.names=F)
-# Average relative abundance of OTU within species
-#sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97.f.p))$Species), FUN=mean)
 # Percent of samples of species that contain OTU at more than 1% relative abundance
 sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p))$Species), 
                    FUN=function(x) length(x[x>0.01])/length(x))
-
 rownames(sp.ag) <- sp.ag$Species
 sp.ag <- sp.ag[, -1]
 edges <- setNames(melt(as.matrix(sp.ag)), nm=c("source", "target", "weight"))  # Melt data
@@ -491,6 +488,188 @@ plot(net, rescale=F, layout=l*1, edge.curved=0.1, vertex.label.cex=V(net)$size/2
      vertex.label.color="black")
 #legend(x=-1.05, y=1.1, c("CladeA", "CladeB", "CladeC", "CladeD", "CladeF", "CladeG"), pch=21,
 #     col="#777777", pt.bg=taxcolors, pt.cex=1.1, cex=.6, bty="n", ncol=2, text.width=0.2)
+```
+
+## Dominant symbionts
+#### (>50% relative abundance)
+```{r dom_networks}
+# Get network with one node for each species.
+otudf <- data.frame(t(otu_table(phy97bs.f.p)), check.names=F)
+# Percent of samples of species that contain OTU at more than 1% relative abundance
+sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p))$Species), 
+                   FUN=function(x) length(x[x>0.5])/length(x))
+rownames(sp.ag) <- sp.ag$Species
+sp.ag <- sp.ag[, -1]
+edges <- setNames(melt(as.matrix(sp.ag)), nm=c("source", "target", "weight"))  # Melt data
+edges <- droplevels(edges[edges$weight>0, ])
+# Create "nodes" table from sample and tax data
+sdf <- data.frame(id=levels(data.frame(sample_data(phy97bs.f.p))$Species))
+tdf <- data.frame(tax_table(phy97bs.f.p))[rownames(data.frame(tax_table(phy97bs.f.p))) %in% edges$target, ]
+tdf$id <- rownames(tdf)
+nodes <- merge(sdf, tdf, all=T)
+nodes$type <- ifelse(is.na(nodes$Clade), 1, 2)
+# Create network
+net <- graph_from_data_frame(d=edges, vertices=nodes, directed=F)
+
+# Best one for now ---------
+V(net)$shape <- c("square", "circle")[factor(V(net)$type)]
+V(net)$size <- ifelse(is.na(V(net)$Clade), 15, 10*(degree(net))^0.75) #5*sqrt(degree(net))
+V(net)$label <- ifelse(is.na(V(net)$Clade), names(V(net)),  
+                       unlist(lapply(strsplit(V(net)$Subtype, split="_"), "[", 1)))
+V(net)$label <- str_replace_all(V(net)$label, c("alcicornis"="M.alc.", "annularis"="O.ann",
+                                                "astreoides"="P.ast.", "cavernosa"="M.cav.",
+                                                "cylindrus"="D.cyl.", "fragum"="F.fra.", 
+                                                "furcata"="P.fur.", "radians"="S.rad.", 
+                                                "siderea"="S.sid.", "strigosa"="D.str."))
+V(net)$color <- ifelse(is.na(V(net)$Clade), "white",
+                       taxcolors[factor(V(net)$Clade, levels=c("A","B","C","D","F","G"))])
+E(net)$color <- "gray60"
+E(net)$width <- 15 * E(net)$weight
+set.seed(12347)
+set.seed(12364)
+set.seed(12374)
+l <- layout.fruchterman.reingold(net)
+l <- norm_coords(l, ymin=-1, ymax=1, xmin=-1, xmax=1)
+par(mar=c(0,0,0,0))
+plot(net, rescale=F, layout=l*1, edge.curved=0.1, vertex.label.cex=V(net)$size/20,
+     vertex.label.color="black")
+#legend(x=-1.05, y=1.1, c("CladeA", "CladeB", "CladeC", "CladeD", "CladeF", "CladeG"), pch=21,
+#     col="#777777", pt.bg=taxcolors, pt.cex=1.1, cex=.6, bty="n", ncol=2, text.width=0.2)
+```
+
+## Background symbionts
+#### (<1% relative abundance)
+```{r bg_net}
+# Get network with one node for each species.
+otudf <- data.frame(t(otu_table(phy97bs.f.p)), check.names=F)
+# Percent of samples of species that contain OTU at less than 1% relative abundance (but more than 0%)
+# Only record if bkgd symbiont was detected in more than one individual
+sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p))$Species), 
+                   FUN=function(x) ifelse(length(x[x<0.01 & x>0])>1, # if more than 1 individual has bkgd symbiont
+                                          length(x[x<0.01 & x>0])/length(x), 0))
+sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p))$Species), 
+                   FUN=function(x) length(x[x<0.01 & x>0])/length(x))
+sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p))$Species), 
+                   FUN=function(x) any(x>0 & x<0.01))
+rownames(sp.ag) <- sp.ag$Species
+sp.ag <- sp.ag[, -1]
+edges <- setNames(melt(as.matrix(sp.ag)), nm=c("source", "target", "weight"))  # Melt data
+edges <- droplevels(edges[edges$weight>0, ])
+# Create "nodes" table from sample and tax data
+sdf <- data.frame(id=levels(data.frame(sample_data(phy97bs.f.p))$Species))
+tdf <- data.frame(tax_table(phy97bs.f.p))[rownames(data.frame(tax_table(phy97bs.f.p))) %in% edges$target, ]
+tdf$id <- rownames(tdf)
+nodes <- merge(sdf, tdf, all=T)
+nodes$type <- ifelse(is.na(nodes$Clade), 1, 2)
+# Create network
+net <- graph_from_data_frame(d=edges, vertices=nodes, directed=F)
+
+
+# Best one for now ---------
+V(net)$shape <- c("square", "circle")[factor(V(net)$type)]
+V(net)$size <- ifelse(is.na(V(net)$Clade), 15, 5*degree(net)) #5*sqrt(degree(net))
+V(net)$label <- ifelse(is.na(V(net)$Clade), names(V(net)),  
+                       unlist(lapply(strsplit(V(net)$Subtype, split="_"), "[", 1)))
+V(net)$label <- str_replace_all(V(net)$label, c("alcicornis"="M.alc.", "annularis"="O.ann",
+                                                "astreoides"="P.ast.", "cavernosa"="M.cav.",
+                                                "cylindrus"="D.cyl.", "fragum"="F.fra.", 
+                                                "furcata"="P.fur.", "radians"="S.rad.", 
+                                                "siderea"="S.sid.", "strigosa"="D.str."))
+V(net)$color <- ifelse(is.na(V(net)$Clade), "white",
+                       taxcolors[factor(V(net)$Clade, levels=c("A","B","C","D","F","G"))])
+E(net)$color <- "gray60"
+E(net)$width <- 1
+set.seed(12347)
+set.seed(12364)
+set.seed(12374)
+l <- layout.fruchterman.reingold(net)
+l <- norm_coords(l, ymin=-1, ymax=1, xmin=-1, xmax=1)
+par(mar=c(0,0,0,0))
+#plot(net, rescale=F, layout=l*1, edge.curved=0.1, vertex.label.cex=V(net)$size/20,
+#     vertex.label.color="black")
+#plot(net, layout=layout_nicely, edge.curved=0.1, vertex.label.cex=V(net)$size/20,
+#     vertex.label.color="black")
+#plot(net, layout=layout_as_tree(net, circular=T))
+#plot(net, layout=layout_with_dh)
+
+
+net2 <- delete.vertices(net, degree(net)<=3)
+V(net2)$size <- ifelse(is.na(V(net2)$Clade), 15, 4*degree(net2))
+set.seed(42381)
+l2 <- layout.fruchterman.reingold(net2)
+l2 <- norm_coords(l2, ymin=-1, ymax=1, xmin=-1, xmax=1)
+plot(net2, rescale=F, layout=l2*1, edge.curved=0.1, vertex.label.cex=V(net2)$size/20,
+     vertex.label.color="black")
+#plot(net2, layout=layout_as_tree(net2, circular=T), edge.curved=0.1)
+#plot(net2, layout=layout_as_star(net2, center = 18))
+#plot(net2, layout=layout_in_circle(net2))
+#plot(net2, layout=layout_with_kk)
+#plot(net2, layout=layout_as_tree(net2, root=16, circular=T))
+#plot(net2, layout=layout_with_dh)
+#?layout_as_tree
+#V(net2)
+
+#cor<-induced.subgraph(net2,V(net2)$type==1)
+#sym<-induced.subgraph(net2,V(net2)$type==2)
+#polar.layout <- function(radii, angles) {
+#    cbind(radii*cos(angles), -radii*sin(angles))        
+#}
+#cor <- which(V(net2)$type == 1)
+#sym <- which(V(net2)$type == 2)
+#radii <- ifelse(V(net2)$type == 1, 2, 1)
+#angles <- rep.int(0, vcount(net2))
+#angles[sym] <- (1:length(sym)-1) * 2 * pi / length(sym)
+#angles[cor] <- (1:length(cor)-1) * 2 * pi / length(cor)
+#layout <- polar.layout(radii, angles)
+#plot(net2, layout=layout)
+```
+
+# Beta diversity {.tabset}
+- Beta diversity is evaluated here as the multivariate dispersion of samples within a coral species. Principal coordinate analysis on Bray-Curtis dissimilarities is used to calculate average distance-to-centroid values for each species group, which are then compared statistically by a permutation test. This analysis is implemented using betadisper() in the vegan package, based on [Anderson (2006)](dx.doi.org/10.1111/j.1541-0420.2005.00440.x).
+- In this context, beta diveristy is analogous to 'flexibility' in symbiosis -- how different can corals of the same species be in terms of their symbiont communities? 
+- The species with **highest beta diversity** are *D. strigosa*, *P. furcata*, and *M. alcicornis*, followed by *O. annularis* and *S. siderea*. Species with the **lowest beta diversity** are *F. fragum*, *D. cylindrus*, *S. radians*, *P. astreoides*, and *M. cavernosa*.
+
+## 97% within-sample OTUs
+```{r betad97bs, cache=T, fig.width=6, fig.height=6}
+betad97bs <- betad(phy97bs.f.t, group="Species")
+with(betad97bs$sambdsumm.ord, {
+  plot(mean, type="n", main="97% within-sample OTUs",
+       ylim=c(0, 0.75), ylab="Distance to centroid", xaxt="n", xlab="")
+  arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
+  points(1:10, mean, cex=1, pch=21, bg="white")
+  text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75, 
+       labels=levels(SAM$Species)[order(betad97bs$sambdsumm$mean, decreasing=T)])
+  text(1:10, mean + se + 0.03, labels=betad97bs$saml$Letters[as.character(group)], cex=0.5)
+})
+```
+
+## 100% OTUs
+```{r betad100, cache=T, fig.width=6, fig.height=6}
+betad100 <- betad(phy100.f.t, group="Species")
+with(betad100$sambdsumm.ord, {
+  plot(mean, type="n", main="100% OTUs",
+       ylim=c(0, 0.75), ylab="Distance to centroid", xaxt="n", xlab="")
+  arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
+  points(1:10, mean, cex=1, pch=21, bg="white")
+  text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75, 
+       labels=levels(SAM$Species)[order(betad100$sambdsumm$mean, decreasing=T)])
+  text(1:10, mean + se + 0.03, labels=betad100$saml$Letters[as.character(group)], cex=0.5)
+})
+```
+
+## 97% OTUs
+```{r betad97, cache=T, fig.width=6, fig.height=6}
+betad97 <- betad(phy97.f.t, group="Species")
+# Figure: Distance to centroids
+with(betad97$sambdsumm.ord, {
+  plot(mean, type="n", main="97% OTUs",
+       ylim=c(0, 0.75), ylab="Distance to centroid", xaxt="n", xlab="")
+  arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
+  points(1:10, mean, cex=1, pch=21, bg="white")
+  text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75, 
+       labels=levels(SAM$Species)[order(betad97$sambdsumm$mean, decreasing=T)])
+  text(1:10, mean + se + 0.03, labels=betad97$saml$Letters[as.character(group)], cex=0.5)
+})
 ```
 
 # Differences between species
@@ -563,54 +742,6 @@ knitr::kable(shorestats97, digits=3, row.names=F,
 ##### Results:
 - __*P. furcata* is the only species whose symbiont communities are significantly different between the north and south shores__, at both the 97% within-sample OTU and 100% OTU scales. 
 
-
-# Beta diversity {.tabset}
-- Beta diversity is evaluated here as the multivariate dispersion of samples within a coral species. Principal coordinate analysis on Bray-Curtis dissimilarities is used to calculate average distance-to-centroid values for each species group, which are then compared statistically by a permutation test. This analysis is implemented using betadisper() in the vegan package, based on [Anderson (2006)](dx.doi.org/10.1111/j.1541-0420.2005.00440.x).
-- In this context, beta diveristy is analogous to 'flexibility' in symbiosis -- how different can corals of the same species be in terms of their symbiont communities? 
-- The species with **highest beta diversity** are *D. strigosa*, *P. furcata*, and *M. alcicornis*, followed by *O. annularis* and *S. siderea*. Species with the **lowest beta diversity** are *F. fragum*, *D. cylindrus*, *S. radians*, *P. astreoides*, and *M. cavernosa*.
-
-## 97% within-sample OTUs
-```{r betad97bs, cache=T, fig.width=6, fig.height=6}
-betad97bs <- betad(phy97bs.f.t, group="Species")
-with(betad97bs$sambdsumm.ord, {
-  plot(mean, type="n", main="97% within-sample OTUs",
-       ylim=c(0, 0.75), ylab="Distance to centroid", xaxt="n", xlab="")
-  arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
-  points(1:10, mean, cex=1, pch=21, bg="white")
-  text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75, 
-       labels=levels(SAM$Species)[order(betad97bs$sambdsumm$mean, decreasing=T)])
-  text(1:10, mean + se + 0.03, labels=betad97bs$saml$Letters[as.character(group)], cex=0.5)
-})
-```
-
-## 100% OTUs
-```{r betad100, cache=T, fig.width=6, fig.height=6}
-betad100 <- betad(phy100.f.t, group="Species")
-with(betad100$sambdsumm.ord, {
-  plot(mean, type="n", main="100% OTUs",
-       ylim=c(0, 0.75), ylab="Distance to centroid", xaxt="n", xlab="")
-  arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
-  points(1:10, mean, cex=1, pch=21, bg="white")
-  text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75, 
-       labels=levels(SAM$Species)[order(betad100$sambdsumm$mean, decreasing=T)])
-  text(1:10, mean + se + 0.03, labels=betad100$saml$Letters[as.character(group)], cex=0.5)
-})
-```
-
-## 97% OTUs
-```{r betad97, cache=T, fig.width=6, fig.height=6}
-betad97 <- betad(phy97.f.t, group="Species")
-# Figure: Distance to centroids
-with(betad97$sambdsumm.ord, {
-  plot(mean, type="n", main="97% OTUs",
-       ylim=c(0, 0.75), ylab="Distance to centroid", xaxt="n", xlab="")
-  arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
-  points(1:10, mean, cex=1, pch=21, bg="white")
-  text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75, 
-       labels=levels(SAM$Species)[order(betad97$sambdsumm$mean, decreasing=T)])
-  text(1:10, mean + se + 0.03, labels=betad97$saml$Letters[as.character(group)], cex=0.5)
-})
-```
 
 # Main findings
 1. Symbiont communities are generally consistent with previous work on these species in the Caribbean, but high-throughput sequencing provides a much **more complete picture** of these communities’ composition.
