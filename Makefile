@@ -1,4 +1,7 @@
-all: data/97_otus.tsv data/97_otus_tax_assignments.txt data/97_otus_bysample.tsv data/97_otus_bysample_tax_assignments.txt data/100_otus.tsv data/100_otus_tax_assignments.txt
+all: data/97_otus.tsv data/97_otus_tax_assignments.txt data/97_otus_bysample.tsv data/97_otus_bysample_tax_assignments.txt data/100_otus.tsv data/100_otus_tax_assignments.txt data/97_otus_byspecies.tsv data/97_otus_byspecies_tax_assignments.txt
+
+data/97_otus_byspecies_tax_assignments.txt data/97_otus_byspecies.tsv: data/otus_97_byspecies/all_rep_set_rep_set.fasta data/ITS2db_trimmed.fasta
+	bash Shell/tax_results.sh $< 97_otus_byspecies
 
 data/97_otus_tax_assignments.txt data/97_otus.tsv: data/otus_97/97_otus_rep_set.fasta data/ITS2db_trimmed.fasta
 	bash Shell/tax_results.sh $< 97_otus
