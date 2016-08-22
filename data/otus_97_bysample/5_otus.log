@@ -1,0 +1,19 @@
+UclustOtuPicker parameters:
+Application:uclust
+Similarity:0.97
+enable_rev_strand_matching:False
+exact:False
+max_accepts:1
+max_rejects:8
+new_cluster_identifier:5_denovo
+optimal:True
+output_dir:data/otus_97_bysample
+prefilter_identical_sequences:True
+presort_by_abundance:True
+save_uc_files:True
+stable_sort:True
+stepwords:8
+suppress_sort:True
+word_length:8
+Num OTUs:9
+Result path: data/otus_97_bysample/5_otus.txt
