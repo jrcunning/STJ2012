@@ -18,7 +18,7 @@ awk '!/^>/ { printf "%s", $0; n = "\n" } /^>/ { print n $0; n = "" } END { print
 awk '!/^>gi/ {print}' data/ITS2_Database_inline.fasta > data/ITS2_Database_ready.fasta
 
 # Download sequences from supplementary material of Green et al. 2014 and add to database
-curl https://dfzljdn9uc3pi.cloudfront.net/2014/386/1/DataS1_PerlScripts_alignment_Bioinformatics.zip > data/green.zip
+curl https://peerj.com/articles/386/DataS1_PerlScripts_alignment_Bioinformatics.zip > data/green.zip
 unzip -p data/green.zip DataS1* > data/greenseqs.aln
 awk '/Haplotype/ {a[$1] = a[$1]"\n"$2}END{for(i in a){print ">B1."i""a[i]}}' data/greenseqs.aln | sed 's/-//g' | \
 awk '!/^>/ { printf "%s", $0; n = "\n" } /^>/ { print n $0; n = "" } END { printf "%s", n }' | \
