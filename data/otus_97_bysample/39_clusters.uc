@@ -1,4 +1,4 @@
-# uclust --input /tmp/UclustExactMatchFilterCECX9I.fasta --id 0.97 --tmpdir /tmp --optimal --w 8 --stepwords 8 --usersort --maxaccepts 1 --stable_sort --maxrejects 8 --uc data/otus_97_bysample/39_clusters.uc
+# uclust --input /tmp/UclustExactMatchFilterBWJ_jy.fasta --id 0.97 --tmpdir /tmp --optimal --w 8 --stepwords 8 --usersort --maxaccepts 1 --stable_sort --maxrejects 8 --uc data/otus_97_bysample/39_clusters.uc
 # version=1.2.22
 # Tab-separated fields:
 # 1=Type, 2=ClusterNr, 3=SeqLength or ClusterSize, 4=PctId, 5=Strand, 6=QueryStart, 7=SeedStart, 8=Alignment, 9=QueryLabel, 10=TargetLabel
@@ -731,7 +731,6 @@ H	0	300	99.7	+	0	0	300M	QiimeExactMatch.39_1357328	QiimeExactMatch.39_1346433
 H	0	300	99.3	+	0	0	300M	QiimeExactMatch.39_1355970	QiimeExactMatch.39_1346433
 H	0	300	99.7	+	0	0	300M	QiimeExactMatch.39_1348713	QiimeExactMatch.39_1346433
 H	0	301	100.0	+	0	0	D300M	QiimeExactMatch.39_1353308	QiimeExactMatch.39_1346433
-H	0	316	99.7	+	0	0	16D300M	QiimeExactMatch.39_1348802	QiimeExactMatch.39_1346433
 H	0	300	99.3	+	0	0	300M	QiimeExactMatch.39_1354360	QiimeExactMatch.39_1346433
 H	0	300	98.7	+	0	0	300M	QiimeExactMatch.39_1354370	QiimeExactMatch.39_1346433
 H	1	302	99.3	+	0	0	302M	QiimeExactMatch.39_1350554	QiimeExactMatch.39_1346553
@@ -2946,7 +2945,6 @@ H	0	300	100.0	+	0	0	300M	QiimeExactMatch.39_1349061	QiimeExactMatch.39_1346433
 H	0	300	99.3	+	0	0	300M	QiimeExactMatch.39_1357392	QiimeExactMatch.39_1346433
 H	0	300	99.7	+	0	0	300M	QiimeExactMatch.39_1356760	QiimeExactMatch.39_1346433
 H	0	300	100.0	+	0	0	300M	QiimeExactMatch.39_1356218	QiimeExactMatch.39_1346433
-H	0	317	99.7	+	0	0	300M17D	QiimeExactMatch.39_1357513	QiimeExactMatch.39_1346433
 H	0	300	100.0	+	0	0	300M	QiimeExactMatch.39_1352015	QiimeExactMatch.39_1346433
 H	0	300	100.0	+	0	0	300M	QiimeExactMatch.39_1352343	QiimeExactMatch.39_1346433
 H	0	300	99.0	+	0	0	300M	QiimeExactMatch.39_1352381	QiimeExactMatch.39_1346433
@@ -6763,7 +6761,7 @@ H	0	301	100.0	+	0	0	D300M	QiimeExactMatch.39_1351900	QiimeExactMatch.39_1346433
 H	0	301	99.7	+	0	0	D300M	QiimeExactMatch.39_1349854	QiimeExactMatch.39_1346433
 H	0	301	99.7	+	0	0	D300M	QiimeExactMatch.39_1353788	QiimeExactMatch.39_1346433
 H	0	301	100.0	+	0	0	D300M	QiimeExactMatch.39_1347607	QiimeExactMatch.39_1346433
-C	0	6165	99.6	*	*	*	*	QiimeExactMatch.39_1346433	*
+C	0	6163	99.6	*	*	*	*	QiimeExactMatch.39_1346433	*
 C	1	551	99.4	*	*	*	*	QiimeExactMatch.39_1346553	*
 C	2	15	99.4	*	*	*	*	QiimeExactMatch.39_1349408	*
 C	3	26	98.1	*	*	*	*	QiimeExactMatch.39_1349439	*

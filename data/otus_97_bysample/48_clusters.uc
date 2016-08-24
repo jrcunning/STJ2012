@@ -1,4 +1,4 @@
-# uclust --input /tmp/UclustExactMatchFilterpzF52F.fasta --id 0.97 --tmpdir /tmp --optimal --w 8 --stepwords 8 --usersort --maxaccepts 1 --stable_sort --maxrejects 8 --uc data/otus_97_bysample/48_clusters.uc
+# uclust --input /tmp/UclustExactMatchFilterE1DpAV.fasta --id 0.97 --tmpdir /tmp --optimal --w 8 --stepwords 8 --usersort --maxaccepts 1 --stable_sort --maxrejects 8 --uc data/otus_97_bysample/48_clusters.uc
 # version=1.2.22
 # Tab-separated fields:
 # 1=Type, 2=ClusterNr, 3=SeqLength or ClusterSize, 4=PctId, 5=Strand, 6=QueryStart, 7=SeedStart, 8=Alignment, 9=QueryLabel, 10=TargetLabel
@@ -2537,7 +2537,6 @@ H	0	300	99.7	+	0	0	300M	QiimeExactMatch.48_158369	QiimeExactMatch.48_148093
 H	0	299	100.0	+	0	0	299MI	QiimeExactMatch.48_166426	QiimeExactMatch.48_148093
 H	0	300	100.0	+	0	0	300M	QiimeExactMatch.48_163078	QiimeExactMatch.48_148093
 H	0	300	99.7	+	0	0	300M	QiimeExactMatch.48_162019	QiimeExactMatch.48_148093
-H	0	317	99.3	+	0	0	300M17D	QiimeExactMatch.48_162711	QiimeExactMatch.48_148093
 H	0	300	99.7	+	0	0	300M	QiimeExactMatch.48_161903	QiimeExactMatch.48_148093
 H	0	300	100.0	+	0	0	300M	QiimeExactMatch.48_157444	QiimeExactMatch.48_148093
 H	0	300	99.7	+	0	0	300M	QiimeExactMatch.48_157773	QiimeExactMatch.48_148093
@@ -7987,7 +7986,6 @@ H	0	300	99.7	+	0	0	300M	QiimeExactMatch.48_160697	QiimeExactMatch.48_148093
 H	0	300	100.0	+	0	0	300M	QiimeExactMatch.48_154351	QiimeExactMatch.48_148093
 H	0	300	100.0	+	0	0	300M	QiimeExactMatch.48_154882	QiimeExactMatch.48_148093
 H	0	300	99.7	+	0	0	300M	QiimeExactMatch.48_148282	QiimeExactMatch.48_148093
-H	0	316	100.0	+	0	0	300M16D	QiimeExactMatch.48_154798	QiimeExactMatch.48_148093
 H	0	300	100.0	+	0	0	300M	QiimeExactMatch.48_150544	QiimeExactMatch.48_148093
 H	0	300	99.7	+	0	0	300M	QiimeExactMatch.48_165864	QiimeExactMatch.48_148093
 H	0	300	99.0	+	0	0	300M	QiimeExactMatch.48_155746	QiimeExactMatch.48_148093
@@ -9114,7 +9112,7 @@ H	0	300	99.3	+	0	0	300M	QiimeExactMatch.48_160639	QiimeExactMatch.48_148093
 H	0	300	99.3	+	0	0	300M	QiimeExactMatch.48_151470	QiimeExactMatch.48_148093
 H	0	300	98.7	+	0	0	300M	QiimeExactMatch.48_163813	QiimeExactMatch.48_148093
 H	0	300	99.0	+	0	0	300M	QiimeExactMatch.48_154090	QiimeExactMatch.48_148093
-C	0	9056	99.6	*	*	*	*	QiimeExactMatch.48_148093	*
+C	0	9054	99.6	*	*	*	*	QiimeExactMatch.48_148093	*
 C	1	11	99.5	*	*	*	*	QiimeExactMatch.48_156371	*
 C	2	10	98.9	*	*	*	*	QiimeExactMatch.48_151313	*
 C	3	28	99.6	*	*	*	*	QiimeExactMatch.48_148534	*

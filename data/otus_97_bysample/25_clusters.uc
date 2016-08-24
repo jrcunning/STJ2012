@@ -1,4 +1,4 @@
-# uclust --input /tmp/UclustExactMatchFilterOlvel6.fasta --id 0.97 --tmpdir /tmp --optimal --w 8 --stepwords 8 --usersort --maxaccepts 1 --stable_sort --maxrejects 8 --uc data/otus_97_bysample/25_clusters.uc
+# uclust --input /tmp/UclustExactMatchFiltervPREbl.fasta --id 0.97 --tmpdir /tmp --optimal --w 8 --stepwords 8 --usersort --maxaccepts 1 --stable_sort --maxrejects 8 --uc data/otus_97_bysample/25_clusters.uc
 # version=1.2.22
 # Tab-separated fields:
 # 1=Type, 2=ClusterNr, 3=SeqLength or ClusterSize, 4=PctId, 5=Strand, 6=QueryStart, 7=SeedStart, 8=Alignment, 9=QueryLabel, 10=TargetLabel
@@ -1129,7 +1129,6 @@ H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_923081	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_924592	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_933376	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_931445	QiimeExactMatch.25_919598
-H	0	323	99.7	+	0	0	306M17D	QiimeExactMatch.25_928932	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_920693	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_921583	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_922868	QiimeExactMatch.25_919598
@@ -1174,7 +1173,6 @@ H	0	305	99.7	+	0	0	189MI116M	QiimeExactMatch.25_932745	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_934979	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_936191	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_924591	QiimeExactMatch.25_919598
-H	0	323	99.7	+	0	0	306M17D	QiimeExactMatch.25_923700	QiimeExactMatch.25_919598
 H	0	293	99.7	+	0	0	235M13I58M	QiimeExactMatch.25_921233	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_922993	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_929334	QiimeExactMatch.25_919598
@@ -1574,7 +1572,6 @@ H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_935437	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_930673	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_935673	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_931595	QiimeExactMatch.25_919598
-H	0	323	99.3	+	0	0	306M17D	QiimeExactMatch.25_922726	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_929871	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_922686	QiimeExactMatch.25_919598
 H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_923045	QiimeExactMatch.25_919598
@@ -4342,7 +4339,6 @@ H	0	293	100.0	+	0	0	235M13I58M	QiimeExactMatch.25_930509	QiimeExactMatch.25_9195
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_933360	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_930719	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_935852	QiimeExactMatch.25_919598
-H	0	323	99.7	+	0	0	306M17D	QiimeExactMatch.25_922280	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_930554	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_924863	QiimeExactMatch.25_919598
 H	0	293	99.7	+	0	0	229M13I64M	QiimeExactMatch.25_923327	QiimeExactMatch.25_919598
@@ -4754,7 +4750,6 @@ H	0	293	98.6	+	0	0	235M13I58M	QiimeExactMatch.25_932630	QiimeExactMatch.25_91959
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_930766	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_924958	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_933442	QiimeExactMatch.25_919598
-H	0	323	99.7	+	0	0	306M17D	QiimeExactMatch.25_931232	QiimeExactMatch.25_919598
 H	0	306	100.0	+	0	0	306M	QiimeExactMatch.25_920151	QiimeExactMatch.25_919598
 H	0	306	100.0	+	0	0	306M	QiimeExactMatch.25_929343	QiimeExactMatch.25_919598
 H	0	305	99.7	+	0	0	122MI183M	QiimeExactMatch.25_921305	QiimeExactMatch.25_919598
@@ -4985,7 +4980,6 @@ H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_922125	QiimeExactMatch.25_91959
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_933213	QiimeExactMatch.25_919598
 H	0	293	98.6	+	0	0	232M13I61M	QiimeExactMatch.25_933700	QiimeExactMatch.25_919598
 H	0	293	99.7	+	0	0	235M13I58M	QiimeExactMatch.25_930762	QiimeExactMatch.25_919598
-S	1	310	*	*	*	*	*	QiimeExactMatch.25_934240	*
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_930717	QiimeExactMatch.25_919598
 H	0	305	99.7	+	0	0	270MI35M	QiimeExactMatch.25_926501	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_928256	QiimeExactMatch.25_919598
@@ -5464,7 +5458,7 @@ H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_927901	QiimeExactMatch.25_919598
 H	0	306	100.0	+	0	0	306M	QiimeExactMatch.25_932287	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_934935	QiimeExactMatch.25_919598
 H	0	306	100.0	+	0	0	306M	QiimeExactMatch.25_933243	QiimeExactMatch.25_919598
-H	1	293	99.0	+	0	0	293M17I	QiimeExactMatch.25_934895	QiimeExactMatch.25_934240
+H	0	293	99.0	+	0	0	234M13I59M	QiimeExactMatch.25_934895	QiimeExactMatch.25_919598
 H	0	306	100.0	+	0	0	306M	QiimeExactMatch.25_921861	QiimeExactMatch.25_919598
 H	0	306	100.0	+	0	0	306M	QiimeExactMatch.25_933227	QiimeExactMatch.25_919598
 H	0	306	100.0	+	0	0	306M	QiimeExactMatch.25_922359	QiimeExactMatch.25_919598
@@ -7977,7 +7971,7 @@ H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_928439	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_933077	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_935474	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_928510	QiimeExactMatch.25_919598
-H	1	293	99.0	+	0	0	293M17I	QiimeExactMatch.25_929435	QiimeExactMatch.25_934240
+H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_929435	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_925807	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_928094	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_924917	QiimeExactMatch.25_919598
@@ -8132,7 +8126,7 @@ H	0	293	99.7	+	0	0	235M13I58M	QiimeExactMatch.25_936055	QiimeExactMatch.25_91959
 H	0	293	99.7	+	0	0	235M13I58M	QiimeExactMatch.25_931315	QiimeExactMatch.25_919598
 H	0	293	99.7	+	0	0	235M13I58M	QiimeExactMatch.25_932394	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_931354	QiimeExactMatch.25_919598
-H	1	293	99.0	+	0	0	293M17I	QiimeExactMatch.25_924864	QiimeExactMatch.25_934240
+H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_924864	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_923942	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_927576	QiimeExactMatch.25_919598
 H	0	306	100.0	+	0	0	306M	QiimeExactMatch.25_930874	QiimeExactMatch.25_919598
@@ -8149,7 +8143,7 @@ H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_922076	QiimeExactMatch.25_91959
 H	0	293	99.7	+	0	0	235M13I58M	QiimeExactMatch.25_921709	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_927701	QiimeExactMatch.25_919598
 H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_923719	QiimeExactMatch.25_919598
-H	1	293	98.3	+	0	0	293M17I	QiimeExactMatch.25_934955	QiimeExactMatch.25_934240
+H	0	293	98.3	+	0	0	235M13I58M	QiimeExactMatch.25_934955	QiimeExactMatch.25_919598
 H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_922599	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_934291	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_931164	QiimeExactMatch.25_919598
@@ -8224,7 +8218,6 @@ H	0	306	98.7	+	0	0	306M	QiimeExactMatch.25_930835	QiimeExactMatch.25_919598
 H	0	293	100.0	+	0	0	235M13I58M	QiimeExactMatch.25_931097	QiimeExactMatch.25_919598
 H	0	293	100.0	+	0	0	235M13I58M	QiimeExactMatch.25_928164	QiimeExactMatch.25_919598
 H	0	293	100.0	+	0	0	235M13I58M	QiimeExactMatch.25_931529	QiimeExactMatch.25_919598
-H	0	321	100.0	+	0	0	306M15D	QiimeExactMatch.25_935322	QiimeExactMatch.25_919598
 H	0	293	100.0	+	0	0	235M13I58M	QiimeExactMatch.25_924373	QiimeExactMatch.25_919598
 H	0	293	99.7	+	0	0	235M13I58M	QiimeExactMatch.25_930422	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_929917	QiimeExactMatch.25_919598
@@ -8292,7 +8285,7 @@ H	0	293	100.0	+	0	0	235M13I58M	QiimeExactMatch.25_933757	QiimeExactMatch.25_9195
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_929092	QiimeExactMatch.25_919598
 H	0	293	100.0	+	0	0	235M13I58M	QiimeExactMatch.25_932567	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_922286	QiimeExactMatch.25_919598
-H	1	293	99.0	+	0	0	293M17I	QiimeExactMatch.25_924678	QiimeExactMatch.25_934240
+H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_924678	QiimeExactMatch.25_919598
 H	0	293	100.0	+	0	0	235M13I58M	QiimeExactMatch.25_924280	QiimeExactMatch.25_919598
 H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_925888	QiimeExactMatch.25_919598
 H	0	293	100.0	+	0	0	235M13I58M	QiimeExactMatch.25_923194	QiimeExactMatch.25_919598
@@ -8444,7 +8437,7 @@ H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_924595	QiimeExactMatch.25_91959
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_925683	QiimeExactMatch.25_919598
 H	0	293	100.0	+	0	0	235M13I58M	QiimeExactMatch.25_925173	QiimeExactMatch.25_919598
 H	0	293	100.0	+	0	0	235M13I58M	QiimeExactMatch.25_927149	QiimeExactMatch.25_919598
-H	1	293	99.0	+	0	0	293M17I	QiimeExactMatch.25_926403	QiimeExactMatch.25_934240
+H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_926403	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_935759	QiimeExactMatch.25_919598
 H	0	293	100.0	+	0	0	235M13I58M	QiimeExactMatch.25_919670	QiimeExactMatch.25_919598
 H	0	293	99.7	+	0	0	235M13I58M	QiimeExactMatch.25_931289	QiimeExactMatch.25_919598
@@ -8473,7 +8466,7 @@ H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_925901	QiimeExactMatch.25_91959
 H	0	293	100.0	+	0	0	235M13I58M	QiimeExactMatch.25_928452	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_926863	QiimeExactMatch.25_919598
 H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_919560	QiimeExactMatch.25_919598
-H	1	293	99.0	+	0	0	293M17I	QiimeExactMatch.25_930047	QiimeExactMatch.25_934240
+H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_930047	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_926642	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_924196	QiimeExactMatch.25_919598
 H	0	293	99.0	+	0	0	229M13I64M	QiimeExactMatch.25_932517	QiimeExactMatch.25_919598
@@ -8551,7 +8544,7 @@ H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_922439	QiimeExactMatch.25_91959
 H	0	293	100.0	+	0	0	235M13I58M	QiimeExactMatch.25_931693	QiimeExactMatch.25_919598
 H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_935870	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_927503	QiimeExactMatch.25_919598
-H	1	293	99.0	+	0	0	293M17I	QiimeExactMatch.25_927611	QiimeExactMatch.25_934240
+H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_927611	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_930537	QiimeExactMatch.25_919598
 H	0	293	98.6	+	0	0	235M13I58M	QiimeExactMatch.25_931730	QiimeExactMatch.25_919598
 H	0	292	99.0	+	0	0	176MI52M13I64M	QiimeExactMatch.25_929574	QiimeExactMatch.25_919598
@@ -8605,7 +8598,7 @@ H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_930942	QiimeExactMatch.25_919598
 H	0	306	98.7	+	0	0	306M	QiimeExactMatch.25_935561	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_935584	QiimeExactMatch.25_919598
 H	0	306	98.7	+	0	0	306M	QiimeExactMatch.25_925388	QiimeExactMatch.25_919598
-H	1	293	98.6	+	0	0	293M17I	QiimeExactMatch.25_931032	QiimeExactMatch.25_934240
+H	0	293	98.6	+	0	0	235M13I58M	QiimeExactMatch.25_931032	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_935703	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_928727	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_919861	QiimeExactMatch.25_919598
@@ -8632,7 +8625,7 @@ H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_927776	QiimeExactMatch.25_91959
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_930806	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_926970	QiimeExactMatch.25_919598
 H	0	293	99.0	+	0	0	229M13I64M	QiimeExactMatch.25_924688	QiimeExactMatch.25_919598
-H	1	293	99.3	+	0	0	293M17I	QiimeExactMatch.25_921929	QiimeExactMatch.25_934240
+H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_921929	QiimeExactMatch.25_919598
 H	0	266	98.9	+	0	0	215M40I51M	QiimeExactMatch.25_934577	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_926982	QiimeExactMatch.25_919598
 H	0	306	98.7	+	0	0	306M	QiimeExactMatch.25_921319	QiimeExactMatch.25_919598
@@ -8658,9 +8651,9 @@ H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_920858	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_930122	QiimeExactMatch.25_919598
 H	0	293	99.0	+	0	0	229M13I64M	QiimeExactMatch.25_920547	QiimeExactMatch.25_919598
 H	0	306	98.7	+	0	0	306M	QiimeExactMatch.25_924189	QiimeExactMatch.25_919598
-H	1	293	99.0	+	0	0	293M17I	QiimeExactMatch.25_929242	QiimeExactMatch.25_934240
+H	0	293	99.0	+	0	0	234M13I59M	QiimeExactMatch.25_929242	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_933723	QiimeExactMatch.25_919598
-H	1	266	98.9	+	0	0	215M27I51M17I	QiimeExactMatch.25_934106	QiimeExactMatch.25_934240
+H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_934106	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_933386	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_933875	QiimeExactMatch.25_919598
 H	0	306	98.7	+	0	0	306M	QiimeExactMatch.25_936024	QiimeExactMatch.25_919598
@@ -8745,7 +8738,7 @@ H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_921794	QiimeExactMatch.25_919598
 H	0	293	99.7	+	0	0	235M13I58M	QiimeExactMatch.25_919920	QiimeExactMatch.25_919598
 H	0	293	99.0	+	0	0	229M13I64M	QiimeExactMatch.25_927770	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_922156	QiimeExactMatch.25_919598
-H	1	293	99.0	+	0	0	293M17I	QiimeExactMatch.25_921610	QiimeExactMatch.25_934240
+H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_921610	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_930316	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_929338	QiimeExactMatch.25_919598
 H	0	293	99.7	+	0	0	235M13I58M	QiimeExactMatch.25_927309	QiimeExactMatch.25_919598
@@ -9327,17 +9320,17 @@ H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_925617	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_920153	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_930010	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_932037	QiimeExactMatch.25_919598
-H	1	266	98.9	+	0	0	215M27I51M17I	QiimeExactMatch.25_934769	QiimeExactMatch.25_934240
+H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_934769	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_925673	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	215M40I51M	QiimeExactMatch.25_929478	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_933169	QiimeExactMatch.25_919598
 H	0	266	98.9	+	0	0	215M40I51M	QiimeExactMatch.25_927818	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_935162	QiimeExactMatch.25_919598
-H	1	266	98.9	+	0	0	215M27I51M17I	QiimeExactMatch.25_932276	QiimeExactMatch.25_934240
+H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_932276	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_935511	QiimeExactMatch.25_919598
 H	0	266	98.9	+	0	0	215M40I51M	QiimeExactMatch.25_927400	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_923205	QiimeExactMatch.25_919598
-H	1	266	98.9	+	0	0	215M27I51M17I	QiimeExactMatch.25_929893	QiimeExactMatch.25_934240
+H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_929893	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_933949	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_929245	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_919698	QiimeExactMatch.25_919598
@@ -9407,7 +9400,7 @@ H	0	300	99.0	+	0	0	44M6I256M	QiimeExactMatch.25_921908	QiimeExactMatch.25_919598
 H	0	300	99.7	+	0	0	44M6I256M	QiimeExactMatch.25_931806	QiimeExactMatch.25_919598
 H	0	299	99.7	+	0	0	44M6I172MI83M	QiimeExactMatch.25_935696	QiimeExactMatch.25_919598
 H	0	300	99.7	+	0	0	44M6I256M	QiimeExactMatch.25_932034	QiimeExactMatch.25_919598
-H	1	287	99.0	+	0	0	44M6I243M17I	QiimeExactMatch.25_929016	QiimeExactMatch.25_934240
+H	0	287	99.0	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_929016	QiimeExactMatch.25_919598
 H	0	287	100.0	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_929547	QiimeExactMatch.25_919598
 H	0	300	100.0	+	0	0	44M6I256M	QiimeExactMatch.25_929540	QiimeExactMatch.25_919598
 H	0	300	99.7	+	0	0	44M6I256M	QiimeExactMatch.25_925699	QiimeExactMatch.25_919598
@@ -9426,7 +9419,6 @@ H	0	300	100.0	+	0	0	44M6I256M	QiimeExactMatch.25_935246	QiimeExactMatch.25_91959
 H	0	300	100.0	+	0	0	44M6I256M	QiimeExactMatch.25_935485	QiimeExactMatch.25_919598
 H	0	287	99.3	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_920200	QiimeExactMatch.25_919598
 H	0	287	99.0	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_926811	QiimeExactMatch.25_919598
-H	0	317	98.0	+	0	0	44M6I256M17D	QiimeExactMatch.25_931697	QiimeExactMatch.25_919598
 H	0	300	100.0	+	0	0	44M6I256M	QiimeExactMatch.25_932181	QiimeExactMatch.25_919598
 H	0	287	100.0	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_934148	QiimeExactMatch.25_919598
 H	0	287	99.7	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_920516	QiimeExactMatch.25_919598
@@ -9442,7 +9434,7 @@ H	0	300	100.0	+	0	0	44M6I256M	QiimeExactMatch.25_930318	QiimeExactMatch.25_91959
 H	0	300	100.0	+	0	0	44M6I256M	QiimeExactMatch.25_935481	QiimeExactMatch.25_919598
 H	0	300	100.0	+	0	0	44M6I256M	QiimeExactMatch.25_929819	QiimeExactMatch.25_919598
 H	0	300	99.7	+	0	0	44M6I256M	QiimeExactMatch.25_934865	QiimeExactMatch.25_919598
-H	1	287	99.3	+	0	0	44M6I243M17I	QiimeExactMatch.25_925503	QiimeExactMatch.25_934240
+H	0	287	99.3	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_925503	QiimeExactMatch.25_919598
 H	0	287	99.7	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_929177	QiimeExactMatch.25_919598
 H	0	287	100.0	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_922357	QiimeExactMatch.25_919598
 H	0	300	99.3	+	0	0	44M6I256M	QiimeExactMatch.25_930234	QiimeExactMatch.25_919598
@@ -9822,7 +9814,7 @@ H	0	300	99.7	+	0	0	44M6I256M	QiimeExactMatch.25_933302	QiimeExactMatch.25_919598
 H	0	287	100.0	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_931425	QiimeExactMatch.25_919598
 H	0	287	100.0	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_920222	QiimeExactMatch.25_919598
 H	0	287	100.0	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_930209	QiimeExactMatch.25_919598
-H	1	287	99.3	+	0	0	44M6I243M17I	QiimeExactMatch.25_929402	QiimeExactMatch.25_934240
+H	0	287	99.3	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_929402	QiimeExactMatch.25_919598
 H	0	300	99.7	+	0	0	44M6I256M	QiimeExactMatch.25_923161	QiimeExactMatch.25_919598
 H	0	300	99.3	+	0	0	44M6I256M	QiimeExactMatch.25_926627	QiimeExactMatch.25_919598
 H	0	287	100.0	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_925548	QiimeExactMatch.25_919598
@@ -9832,17 +9824,17 @@ H	0	300	100.0	+	0	0	44M6I256M	QiimeExactMatch.25_932360	QiimeExactMatch.25_91959
 H	0	300	100.0	+	0	0	44M6I256M	QiimeExactMatch.25_936018	QiimeExactMatch.25_919598
 H	0	287	99.3	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_922136	QiimeExactMatch.25_919598
 H	0	300	99.7	+	0	0	44M6I256M	QiimeExactMatch.25_929972	QiimeExactMatch.25_919598
-H	1	260	98.5	+	0	0	44M6I165M27I51M17I	QiimeExactMatch.25_933703	QiimeExactMatch.25_934240
+H	0	260	98.5	+	0	0	44M6I166M40I50M	QiimeExactMatch.25_933703	QiimeExactMatch.25_919598
 H	0	300	99.3	+	0	0	44M6I256M	QiimeExactMatch.25_931241	QiimeExactMatch.25_919598
 H	0	287	100.0	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_923281	QiimeExactMatch.25_919598
 H	0	287	99.3	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_923973	QiimeExactMatch.25_919598
 H	0	260	99.6	+	0	0	44M6I166M40I50M	QiimeExactMatch.25_924694	QiimeExactMatch.25_919598
-H	1	287	99.3	+	0	0	44M6I243M17I	QiimeExactMatch.25_924125	QiimeExactMatch.25_934240
+H	0	287	99.3	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_924125	QiimeExactMatch.25_919598
 H	0	287	99.7	+	0	0	44M6I181M13I62M	QiimeExactMatch.25_929782	QiimeExactMatch.25_919598
 H	0	287	100.0	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_924929	QiimeExactMatch.25_919598
 H	0	287	100.0	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_929605	QiimeExactMatch.25_919598
 H	0	287	100.0	+	0	0	44M6I185M13I58M	QiimeExactMatch.25_934181	QiimeExactMatch.25_919598
-H	1	287	99.3	+	0	0	44M6I243M17I	QiimeExactMatch.25_931854	QiimeExactMatch.25_934240
+H	0	287	99.3	+	0	0	44M6I181M13I62M	QiimeExactMatch.25_931854	QiimeExactMatch.25_919598
 H	0	300	100.0	+	0	0	44M6I256M	QiimeExactMatch.25_936125	QiimeExactMatch.25_919598
 H	0	300	99.7	+	0	0	44M6I256M	QiimeExactMatch.25_934422	QiimeExactMatch.25_919598
 H	0	299	100.0	+	0	0	44M6I16MI239M	QiimeExactMatch.25_934786	QiimeExactMatch.25_919598
@@ -9916,7 +9908,7 @@ H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_922380	QiimeExactMatch.25_91959
 H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_921730	QiimeExactMatch.25_919598
 H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_922979	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_931268	QiimeExactMatch.25_919598
-H	1	266	98.5	+	0	0	215M27I51M17I	QiimeExactMatch.25_933775	QiimeExactMatch.25_934240
+H	0	266	98.5	+	0	0	216M40I50M	QiimeExactMatch.25_933775	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_924806	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_927891	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_924829	QiimeExactMatch.25_919598
@@ -9944,7 +9936,7 @@ H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_926286	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_920639	QiimeExactMatch.25_919598
 H	0	300	99.7	+	0	0	44M6I256M	QiimeExactMatch.25_927073	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_928455	QiimeExactMatch.25_919598
-H	1	266	98.9	+	0	0	215M27I51M17I	QiimeExactMatch.25_925041	QiimeExactMatch.25_934240
+H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_925041	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_927804	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_921356	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_922126	QiimeExactMatch.25_919598
@@ -9984,7 +9976,7 @@ H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_935277	QiimeExactMatch.25_91959
 H	0	260	99.6	+	0	0	44M6I166M40I50M	QiimeExactMatch.25_928850	QiimeExactMatch.25_919598
 H	0	306	98.7	+	0	0	306M	QiimeExactMatch.25_926864	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_926769	QiimeExactMatch.25_919598
-H	1	293	98.6	+	0	0	293M17I	QiimeExactMatch.25_930870	QiimeExactMatch.25_934240
+H	0	293	98.6	+	0	0	234M13I59M	QiimeExactMatch.25_930870	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_934462	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_924079	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_921412	QiimeExactMatch.25_919598
@@ -10019,10 +10011,10 @@ H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_927898	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_927515	QiimeExactMatch.25_919598
 H	0	266	98.5	+	0	0	216M40I50M	QiimeExactMatch.25_926464	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_923823	QiimeExactMatch.25_919598
-H	1	266	98.5	+	0	0	215M27I51M17I	QiimeExactMatch.25_931111	QiimeExactMatch.25_934240
+H	0	266	98.5	+	0	0	216M40I50M	QiimeExactMatch.25_931111	QiimeExactMatch.25_919598
 H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_921894	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_933572	QiimeExactMatch.25_919598
-H	1	266	99.2	+	0	0	215M27I51M17I	QiimeExactMatch.25_924905	QiimeExactMatch.25_934240
+H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_924905	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_920163	QiimeExactMatch.25_919598
 H	0	266	98.9	+	0	0	215M40I51M	QiimeExactMatch.25_922636	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	215M40I51M	QiimeExactMatch.25_933540	QiimeExactMatch.25_919598
@@ -10037,12 +10029,12 @@ H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_931878	QiimeExactMatch.25_91959
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_920104	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	215M40I51M	QiimeExactMatch.25_927705	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	215M40I51M	QiimeExactMatch.25_925472	QiimeExactMatch.25_919598
-H	1	266	99.2	+	0	0	216M27I50M17I	QiimeExactMatch.25_919930	QiimeExactMatch.25_934240
+H	0	266	99.2	+	0	0	215M40I51M	QiimeExactMatch.25_919930	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_923961	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_935555	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_926686	QiimeExactMatch.25_919598
-H	1	266	98.5	+	0	0	215M27I51M17I	QiimeExactMatch.25_928323	QiimeExactMatch.25_934240
-H	1	266	98.9	+	0	0	215M27I51M17I	QiimeExactMatch.25_932101	QiimeExactMatch.25_934240
+H	0	266	98.5	+	0	0	216M40I50M	QiimeExactMatch.25_928323	QiimeExactMatch.25_919598
+H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_932101	QiimeExactMatch.25_919598
 H	0	266	98.5	+	0	0	215M40I51M	QiimeExactMatch.25_933379	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_929176	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_934536	QiimeExactMatch.25_919598
@@ -10069,11 +10061,11 @@ H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_927222	QiimeExactMatch.25_91959
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_924780	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_930528	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_934325	QiimeExactMatch.25_919598
-H	1	266	98.9	+	0	0	215M27I51M17I	QiimeExactMatch.25_934127	QiimeExactMatch.25_934240
+H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_934127	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_927655	QiimeExactMatch.25_919598
 H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_922569	QiimeExactMatch.25_919598
-H	1	266	98.9	+	0	0	215M27I51M17I	QiimeExactMatch.25_933105	QiimeExactMatch.25_934240
-H	1	266	98.9	+	0	0	215M27I51M17I	QiimeExactMatch.25_922646	QiimeExactMatch.25_934240
+H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_933105	QiimeExactMatch.25_919598
+H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_922646	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_930683	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_932968	QiimeExactMatch.25_919598
 H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_929700	QiimeExactMatch.25_919598
@@ -10100,7 +10092,7 @@ H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_931350	QiimeExactMatch.25_91959
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_920102	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_921884	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_921936	QiimeExactMatch.25_919598
-H	1	266	98.9	+	0	0	215M27I51M17I	QiimeExactMatch.25_931947	QiimeExactMatch.25_934240
+H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_931947	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_921294	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	215M40I51M	QiimeExactMatch.25_920587	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_925327	QiimeExactMatch.25_919598
@@ -10120,7 +10112,7 @@ H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_925528	QiimeExactMatch.25_91959
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_932275	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_930386	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_923617	QiimeExactMatch.25_919598
-H	1	266	98.9	+	0	0	215M27I51M17I	QiimeExactMatch.25_928963	QiimeExactMatch.25_934240
+H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_928963	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_925641	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	215M40I51M	QiimeExactMatch.25_935662	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	215M40I51M	QiimeExactMatch.25_935733	QiimeExactMatch.25_919598
@@ -10145,7 +10137,7 @@ H	0	266	99.2	+	0	0	215M40I51M	QiimeExactMatch.25_923763	QiimeExactMatch.25_91959
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_931840	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_929734	QiimeExactMatch.25_919598
 H	0	266	99.6	+	0	0	216M40I50M	QiimeExactMatch.25_921351	QiimeExactMatch.25_919598
-H	1	266	98.5	+	0	0	215M27I51M17I	QiimeExactMatch.25_919662	QiimeExactMatch.25_934240
+H	0	266	98.5	+	0	0	215M40I51M	QiimeExactMatch.25_919662	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_935834	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	216M40I50M	QiimeExactMatch.25_926142	QiimeExactMatch.25_919598
 H	0	266	99.2	+	0	0	215M40I51M	QiimeExactMatch.25_923676	QiimeExactMatch.25_919598
@@ -10192,7 +10184,6 @@ H	0	306	98.7	+	0	0	306M	QiimeExactMatch.25_935281	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_932719	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_926152	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_935255	QiimeExactMatch.25_919598
-H	0	322	99.0	+	0	0	306M16D	QiimeExactMatch.25_927030	QiimeExactMatch.25_919598
 H	0	293	99.3	+	0	0	235M13I58M	QiimeExactMatch.25_933663	QiimeExactMatch.25_919598
 H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_928156	QiimeExactMatch.25_919598
 H	0	306	98.4	+	0	0	306M	QiimeExactMatch.25_932727	QiimeExactMatch.25_919598
@@ -10272,7 +10263,7 @@ H	0	291	99.3	+	0	0	32M16I79MD179M	QiimeExactMatch.25_926418	QiimeExactMatch.25_9
 H	0	290	99.7	+	0	0	32M16I258M	QiimeExactMatch.25_929227	QiimeExactMatch.25_919598
 H	0	290	99.7	+	0	0	32M16I258M	QiimeExactMatch.25_929550	QiimeExactMatch.25_919598
 H	0	277	99.6	+	0	0	32M16I187M13I58M	QiimeExactMatch.25_922411	QiimeExactMatch.25_919598
-H	1	250	98.8	+	0	0	32M16I167M27I51M17I	QiimeExactMatch.25_921668	QiimeExactMatch.25_934240
+H	0	250	98.8	+	0	0	32M16I167M40I51M	QiimeExactMatch.25_921668	QiimeExactMatch.25_919598
 H	0	290	99.3	+	0	0	32M16I258M	QiimeExactMatch.25_932638	QiimeExactMatch.25_919598
 H	0	289	99.7	+	0	0	32M16I108MI149M	QiimeExactMatch.25_920988	QiimeExactMatch.25_919598
 H	0	290	99.7	+	0	0	32M16I258M	QiimeExactMatch.25_930446	QiimeExactMatch.25_919598
@@ -10305,7 +10296,7 @@ H	0	290	99.7	+	0	0	32M16I258M	QiimeExactMatch.25_934478	QiimeExactMatch.25_91959
 H	0	290	100.0	+	0	0	32M16I258M	QiimeExactMatch.25_923297	QiimeExactMatch.25_919598
 H	0	290	100.0	+	0	0	32M16I258M	QiimeExactMatch.25_933710	QiimeExactMatch.25_919598
 H	0	290	99.7	+	0	0	32M16I258M	QiimeExactMatch.25_919812	QiimeExactMatch.25_919598
-H	1	250	98.8	+	0	0	32M16I168M27I50M17I	QiimeExactMatch.25_925970	QiimeExactMatch.25_934240
+H	0	250	98.8	+	0	0	32M16I167M40I51M	QiimeExactMatch.25_925970	QiimeExactMatch.25_919598
 H	0	290	99.7	+	0	0	32M16I258M	QiimeExactMatch.25_925533	QiimeExactMatch.25_919598
 H	0	290	99.0	+	0	0	32M16I258M	QiimeExactMatch.25_922145	QiimeExactMatch.25_919598
 H	0	290	99.3	+	0	0	32M16I258M	QiimeExactMatch.25_928502	QiimeExactMatch.25_919598
@@ -10332,7 +10323,7 @@ H	0	290	99.7	+	0	0	32M16I258M	QiimeExactMatch.25_930843	QiimeExactMatch.25_91959
 H	0	290	99.7	+	0	0	32M16I258M	QiimeExactMatch.25_930948	QiimeExactMatch.25_919598
 H	0	290	98.6	+	0	0	32M16I258M	QiimeExactMatch.25_935021	QiimeExactMatch.25_919598
 H	0	277	99.6	+	0	0	32M16I181M13I64M	QiimeExactMatch.25_929124	QiimeExactMatch.25_919598
-H	1	277	98.6	+	0	0	32M16I245M17I	QiimeExactMatch.25_932202	QiimeExactMatch.25_934240
+H	0	277	98.6	+	0	0	32M16I187M13I58M	QiimeExactMatch.25_932202	QiimeExactMatch.25_919598
 H	0	250	99.2	+	0	0	32M16I168M40I50M	QiimeExactMatch.25_921634	QiimeExactMatch.25_919598
 H	0	250	99.2	+	0	0	32M16I168M40I50M	QiimeExactMatch.25_928656	QiimeExactMatch.25_919598
 H	0	290	100.0	+	0	0	32M16I258M	QiimeExactMatch.25_936247	QiimeExactMatch.25_919598
@@ -11297,9 +11288,7 @@ H	0	250	99.6	+	0	0	32M16I168M40I50M	QiimeExactMatch.25_922789	QiimeExactMatch.25
 H	0	250	98.8	+	0	0	32M16I168M40I50M	QiimeExactMatch.25_935671	QiimeExactMatch.25_919598
 H	0	250	99.6	+	0	0	32M16I168M40I50M	QiimeExactMatch.25_926374	QiimeExactMatch.25_919598
 H	0	250	99.2	+	0	0	32M16I168M40I50M	QiimeExactMatch.25_931134	QiimeExactMatch.25_919598
-H	0	249	99.6	+	0	0	32M16I18MI149M40I50M	QiimeExactMatch.25_927121	QiimeExactMatch.25_919598
 H	0	250	98.4	+	0	0	32M16I168M40I50M	QiimeExactMatch.25_924449	QiimeExactMatch.25_919598
-H	0	249	99.6	+	0	0	32M16I18MI149M40I50M	QiimeExactMatch.25_927122	QiimeExactMatch.25_919598
 H	0	250	99.2	+	0	0	32M16I168M40I50M	QiimeExactMatch.25_930036	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_935351	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_928468	QiimeExactMatch.25_919598
@@ -11384,7 +11373,7 @@ H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_930660	QiimeExactMatch.25_919598
 H	0	293	99.7	+	0	0	235M13I58M	QiimeExactMatch.25_923926	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_928230	QiimeExactMatch.25_919598
 H	0	293	99.0	+	0	0	235M13I58M	QiimeExactMatch.25_935478	QiimeExactMatch.25_919598
-H	1	293	98.6	+	0	0	293M17I	QiimeExactMatch.25_922560	QiimeExactMatch.25_934240
+H	0	293	98.6	+	0	0	235M13I58M	QiimeExactMatch.25_922560	QiimeExactMatch.25_919598
 H	0	293	99.7	+	0	0	235M13I58M	QiimeExactMatch.25_927384	QiimeExactMatch.25_919598
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_936184	QiimeExactMatch.25_919598
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.25_933650	QiimeExactMatch.25_919598
@@ -11595,7 +11584,7 @@ H	0	304	100.0	+	0	0	6M2I298M	QiimeExactMatch.25_928666	QiimeExactMatch.25_919598
 H	0	304	99.0	+	0	0	6M2I298M	QiimeExactMatch.25_932928	QiimeExactMatch.25_919598
 H	0	304	100.0	+	0	0	6M2I298M	QiimeExactMatch.25_934649	QiimeExactMatch.25_919598
 H	0	291	98.3	+	0	0	6M2I227M13I58M	QiimeExactMatch.25_930435	QiimeExactMatch.25_919598
-H	1	291	99.0	+	0	0	6M2I285M17I	QiimeExactMatch.25_930796	QiimeExactMatch.25_934240
+H	0	291	99.0	+	0	0	6M2I223M13I62M	QiimeExactMatch.25_930796	QiimeExactMatch.25_919598
 H	0	291	99.0	+	0	0	6M2I221M13I64M	QiimeExactMatch.25_926096	QiimeExactMatch.25_919598
 H	0	304	100.0	+	0	0	6M2I298M	QiimeExactMatch.25_932636	QiimeExactMatch.25_919598
 H	0	304	100.0	+	0	0	6M2I298M	QiimeExactMatch.25_929887	QiimeExactMatch.25_919598
@@ -11860,7 +11849,7 @@ H	0	264	99.6	+	0	0	6M2I208M40I50M	QiimeExactMatch.25_920617	QiimeExactMatch.25_9
 H	0	264	99.6	+	0	0	6M2I208M40I50M	QiimeExactMatch.25_927036	QiimeExactMatch.25_919598
 H	0	264	99.6	+	0	0	6M2I208M40I50M	QiimeExactMatch.25_919852	QiimeExactMatch.25_919598
 H	0	264	99.6	+	0	0	6M2I208M40I50M	QiimeExactMatch.25_924436	QiimeExactMatch.25_919598
-H	1	264	98.5	+	0	0	6M2I207M27I51M17I	QiimeExactMatch.25_932072	QiimeExactMatch.25_934240
+H	0	264	98.5	+	0	0	6M2I207M40I51M	QiimeExactMatch.25_932072	QiimeExactMatch.25_919598
 H	0	264	99.6	+	0	0	6M2I208M40I50M	QiimeExactMatch.25_933557	QiimeExactMatch.25_919598
 H	0	264	99.6	+	0	0	6M2I208M40I50M	QiimeExactMatch.25_923116	QiimeExactMatch.25_919598
 H	0	264	99.2	+	0	0	6M2I208M40I50M	QiimeExactMatch.25_930840	QiimeExactMatch.25_919598
@@ -11919,9 +11908,9 @@ H	0	306	99.7	+	0	0	306M	QiimeExactMatch.25_919877	QiimeExactMatch.25_919598
 H	0	306	98.7	+	0	0	306M	QiimeExactMatch.25_926938	QiimeExactMatch.25_919598
 H	0	293	98.3	+	0	0	235M13I58M	QiimeExactMatch.25_928376	QiimeExactMatch.25_919598
 H	0	266	98.9	+	0	0	216M40I50M	QiimeExactMatch.25_934333	QiimeExactMatch.25_919598
-H	1	277	98.2	+	0	0	32M16I245M17I	QiimeExactMatch.25_932296	QiimeExactMatch.25_934240
+H	0	277	98.2	+	0	0	32M16I185M13I60M	QiimeExactMatch.25_932296	QiimeExactMatch.25_919598
 H	0	290	99.7	+	0	0	32M16I258M	QiimeExactMatch.25_924637	QiimeExactMatch.25_919598
-S	2	298	*	*	*	*	*	QiimeExactMatch.25_924344	*
+S	1	298	*	*	*	*	*	QiimeExactMatch.25_924344	*
 H	0	304	98.7	+	0	0	6M2I298M	QiimeExactMatch.25_932507	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_930470	QiimeExactMatch.25_919598
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.25_921014	QiimeExactMatch.25_919598
@@ -11937,6 +11926,5 @@ H	0	307	100.0	+	0	0	D306M	QiimeExactMatch.25_930859	QiimeExactMatch.25_919598
 H	0	307	99.0	+	0	0	D306M	QiimeExactMatch.25_932524	QiimeExactMatch.25_919598
 H	0	307	99.3	+	0	0	D306M	QiimeExactMatch.25_924877	QiimeExactMatch.25_919598
 H	0	278	99.3	+	0	0	D32M16I181M13I64M	QiimeExactMatch.25_930258	QiimeExactMatch.25_919598
-C	0	11886	99.4	*	*	*	*	QiimeExactMatch.25_919598	*
-C	1	44	98.9	*	*	*	*	QiimeExactMatch.25_934240	*
-C	2	1	*	*	*	*	*	QiimeExactMatch.25_924344	*
+C	0	11919	99.4	*	*	*	*	QiimeExactMatch.25_919598	*
+C	1	1	*	*	*	*	*	QiimeExactMatch.25_924344	*

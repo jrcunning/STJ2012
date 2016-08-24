@@ -1,4 +1,4 @@
-# uclust --input /tmp/UclustExactMatchFilterv4Absm.fasta --id 0.97 --tmpdir /tmp --optimal --w 8 --stepwords 8 --usersort --maxaccepts 1 --stable_sort --maxrejects 8 --uc data/otus_97_bysample/68_clusters.uc
+# uclust --input /tmp/UclustExactMatchFilterTNTDvi.fasta --id 0.97 --tmpdir /tmp --optimal --w 8 --stepwords 8 --usersort --maxaccepts 1 --stable_sort --maxrejects 8 --uc data/otus_97_bysample/68_clusters.uc
 # version=1.2.22
 # Tab-separated fields:
 # 1=Type, 2=ClusterNr, 3=SeqLength or ClusterSize, 4=PctId, 5=Strand, 6=QueryStart, 7=SeedStart, 8=Alignment, 9=QueryLabel, 10=TargetLabel
@@ -788,7 +788,6 @@ H	0	306	99.3	+	0	0	306M	QiimeExactMatch.68_721463	QiimeExactMatch.68_717122
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.68_722332	QiimeExactMatch.68_717122
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.68_720115	QiimeExactMatch.68_717122
 H	0	306	99.7	+	0	0	306M	QiimeExactMatch.68_720743	QiimeExactMatch.68_717122
-H	0	323	99.3	+	0	0	306M17D	QiimeExactMatch.68_724191	QiimeExactMatch.68_717122
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.68_718336	QiimeExactMatch.68_717122
 H	0	306	98.4	+	0	0	306M	QiimeExactMatch.68_724286	QiimeExactMatch.68_717122
 H	0	306	98.7	+	0	0	306M	QiimeExactMatch.68_722988	QiimeExactMatch.68_717122
@@ -1350,7 +1349,6 @@ H	0	306	98.7	+	0	0	306M	QiimeExactMatch.68_718600	QiimeExactMatch.68_717122
 H	0	306	97.4	+	0	0	306M	QiimeExactMatch.68_722071	QiimeExactMatch.68_717122
 H	0	306	98.4	+	0	0	306M	QiimeExactMatch.68_722072	QiimeExactMatch.68_717122
 H	0	306	99.3	+	0	0	306M	QiimeExactMatch.68_720537	QiimeExactMatch.68_717122
-H	0	322	99.3	+	0	0	306M16D	QiimeExactMatch.68_721023	QiimeExactMatch.68_717122
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.68_719229	QiimeExactMatch.68_717122
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.68_723455	QiimeExactMatch.68_717122
 H	0	306	99.0	+	0	0	306M	QiimeExactMatch.68_720017	QiimeExactMatch.68_717122
@@ -4561,5 +4559,5 @@ H	0	307	100.0	+	0	0	D306M	QiimeExactMatch.68_718977	QiimeExactMatch.68_717122
 H	0	307	99.0	+	0	0	D306M	QiimeExactMatch.68_721909	QiimeExactMatch.68_717122
 H	0	307	100.0	+	0	0	D306M	QiimeExactMatch.68_720689	QiimeExactMatch.68_717122
 H	0	307	99.3	+	0	0	D306M	QiimeExactMatch.68_719434	QiimeExactMatch.68_717122
-C	0	4547	99.4	*	*	*	*	QiimeExactMatch.68_717122	*
+C	0	4545	99.4	*	*	*	*	QiimeExactMatch.68_717122	*
 C	1	8	100.0	*	*	*	*	QiimeExactMatch.68_720502	*

@@ -15,5 +15,5 @@ stable_sort:True
 stepwords:8
 suppress_sort:True
 word_length:8
-Num OTUs:7
+Num OTUs:6
 Result path: data/otus_97_bysample/13_otus.txt

@@ -1,4 +1,4 @@
-# uclust --input /tmp/UclustExactMatchFilter6jkodc.fasta --id 0.97 --tmpdir /tmp --optimal --w 8 --stepwords 8 --usersort --maxaccepts 1 --stable_sort --maxrejects 8 --uc data/otus_97_bysample/78_clusters.uc
+# uclust --input /tmp/UclustExactMatchFilterVNMqMl.fasta --id 0.97 --tmpdir /tmp --optimal --w 8 --stepwords 8 --usersort --maxaccepts 1 --stable_sort --maxrejects 8 --uc data/otus_97_bysample/78_clusters.uc
 # version=1.2.22
 # Tab-separated fields:
 # 1=Type, 2=ClusterNr, 3=SeqLength or ClusterSize, 4=PctId, 5=Strand, 6=QueryStart, 7=SeedStart, 8=Alignment, 9=QueryLabel, 10=TargetLabel
@@ -476,7 +476,6 @@ H	0	272	99.6	+	0	0	272M	QiimeExactMatch.78_1404566	QiimeExactMatch.78_1401758
 H	0	272	99.6	+	0	0	272M	QiimeExactMatch.78_1402854	QiimeExactMatch.78_1401758
 H	0	272	99.6	+	0	0	272M	QiimeExactMatch.78_1404818	QiimeExactMatch.78_1401758
 H	0	272	99.6	+	0	0	272M	QiimeExactMatch.78_1402912	QiimeExactMatch.78_1401758
-H	0	289	100.0	+	0	0	272M17D	QiimeExactMatch.78_1402115	QiimeExactMatch.78_1401758
 H	0	272	99.6	+	0	0	272M	QiimeExactMatch.78_1404988	QiimeExactMatch.78_1401758
 H	0	272	99.6	+	0	0	272M	QiimeExactMatch.78_1402671	QiimeExactMatch.78_1401758
 H	0	272	99.6	+	0	0	272M	QiimeExactMatch.78_1404493	QiimeExactMatch.78_1401758
@@ -582,7 +581,6 @@ H	0	272	100.0	+	0	0	272M	QiimeExactMatch.78_1403790	QiimeExactMatch.78_1401758
 H	0	272	99.6	+	0	0	272M	QiimeExactMatch.78_1403936	QiimeExactMatch.78_1401758
 H	0	272	99.6	+	0	0	272M	QiimeExactMatch.78_1405977	QiimeExactMatch.78_1401758
 H	0	272	99.3	+	0	0	272M	QiimeExactMatch.78_1405576	QiimeExactMatch.78_1401758
-H	0	289	99.3	+	0	0	272M17D	QiimeExactMatch.78_1403124	QiimeExactMatch.78_1401758
 H	0	272	98.9	+	0	0	272M	QiimeExactMatch.78_1402377	QiimeExactMatch.78_1401758
 H	0	272	99.6	+	0	0	272M	QiimeExactMatch.78_1402106	QiimeExactMatch.78_1401758
 H	0	272	99.6	+	0	0	272M	QiimeExactMatch.78_1404773	QiimeExactMatch.78_1401758
@@ -3197,7 +3195,7 @@ H	0	272	99.3	+	0	0	272M	QiimeExactMatch.78_1405591	QiimeExactMatch.78_1401758
 H	0	273	99.6	+	0	0	D272M	QiimeExactMatch.78_1405483	QiimeExactMatch.78_1401758
 H	0	273	100.0	+	0	0	D272M	QiimeExactMatch.78_1404362	QiimeExactMatch.78_1401758
 H	0	273	100.0	+	0	0	D272M	QiimeExactMatch.78_1404363	QiimeExactMatch.78_1401758
-C	0	3178	99.6	*	*	*	*	QiimeExactMatch.78_1401758	*
+C	0	3176	99.6	*	*	*	*	QiimeExactMatch.78_1401758	*
 C	1	1	*	*	*	*	*	QiimeExactMatch.78_1404979	*
 C	2	3	98.9	*	*	*	*	QiimeExactMatch.78_1402191	*
 C	3	9	99.4	*	*	*	*	QiimeExactMatch.78_1405970	*
