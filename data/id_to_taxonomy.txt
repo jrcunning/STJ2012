@@ -752,3 +752,10 @@ C15.24_KC597696	Symbiodiniaceae;Symbiodinium;CladeC;C15.24;_;_
 C15.23_KC597697	Symbiodiniaceae;Symbiodinium;CladeC;C15.23;_;_
 G3.3_LK392377	Symbiodiniaceae;Symbiodinium;CladeG;G3.3;_;_
 G3.4_LK392378	Symbiodiniaceae;Symbiodinium;CladeG;G3.4;_;_
+B1.VI_Green2014	Symbiodiniaceae;Symbiodinium;CladeB;B1.VI;_;_
+B1.IV_Green2014	Symbiodiniaceae;Symbiodinium;CladeB;B1.IV;_;_
+B1.II_Green2014	Symbiodiniaceae;Symbiodinium;CladeB;B1.II;_;_
+B1.VII_Green2014	Symbiodiniaceae;Symbiodinium;CladeB;B1.VII;_;_
+B1.III_Green2014	Symbiodiniaceae;Symbiodinium;CladeB;B1.III;_;_
+B1.V_Green2014	Symbiodiniaceae;Symbiodinium;CladeB;B1.V;_;_
+B1.I_Green2014	Symbiodiniaceae;Symbiodinium;CladeB;B1.I;_;_

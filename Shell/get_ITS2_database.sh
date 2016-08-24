@@ -17,6 +17,15 @@ cat data/dbseqs/*.fasta > data/ITS2_Database.fasta
 awk '!/^>/ { printf "%s", $0; n = "\n" } /^>/ { print n $0; n = "" } END { printf "%s", n }' data/ITS2_Database.fasta > data/ITS2_Database_inline.fasta
 awk '!/^>gi/ {print}' data/ITS2_Database_inline.fasta > data/ITS2_Database_ready.fasta
 
+# Download sequences from supplementary material of Green et al. 2014 and add to database
+curl https://dfzljdn9uc3pi.cloudfront.net/2014/386/1/DataS1_PerlScripts_alignment_Bioinformatics.zip > data/green.zip
+unzip -p data/green.zip DataS1* > data/greenseqs.aln
+awk '/Haplotype/ {a[$1] = a[$1]"\n"$2}END{for(i in a){print ">B1."i""a[i]}}' data/greenseqs.aln | sed 's/-//g' | \
+awk '!/^>/ { printf "%s", $0; n = "\n" } /^>/ { print n $0; n = "" } END { printf "%s", n }' | \
+sed 's/Haplotype\(.*$\)/\1_Green2014/' > data/greenseqs.fasta
+rm data/green.zip
+rm data/greenseqs.aln
+cat data/greenseqs.fasta >> data/ITS2_Database_ready.fasta
 
 # Trim primers from database sequences using cutadapt
 # Trim forward primers using cutadapt
@@ -36,7 +45,7 @@ awk '!/>/ { gsub("N","") }; { print $0 }' data/ITS2db_trimFR.fasta > data/ITS2db
 
 # Generate id_to_taxonomy file
 TAB=$'\t'  # ( because \t is not recognized by sed on mac os x )
-sed -e 's/>\([A-Z]\)\(.*\)\(_[A-Z][A-Z][0-9][0-9][0-9][0-9][0-9][0-9]\)/\1\2\3'"${TAB}"'Symbiodiniaceae;Symbiodinium;Clade\1;\1\2;_;_/' -e 'tx' -e 'd' -e ':x' data/ITS2db.fasta > data/id_to_taxonomy.txt
+sed -e 's/>\([A-Z]\)\(.*\)\(_.*$\)/\1\2\3'"${TAB}"'Symbiodiniaceae;Symbiodinium;Clade\1;\1\2;_;_/' -e 'tx' -e 'd' -e ':x' data/ITS2db.fasta > data/id_to_taxonomy.txt
 
 
 awk '/>A/ {print; getline; print}' data/ITS2db.fasta | muscle -out data/cladeA_align.fasta
@@ -89,3 +98,4 @@ rm data/ITS2_Database_trimF2.fasta
 rm data/ITS2_Database_trimF2_trimR.fasta
 rm data/ITS2db_trimFR.fasta
 rm data/clade*
+rm data/greenseqs.fasta
