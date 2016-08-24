@@ -103,6 +103,18 @@ phy97.f <- prune_samples(sample_sums(phy97.f)>=sn, phy97.f)
 phy97bs.f <- prune_samples(sample_sums(phy97bs.f)>=sn, phy97bs.f)
 phy97bsp.f <- prune_samples(sample_sums(phy97bsp.f)>=sn, phy97bsp.f)
 phy100.f <- prune_samples(sample_sums(phy100.f)>=sn, phy100.f)
+
+# Filter OTUs by minimum count again in case any dropped below threshold after filtering samples
+# Identify OTUs below threshold count
+taxa97 <- taxa_sums(phy97.f)[which(taxa_sums(phy97.f) >= n)]
+taxa97bs <- taxa_sums(phy97bs.f)[which(taxa_sums(phy97bs.f) >= n)]
+taxa97bsp <- taxa_sums(phy97bsp.f)[which(taxa_sums(phy97bsp.f) >= n)] 
+taxa100 <- taxa_sums(phy100.f)[which(taxa_sums(phy100.f) >= n)]
+# Remove taxa below threshold count
+phy97.f <- prune_taxa(names(taxa97), phy97.f)
+phy97bs.f <- prune_taxa(names(taxa97bs), phy97bs.f)
+phy97bsp.f <- prune_taxa(names(taxa97bsp), phy97bsp.f)
+phy100.f <- prune_taxa(names(taxa100), phy100.f)
 ```
 * Minimum count to retain OTU: `r n`
 * Minimum count to retain sample: `r sn`
@@ -211,6 +223,21 @@ phy100.f.t <- transform_sample_counts(phy100.f, transform)
 # Clade overview
 Here the composition of each sample is plotted as a horizontal bar, sorted by species and shore. Each segment of the bar represents an individual OTU and is colored by clade. This plot is a nice overview of the whole dataset but only provides coarse information at the clade level.
 ```{r cladecomp97bs, cache=T, fig.height=6, fig.width=4}
+cladeAbund <- aggregate(data.frame(RelAbund=rowSums(otu_table(phy97bs.f.p))),
+                        by=list(Clade=data.frame(tax_table(phy97bs.f.p))$Clade), FUN=sum)
+sum(cladeAbund$RelAbund)
+cladeAbund$Prop <- prop.table(cladeAbund$RelAbund)
+pie(cladeAbund$Prop, col=taxcolors)
+dotchart(cladeAbund$Prop)
+bars <- barplot(cladeAbund$Prop*100, col=taxcolors, space=0,
+                names.arg=cladeAbund$Clade, xlab=expression(paste(italic('Symbiodinium'), " Clade")),
+                ylab="Relative abundance (%)")
+text(bars, cladeAbund$Prop*100+2, labels=round(cladeAbund$Prop*100, 1), xpd=T)
+
+cladeAbund$Notus <- table(data.frame(tax_table(phy97bs.f.p))$Clade)
+cladeAbund
+
+
 par(mfrow=c(1,1), mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7)
 # Plot composition of 97% within-sample OTUs colored by clade
 composition(phy97bs.f.p, col=taxcolors[factor(data.frame(tax_table(phy97bs.f.p))[order(data.frame(tax_table(phy97bs.f.p))$Subtype), ]$Clade, levels=c("A","B","C","D","F","G"))], legend=T)
@@ -490,7 +517,7 @@ White circles represent coral samples, colored circles represent *Symbiodinium* 
 ## "Resident" symbionts
 #### (>1% relative abundance)
 In this network, each coral species is collapsed into a single node (white squares), and connected to every *Symbiodinium* OTU (colored circles) that comprises **at least 1% relative abundance** within at least one individual of that species. Thus, very low abundance OTUs are not represented. The thickness of connections between coral species and OTUs is scaled by the relative proportion of samples of that species in which that OTU was present at ≥1% relative abundance (i.e., the frequency of presence at ≥1%). The size of *Symbiodinium* OTU nodes in the network is scaled by the number of species in which they occur, and colored according to clade.
-```{r networks}
+```{r networks, fig.width=5, fig.height=5, fig.align="center"}
 # Get network with one node for each species.
 otudf <- data.frame(t(otu_table(phy97bs.f.p)), check.names=F)
 # Percent of samples of species that contain OTU at more than 1% relative abundance
@@ -537,10 +564,10 @@ plot(net, rescale=F, layout=l*1, edge.curved=0.1, vertex.label.cex=V(net)$size/2
 
 ## Dominant symbionts
 #### (>50% relative abundance)
-```{r dom_networks}
+```{r dom_networks, fig.width=5, fig.height=5, fig.align="center"}
 # Get network with one node for each species.
 otudf <- data.frame(t(otu_table(phy97bs.f.p)), check.names=F)
-# Percent of samples of species that contain OTU at more than 1% relative abundance
+# Percent of samples of species that contain OTU at more than 50% relative abundance
 sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p))$Species), 
                    FUN=function(x) length(x[x>0.5])/length(x))
 rownames(sp.ag) <- sp.ag$Species
@@ -584,33 +611,29 @@ plot(net, rescale=F, layout=l*1, edge.curved=0.1, vertex.label.cex=V(net)$size/2
 
 ## Background symbionts
 #### (<1% relative abundance)
-```{r bg_net}
+```{r bk.net, fig.width=5, fig.height=5, fig.align="center"}
+# filter out OTUs that only occurred in one sample
+phy97bs.f.p2 <- filter_taxa(phy97bs.f.p, function(x) sum(x>0) > 1, prune=TRUE)
 # Get network with one node for each species.
-otudf <- data.frame(t(otu_table(phy97bs.f.p)), check.names=F)
+otudf <- data.frame(t(otu_table(phy97bs.f.p2)), check.names=F)
 # Percent of samples of species that contain OTU at less than 1% relative abundance (but more than 0%)
-# Only record if bkgd symbiont was detected in more than one individual
-sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p))$Species), 
-                   FUN=function(x) ifelse(length(x[x<0.01 & x>0])>1, # if more than 1 individual has bkgd symbiont
-                                          length(x[x<0.01 & x>0])/length(x), 0))
-sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p))$Species), 
-                   FUN=function(x) length(x[x<0.01 & x>0])/length(x))
-sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p))$Species), 
+
+sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p2))$Species), 
                    FUN=function(x) any(x>0 & x<0.01))
 rownames(sp.ag) <- sp.ag$Species
 sp.ag <- sp.ag[, -1]
 edges <- setNames(melt(as.matrix(sp.ag)), nm=c("source", "target", "weight"))  # Melt data
 edges <- droplevels(edges[edges$weight>0, ])
 # Create "nodes" table from sample and tax data
-sdf <- data.frame(id=levels(data.frame(sample_data(phy97bs.f.p))$Species))
-tdf <- data.frame(tax_table(phy97bs.f.p))[rownames(data.frame(tax_table(phy97bs.f.p))) %in% edges$target, ]
+sdf <- data.frame(id=levels(data.frame(sample_data(phy97bs.f.p2))$Species))
+tdf <- data.frame(tax_table(phy97bs.f.p2))[rownames(data.frame(tax_table(phy97bs.f.p2))) %in% edges$target, ]
 tdf$id <- rownames(tdf)
 nodes <- merge(sdf, tdf, all=T)
 nodes$type <- ifelse(is.na(nodes$Clade), 1, 2)
 # Create network
 net <- graph_from_data_frame(d=edges, vertices=nodes, directed=F)
 
-
-# Best one for now ---------
+# Edit vertex attributes
 V(net)$shape <- c("square", "circle")[factor(V(net)$type)]
 V(net)$size <- ifelse(is.na(V(net)$Clade), 15, 5*degree(net)) #5*sqrt(degree(net))
 V(net)$label <- ifelse(is.na(V(net)$Clade), names(V(net)),  
@@ -623,51 +646,40 @@ V(net)$label <- str_replace_all(V(net)$label, c("alcicornis"="M.alc.", "annulari
 V(net)$color <- ifelse(is.na(V(net)$Clade), "white",
                        taxcolors[factor(V(net)$Clade, levels=c("A","B","C","D","F","G"))])
 E(net)$color <- "gray60"
-E(net)$width <- 1
-set.seed(12347)
-set.seed(12364)
-set.seed(12374)
-l <- layout.fruchterman.reingold(net)
-l <- norm_coords(l, ymin=-1, ymax=1, xmin=-1, xmax=1)
+E(net)$width <- E(net)$weight * 2
+
+# Merge D nodes (assuming they are all D1a/trenchii)
+# Get original node map (sequence starting at one to the total number of nodes)
+nodemap <- seq(1:length(V(net)))
+# Make a copy of the nodemap that will be modified
+nodemapnew <- nodemap
+# Find all nodes beginning with D, and give them the same node ID number
+nodemapnew[grep("^D", V(net)$Subtype)] <- min(grep("^D", V(net)$Subtype))
+# Replace the now missing values in the node map so node IDs remain sequential
+while (max(setdiff(nodemap, nodemapnew)) < max(nodemap)) {
+  nodemapnew[which(nodemapnew==max(setdiff(nodemap, nodemapnew))+1)] <- min(setdiff(nodemap, nodemapnew))
+}
+# Contract the network using the new nodemap (nodes with same node ID are merged)
+net2 <- contract(net, nodemapnew, vertex.attr.comb=list(size="sum", "last"))
+# Simplify network so that multiple edges are combined
+net2 <- simplify(net2, remove.multiple=T, edge.attr.comb=list(weight="mean", width="mean", "ignore"))
+
+# remove symbionts that are only connected to one or two coral species
+net3 <- delete.vertices(net2, degree(net2)<=2) # & V(net2)$type==2)
+V(net3)$size <- ifelse(is.na(V(net3)$Clade), 15, 1.5*degree(net3)^1.5)
+set.seed(42384)
+l3 <- layout.fruchterman.reingold(net3, weights=E(net3)$weight)
+l3 <- norm_coords(l3, ymin=-1, ymax=1, xmin=-1, xmax=1)
 par(mar=c(0,0,0,0))
-#plot(net, rescale=F, layout=l*1, edge.curved=0.1, vertex.label.cex=V(net)$size/20,
-#     vertex.label.color="black")
-#plot(net, layout=layout_nicely, edge.curved=0.1, vertex.label.cex=V(net)$size/20,
-#     vertex.label.color="black")
-#plot(net, layout=layout_as_tree(net, circular=T))
-#plot(net, layout=layout_with_dh)
-
-
-net2 <- delete.vertices(net, degree(net)<=3)
-V(net2)$size <- ifelse(is.na(V(net2)$Clade), 15, 4*degree(net2))
-set.seed(42381)
-l2 <- layout.fruchterman.reingold(net2)
-l2 <- norm_coords(l2, ymin=-1, ymax=1, xmin=-1, xmax=1)
-plot(net2, rescale=F, layout=l2*1, edge.curved=0.1, vertex.label.cex=V(net2)$size/20,
+plot(net3, rescale=F, layout=l3*1, edge.curved=0.1, vertex.label.cex=V(net3)$size/20,
      vertex.label.color="black")
-#plot(net2, layout=layout_as_tree(net2, circular=T), edge.curved=0.1)
-#plot(net2, layout=layout_as_star(net2, center = 18))
-#plot(net2, layout=layout_in_circle(net2))
-#plot(net2, layout=layout_with_kk)
-#plot(net2, layout=layout_as_tree(net2, root=16, circular=T))
-#plot(net2, layout=layout_with_dh)
-#?layout_as_tree
-#V(net2)
+points(0.9,0.9, pch=0, cex=4)
+text(0.9,0.9, "O.ann.", cex=0.5)
 
-#cor<-induced.subgraph(net2,V(net2)$type==1)
-#sym<-induced.subgraph(net2,V(net2)$type==2)
-#polar.layout <- function(radii, angles) {
-#    cbind(radii*cos(angles), -radii*sin(angles))        
-#}
-#cor <- which(V(net2)$type == 1)
-#sym <- which(V(net2)$type == 2)
-#radii <- ifelse(V(net2)$type == 1, 2, 1)
-#angles <- rep.int(0, vcount(net2))
-#angles[sym] <- (1:length(sym)-1) * 2 * pi / length(sym)
-#angles[cor] <- (1:length(cor)-1) * 2 * pi / length(cor)
-#layout <- polar.layout(radii, angles)
-#plot(net2, layout=layout)
 ```
+
+
+
 
 # Beta diversity {.tabset}
 - Beta diversity is evaluated here as the multivariate dispersion of samples within a coral species. Principal coordinate analysis on Bray-Curtis dissimilarities is used to calculate average distance-to-centroid values for each species group, which are then compared statistically by a permutation test. This analysis is implemented using betadisper() in the vegan package, based on [Anderson (2006)](dx.doi.org/10.1111/j.1541-0420.2005.00440.x).

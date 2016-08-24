@@ -25,7 +25,7 @@ perms <- function(phy, group, trt) {
     resdf$between[i] <- summary(md)$B  # Mean dissimilarity between treatments
     resdf$overall[i] <- summary(md)$D  # Overall dissimilarity
     if (nlevels(as(sample_data(phy.group), "data.frame")[, trt]) > 1) {
-      permanova <- adonis(braydist ~ get(trt), data=samdat, permutations=999)
+      permanova <- adonis(braydist ~ get(trt), data=samdat, permutations=99999)
       resdf$R2[i] <- permanova$aov.tab$"R2"[1]  # PERMANOVA partial R-squared
       resdf$p[i] <- permanova$aov.tab$"Pr(>F)"[1]  # PERMANOVA p-value
       bd <- betadisper(braydist, group=samdat[, trt])
