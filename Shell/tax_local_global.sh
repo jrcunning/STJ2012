@@ -15,18 +15,18 @@ rm -f data/ITS2db_trimmed.fasta.*
 rm -rf $dir/needle; mkdir $dir/needle
 split -a 10 -l 2 $1 $dir/needle/
 # rename files according to OTU name
-for i in $dir/needle/*
-do
-d="$(head -1 "$i" | cut -d " " -f1 | cut -c 2-).fasta";
-mv "$i" $dir/needle/$d
-done
+#for i in $dir/needle/*
+#do
+#d="$(head -1 "$i" | cut -d " " -f1 | cut -c 2-).fasta";
+#mv "$i" $dir/needle/$d
+#done
 # build function to get top needle hit from a sequence in above format
 get_needle() {
 	needle -gapopen 10.0 -gapextend 0.5 -endopen 0.0 -endextend 0.0 -asequence $1 -bsequence data/ITS2db_trimmed.fasta -outfile $1.out -aformat score 
 }
 export -f get_needle
 # feed each line of tab-separated sequences to the get_needle function
-parallel get_needle :::  $dir/needle/*.fasta
+parallel get_needle :::  $dir/needle/*
 # get top hit for each sequence and write to file
 parallel "sort -nt'(' -k2 {} | tail -n 1" ::: $dir/needle/*.out | sort -k1,1 > $dir/needle_results.txt
 
