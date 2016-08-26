@@ -10,3 +10,12 @@ awk '$3 ~ /./ {print}' data/otus_100/combined_seqs_trimmed_otus.txt > data/otus_
 pick_rep_set.py -i data/otus_100/nosingles_otus.txt \
 -f data/fasta/combined_seqs_trimmed.fasta \
 -o data/otus_100/100_otus_rep_set.fasta
+
+# Make OTU table
+make_otu_table.py -i data/otus_100/nosingles_otus.txt -o data/otus_100/100_otus.biom
+rm -f  data/otus_100/100_otus.tsv  # delete old OTU .tsv if present
+biom convert -i data/otus_100/100_otus.biom -o data/otus_100/100_otus.tsv --to-tsv
+
+
+
+
