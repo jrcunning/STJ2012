@@ -37,3 +37,8 @@ merge_otu_maps.py -i data/otus_97_bysample/all_97_otus.txt,data/otus_97_bysample
 
 # Remove singletons
 awk '$3 ~ /./ {print}' data/otus_97_bysample/merged_otu_map.txt > data/otus_97_bysample/nosingles_otus.txt
+
+# Make OTU table
+make_otu_table.py -i data/otus_97_bysample/nosingles_otus.txt -o data/otus_97_bysample/97_otus_bysample.biom
+rm -f  data/otus_97_bysample/97_otus_bysample.tsv  # delete old OTU .tsv if present
+biom convert -i data/otus_97_bysample/97_otus_bysample.biom -o data/otus_97_bysample/97_otus_bysample.tsv --to-tsv
