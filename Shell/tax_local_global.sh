@@ -13,7 +13,7 @@ rm -f data/ITS2db_trimmed.fasta.*
 ### Get top needle hit (global alignment) for each sequence
 # split fasta file into separate file for each sequence to feed to get_needle
 rm -rf $dir/needle; mkdir $dir/needle
-split -l 2 $1 $dir/needle/
+split -a 10 -l 2 $1 $dir/needle/
 # rename files according to OTU name
 for i in $dir/needle/*
 do
@@ -33,3 +33,6 @@ parallel "sort -nt'(' -k2 {} | tail -n 1" ::: $dir/needle/*.out | sort -k1,1 > $
 
 ## merge together blast results and needle results to compare
 join $dir/blast_results_filtered.txt $dir/needle_results.txt > $dir/tax_results.txt
+
+# Clean up
+rm -rf $dir/needle
