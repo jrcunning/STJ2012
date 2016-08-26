@@ -99,3 +99,20 @@ rm data/ITS2_Database_trimF2_trimR.fasta
 rm data/ITS2db_trimFR.fasta
 rm data/clade*
 rm data/greenseqs.fasta
+
+
+### Identify identical reference sequences (post-trimming)
+# Get database sequences that are not uniqueq
+usearch -derep_fulllength data/ITS2db_trimmed.fasta -output data/ITS2db_trimmed_notunique.fasta -sizeout -minuniquesize 2
+# Get fasta file of all the non-unique sequences
+usearch -usearch_global data/ITS2db_trimmed.fasta -db data/ITS2db_trimmed_notunique.fasta -strand plus -id 1.0 \
+-matched data/ITS2db_trimmed_notuniques.fasta
+# Re-cluster non-unique sequences at 100% identity to get list of which ones are identical
+pick_otus.py -i data/ITS2db_trimmed_notuniques.fasta -s 1.0 -o data
+# list of identical sequence groups is in output file: data/ITS2db_trimmed_notuniques_otus.txt
+
+# Clean up
+rm data/ITS2db_trimmed_notunique.fasta
+rm data/ITS2db_trimmed_notuniques_clusters.uc
+rm data/ITS2db_trimmed_notuniques.fasta
+rm data/ITS2db_trimmed_notuniques_otus.log
