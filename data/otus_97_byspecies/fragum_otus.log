@@ -15,5 +15,5 @@ stable_sort:True
 stepwords:8
 suppress_sort:True
 word_length:8
-Num OTUs:27
+Num OTUs:23
 Result path: data/otus_97_byspecies/fragum_otus.txt

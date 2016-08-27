@@ -15,5 +15,5 @@ stable_sort:True
 stepwords:8
 suppress_sort:True
 word_length:8
-Num OTUs:259
+Num OTUs:180
 Result path: data/otus_97_byspecies/all_rep_set_otus.txt
