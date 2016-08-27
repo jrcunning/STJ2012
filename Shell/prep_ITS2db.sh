@@ -1,21 +1,5 @@
 #!/bin/bash
-
-# use accession numbers to download sequences from NCBI in parallel
-getseq() {
-	n=$1
-	acn=${n##*_}
-	echo $1 > data/dbseqs/${acn}.fasta
-	curl "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=${acn}&rettype=fasta" >> data/dbseqs/${acn}.fasta
-}
-export -f getseq
-rm -rf data/dbseqs; mkdir data/dbseqs
-parallel -a data/accn_nos.txt getseq 
-cat data/dbseqs/*.fasta > data/ITS2_Database.fasta
-
 	
-# Reformat names of new database to be only accession numbers & subtypes and put sequences on one line
-awk '!/^>/ { printf "%s", $0; n = "\n" } /^>/ { print n $0; n = "" } END { printf "%s", n }' data/ITS2_Database.fasta > data/ITS2_Database_inline.fasta
-awk '!/^>gi/ {print}' data/ITS2_Database_inline.fasta > data/ITS2_Database_ready.fasta
 
 # Download sequences from supplementary material of Green et al. 2014 and add to database
 curl https://peerj.com/articles/386/DataS1_PerlScripts_alignment_Bioinformatics.zip > data/green.zip
@@ -25,27 +9,29 @@ awk '!/^>/ { printf "%s", $0; n = "\n" } /^>/ { print n $0; n = "" } END { print
 sed 's/Haplotype\(.*$\)/\1_Green2014/' > data/greenseqs.fasta
 rm data/green.zip
 rm data/greenseqs.aln
-cat data/greenseqs.fasta >> data/ITS2_Database_ready.fasta
+# If Green sequences are not already added to ITS2db_raw, add them.
+! grep -q "Green" data/ITS2db_raw.fasta && cat data/greenseqs.fasta >> data/ITS2db_raw.fasta
 
 # Trim primers from database sequences using cutadapt
 # Trim forward primers using cutadapt
 #   Allow error rate of 15% (0 indels/mismatches)
-cutadapt -g GTGAATTGCAGAACTCCGTG -e 0.15 data/ITS2_Database_ready.fasta -o data/ITS2_Database_trimF.fasta
+cutadapt -g GTGAATTGCAGAACTCCGTG -e 0.15 data/ITS2db_raw.fasta -o data/ITS2db_trimF.fasta
 # Trim forward primers again (may be multiple internal primer sequences), but do not discard sequences that do not contain primer
-cutadapt -g GTGAATTGCAGAACTCCGTG -e 0.15 data/ITS2_Database_trimF.fasta -o data/ITS2_Database_trimF2.fasta
+cutadapt -g GTGAATTGCAGAACTCCGTG -e 0.15 data/ITS2db_trimF.fasta -o data/ITS2db_trimF2.fasta
 # Trim reverse primers using cutadapt
 #   Do not remove sequences that do not have reverse primer sequence
-cutadapt -a AAGCATATAAGTAAGCGGAGG -e 0.15 data/ITS2_Database_trimF2.fasta -o data/ITS2_Database_trimF2_trimR.fasta
+cutadapt -a AAGCATATAAGTAAGCGGAGG -e 0.15 data/ITS2db_trimF2.fasta -o data/ITS2db_trimF2_trimR.fasta
 # Trim reverse primers again for any remaining internally
-cutadapt -a AAGCATATAAGTAAGCGGAGG -e 0.15 data/ITS2_Database_trimF2_trimR.fasta -o data/ITS2db_trimFR.fasta
+cutadapt -a AAGCATATAAGTAAGCGGAGG -e 0.15 data/ITS2db_trimF2_trimR.fasta -o data/ITS2db.fasta
 
 # Remove Ns if present in sequences -- noting that several were deposited in GenBank using Ns as gaps...
-awk '!/>/ { gsub("N","") }; { print $0 }' data/ITS2db_trimFR.fasta > data/ITS2db.fasta
+#awk '!/>/ { gsub("N","") }; { print $0 }' data/ITS2db_raw.fasta > data/ITS2db.fasta
 
 
 # Generate id_to_taxonomy file
 TAB=$'\t'  # ( because \t is not recognized by sed on mac os x )
 sed -e 's/>\([A-Z]\)\(.*\)\(_.*$\)/\1\2\3'"${TAB}"'Symbiodiniaceae;Symbiodinium;Clade\1;\1\2;_;_/' -e 'tx' -e 'd' -e ':x' data/ITS2db.fasta > data/id_to_taxonomy.txt
+
 
 
 awk '/>A/ {print; getline; print}' data/ITS2db.fasta | muscle -out data/cladeA_align.fasta
@@ -89,14 +75,10 @@ cat data/*_trimES.fasta | sed 's/-//g' > data/ITS2db_trimmed.fasta
 
 
 # Clean up intermediate files
-rm -r data/dbseqs
-rm data/ITS2_Database.fasta
-rm data/ITS2_Database_inline.fasta
-rm data/ITS2_Database_ready.fasta
-rm data/ITS2_Database_trimF.fasta
-rm data/ITS2_Database_trimF2.fasta
-rm data/ITS2_Database_trimF2_trimR.fasta
-rm data/ITS2db_trimFR.fasta
+rm data/ITS2db.fasta
+rm data/ITS2db_trimF.fasta
+rm data/ITS2db_trimF2.fasta
+rm data/ITS2db_trimF2_trimR.fasta
 rm data/clade*
 rm data/greenseqs.fasta
 
