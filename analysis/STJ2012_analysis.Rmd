@@ -15,7 +15,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir = normalizePath(".."))
 knitr::opts_chunk$set(echo = TRUE)
-options(scipen = 3, digits = 2)
+options(scipen = 3, digits = 9)
 ```
 
 ```{r setup_2, include=FALSE}
@@ -52,24 +52,163 @@ OTU tables and taxonomic assignments from each of these bioinformatic approaches
 ### Import dataset
 The [phyloseq](https://joey711.github.io/phyloseq/) package is used here to combine the OTU table, taxonomic assignments, and sample metadata into a single R data object (class 'phyloseq') to facilitate downstream analyses.
 ```{r data_import, cache=T}
+
+```
+
+```{r filter_taxa}
+# Import taxonomic assignment data from local and global alignments
+taxcolnames <- c("OTU", "BLAST.hit", "BLAST.pct.id", "BLAST.align.length", "BLAST.mismatches", "BLAST.gapopen", 
+                 "BLAST.q.start", "BLAST.q.end", "BLAST.s.start", "BLAST.s.end", "BLAST.e.val", "BLAST.bit.score", 
+                 "needle.hit", "needle.length", "needle.score")
+
+TAX97 <- read.table("data/otus_97/tax_results.txt", sep=" ", col.names=taxcolnames)
+TAX97$needle.score <- as.numeric(gsub("[^0-9.]", "", TAX97$needle.score))
+
+TAX97bs <- read.table("data/otus_97_bysample/tax_results.txt", sep=" ", col.names=taxcolnames)
+TAX97bs$needle.score <- as.numeric(gsub("[^0-9.]", "", TAX97bs$needle.score))
+       
+TAX97bsp <- read.table("data/otus_97_byspecies/tax_results.txt", sep=" ", col.names=taxcolnames)
+TAX97bsp$needle.score <- as.numeric(gsub("[^0-9.]", "", TAX97bsp$needle.score))
+
+TAX100 <- read.table("data/otus_100/tax_results.txt", sep=" ", col.names=taxcolnames)
+TAX100$needle.score <- as.numeric(gsub("[^0-9.]", "", TAX100$needle.score))
+
+# Merge identical taxonomic assignments (because some reference sequences are not unique...)
+ident <- readLines("data/ITS2db_trimmed_notuniques_otus.txt")
+ident <- strsplit(ident, split="\t")
+names(ident) <- c("C3_multiple", "B19_multiple", "H1_multiple", "C33_multiple", "H5_multiple", "A2_multiple",
+                  "B21/B38_multiple", "C35/C26_multiple", "A1/A13_multiple", "F5.2_multiple", "D1_multiple", 
+                  "A10_multiple", "B2_multiple", "A1.2_multiple", "C1c/C45_multiple", "B1_multiple",
+                  "C91_multiple", "C82_multiple", "D1a_multiple", "A4a_multiple", "C1_multiple",
+                  "F5.2d_multiple", "C21/C32_multiple", "A3/A6_multiple", "C26/C35a_multiple")
+
+merge.identical.hits <- function(x) {
+  sapply(as.character(x), FUN=function(y) {
+    ifelse(y %in% unlist(ident), 
+           gsub("[0-9]*$", "", names(unlist(ident))[match(y, unlist(ident))]), 
+           y)
+    })
+}
+
+TAX97$BLAST.matched <- merge.identical.hits(TAX97$BLAST.hit)
+TAX97$needle.matched <- merge.identical.hits(TAX97$needle.hit)
+
+# OTUs for which BLAST and needle gave different assignments
+nomatch <- subset(TAX97, BLAST.matched!=needle.matched)
+nomatch
+
+
+# Get percent identity of global alignment to needle hits
+# import reference sequences
+ref <- readDNAStringSet("data/ITS2db_trimmed.fasta")
+# import otu sequences
+otus97 <- readDNAStringSet("data/otus_97/97_otus_rep_set.fasta")
+names(otus97) <- gsub(" .*$", "", names(otus97))
+# align each otu sequence to its best needle hit, using same parameters as command line needle
+# "global-local" forces whole reference/pattern sequence to be used, but subject/query can be a concescutive subsequence -- this is because queries may include slightly longer region of gene than references because references were trimmed by o-smart-trim. this means that query sequence can have more bases than the reference at beginning or end of the sequence (=end gaps in alignment) without penalties.
+EDNAFULL <- as.matrix(read.table("data/EDNAFULL", skip=8, header=T, row.names=1))
+n.psa <- pairwiseAlignment(subject=otus97[TAX97$OTU], pattern=ref[TAX97$needle.hit], type="global-local",
+                           substitutionMatrix=EDNAFULL,
+                           gapOpening=10.0, gapExtension=0.5)
+
+# calculate percent similarity to reference with indels counting as single difference regardless of length
+TAX97 <- within(TAX97, {
+  needle.hit.length <- width(pattern(n.psa))
+  needle.mismatches <- nmismatch(n.psa)
+  needle.insertions <- unlist(lapply(as.list(insertion(n.psa)), length))
+  needle.deletions <- unlist(lapply(as.list(deletion(n.psa)), length))
+  needle.similarity <- (needle.hit.length-needle.mismatches-needle.insertions-needle.deletions)/needle.hit.length
+})
+
+g.psa <- pairwiseAlignment(subject=otus97[TAX97$OTU], pattern=ref[TAX97$needle.hit], type="global",
+                           substitutionMatrix=EDNAFULL,
+                           gapOpening=10.0, gapExtension=0.5)
+
+# calculate percent similarity to reference with indels counting as single difference regardless of length
+TAX97 <- within(TAX97, {
+  gneedle.hit.length <- width(pattern(g.psa))
+  gneedle.mismatches <- nmismatch(g.psa)
+  gneedle.insertions <- unlist(lapply(as.list(insertion(g.psa)), length))
+  gneedle.deletions <- unlist(lapply(as.list(deletion(g.psa)), length))
+  gneedle.similarity <- (gneedle.hit.length-gneedle.mismatches-gneedle.insertions-gneedle.deletions)/gneedle.hit.length
+})
+
+
+aligned(n.psa[])
+n.psa
+aligned(n.psa[1])
+TAX97$needle.hit.length <- width(pattern(n.psa))
+TAX97$needle.mismatches <- nmismatch(n.psa)
+TAX97$needle.insertions <- unlist(lapply(as.list(insertion(n.psa)), length))
+TAX97$needle.deletions <- unlist(lapply(as.list(deletion(n.psa)), length))
+TAX97$needle.similarity <- with(TAX97, (needle.hit.length - needle.mismatches - needle.insertions - needle.deletions) / needle.hit.length)
+
+with(TAX97[115, ], {
+  aln <<- pairwiseAlignment(subject=otus97[OTU], pattern=ref[needle.hit], type="global-local",
+                            substitutionMatrix=EDNAFULL,
+                            gapOpening=10.0, gapExtension=0.5)
+})
+aln
+
+aln <- pairwiseAlignment(subject="ACTTCTCTATCTATCTTGGTACG", pattern="AATTCTCGGTACG", type="global")
+aln2 <- pairwiseAlignment(subject="ACTTCTACG", pattern="AATTCTCGGTACG", type="global")
+aln
+aln2
+width(aligned(aln))
+nmatch(aln)/width(aligned(aln))
+
+
+# calculate pct id of all positions relative to reference/(pattern)
+nmatch(aln)/width(pattern(aln))
+# calculate pct id counting indels as single difference regardless of length = GAST definition
+(width(pattern(aln)) - nmismatch(aln) - length(unlist(insertion(aln))) - length(unlist(deletion(aln))))/width(pattern(aln))
+
+stringDist(aln)
+
+nmatch(aln)
+nmismatch(aln)
+width(nindel(aln))
+length(unlist(insertion(aln))); length(unlist(deletion(aln)))
+length(unlist(insertion(aln)))
+length(unlist(deletion(aln)))
+insertion(aln)
+deletion(aln)
+unlist(nindel(aln))
+nindel(aln)$insertion
+str(nindel(aln))
+b <- n.psa[11]
+as.list(indel(subject(b)))
+as.list(indel(subject(aln)))
+length(as.data.frame(deletion(b))[[1]])
+indel(b)
+length(unlist(insertion(b)))
+
+
+
+class(EDNAFULL)
+n.psa[47]
+summary(n.psa[47])
+nmatch(n.psa[47])
+nindel(n.psa[47])
+nmismatch(n.psa[47])
+nchar(pattern(n.psa[2]))
+246/255
+nmismatch(n.psa[2])
+
+```
+
+```{r build_phyloseq}
 # Import OTU tables
-OTU97 <- otu_table(read.table("data/97_otus.tsv", header=T, check.names=F, row.names=1,
+OTU97 <- otu_table(read.table("data/otus_97/97_otus.tsv", header=T, check.names=F, row.names=1,
                               skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
-OTU97bs <- otu_table(read.table("data/97_otus_bysample.tsv", header=T, check.names=F, row.names=1,
+OTU97bs <- otu_table(read.table("data/otus_97_bysample/97_otus_bysample.tsv", header=T, check.names=F, row.names=1,
                               skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
-OTU97bsp <- otu_table(read.table("data/97_otus_byspecies.tsv", header=T, check.names=F, row.names=1,
-                              skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
-OTU100 <- otu_table(read.table("data/100_otus.tsv", header=T, check.names=F, row.names=1,
+#OTU97bsp <- otu_table(read.table("data/97_otus_byspecies.tsv", header=T, check.names=F, row.names=1,
+#                              skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
+OTU100 <- otu_table(read.table("data/otus_100/100_otus.tsv", header=T, check.names=F, row.names=1,
                                skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
 # Import taxonomy
-TAX97 <- tax_table(as.matrix(read.table("data/97_otus_tax_assignments.txt", sep="\t", row.names=2,
-                                        col.names=c("Clade", "OTU.ID", "Taxonomy", "Eval", "Subtype"))))
-TAX97bs <- tax_table(as.matrix(read.table("data/97_otus_bysample_tax_assignments.txt", sep="\t", row.names=2,
-                                        col.names=c("Clade", "OTU.ID", "Taxonomy", "Eval", "Subtype"))))
-TAX97bsp <- tax_table(as.matrix(read.table("data/97_otus_byspecies_tax_assignments.txt", sep="\t", row.names=2,
-                                        col.names=c("Clade", "OTU.ID", "Taxonomy", "Eval", "Subtype"))))
-TAX100 <- tax_table(as.matrix(read.table("data/100_otus_tax_assignments.txt", sep="\t", row.names=2,
-                                         col.names=c("Clade", "OTU.ID", "Taxonomy", "Eval", "Subtype"))))
+
 # Import sample data
 SAM <- sample_data(read.delim("data/mapping_file.txt", sep="\t", header=T, row.names=1))
 # Build phyloseq objects
@@ -81,6 +220,11 @@ phy100 <- phyloseq(OTU100, TAX100, SAM)
 
 ### Filter dataset
 ```{r filter_dataset, cache=T}
+
+
+
+
+
 # Filter OTUs by minimum count
 # Set threshold count
 n <- 10
@@ -616,14 +760,13 @@ plot(net, rescale=F, layout=l*1, edge.curved=0.1, vertex.label.cex=V(net)$size/2
 phy97bs.f.p2 <- filter_taxa(phy97bs.f.p, function(x) sum(x>0) > 1, prune=TRUE)
 # Get network with one node for each species.
 otudf <- data.frame(t(otu_table(phy97bs.f.p2)), check.names=F)
-# Percent of samples of species that contain OTU at less than 1% relative abundance (but more than 0%)
-
+# Whether any samples of species contain OTU at less than 1% relative abundance (but more than 0%)
 sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p2))$Species), 
                    FUN=function(x) any(x>0 & x<0.01))
 rownames(sp.ag) <- sp.ag$Species
 sp.ag <- sp.ag[, -1]
 edges <- setNames(melt(as.matrix(sp.ag)), nm=c("source", "target", "weight"))  # Melt data
-edges <- droplevels(edges[edges$weight>0, ])
+edges <- droplevels(edges[edges$weight>0, ])  # only keep if was observed in more than N colony of a spp
 # Create "nodes" table from sample and tax data
 sdf <- data.frame(id=levels(data.frame(sample_data(phy97bs.f.p2))$Species))
 tdf <- data.frame(tax_table(phy97bs.f.p2))[rownames(data.frame(tax_table(phy97bs.f.p2))) %in% edges$target, ]
@@ -675,6 +818,15 @@ plot(net3, rescale=F, layout=l3*1, edge.curved=0.1, vertex.label.cex=V(net3)$siz
      vertex.label.color="black")
 points(0.9,0.9, pch=0, cex=4)
 text(0.9,0.9, "O.ann.", cex=0.5)
+
+
+set.seed(42399)
+l3 <- layout_nicely(net3)
+l3 <- norm_coords(l3, ymin=-1, ymax=1, xmin=-1, xmax=1)
+par(mar=c(0,0,0,0))
+V(net3)$size <- ifelse(is.na(V(net3)$Clade), 15, 10*degree(net3)^0.2)
+plot(net3, rescale=F, layout=l3*1, edge.curved=0.1, vertex.label.cex=V(net3)$size/20,
+     vertex.label.color="black")
 
 ```
 
