@@ -60,6 +60,6 @@ results <- within(results, {
 })
 
 # Write results to .tsv file
-write.table(results, file=paste(dirname(args[1]), "/", gsub("\\..*$","", basename(args[1])),"_nw.tsv", sep=""), 
+write.table(results, file=paste(dirname(args[1]), "/", "nw_tophits.tsv", sep=""), 
             sep="\t", quote=FALSE)
 
