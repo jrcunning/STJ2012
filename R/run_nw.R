@@ -39,8 +39,8 @@ stopCluster(cl)  # Stop cluster
 # Collect results in a data frame
 results <- data.frame(otu=names(otus), hits=best, stringsAsFactors = FALSE)
 # If multiple hit, select first one
-results$hit <- unlist(lapply(strsplit(results$hits, split=";;"), "[", 1))
-results$hit <- gsub(";;", ";", paste(results$hit, ";", sep="")) # temp fix to end with ;....get rid of sizeout!!!
+results$hit <- unlist(lapply(strsplit(results$hits, split=";"), "[", 1))
+#results$hit <- gsub(";;", ";", paste(results$hit, ";", sep="")) # temp fix to end with ;....get rid of sizeout!!!
 
 # Get percent identity of global alignment of each sequence with its best hit from database
 
