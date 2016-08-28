@@ -93,6 +93,11 @@ usearch -usearch_global data/ITS2db_trimmed.fasta -db data/ITS2db_trimmed_notuni
 pick_otus.py -i data/ITS2db_trimmed_notuniques.fasta -s 1.0 -o data
 # list of identical sequence groups is in output file: data/ITS2db_trimmed_notuniques_otus.txt
 
+# Dereplicate database
+usearch -derep_fulllength data/ITS2db_trimmed.fasta -output data/ITS2db_trimmed_derep.fasta -sizeout
+
+
+
 # Clean up
 rm data/ITS2db_trimmed_notunique.fasta
 rm data/ITS2db_trimmed_notuniques_clusters.uc
