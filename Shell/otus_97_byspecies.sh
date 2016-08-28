@@ -21,7 +21,7 @@ clust97() {
 	pick_otus.py -i $1 -s 0.97 --denovo_otu_id_prefix $s'_denovo' --optimal_uclust -o data/otus_97_byspecies
 }
 export -f clust97
-parallel -j5 clust97 ::: data/fasta/byspecies/*.fasta
+parallel -j3 clust97 ::: data/fasta/byspecies/*.fasta
 
 # Pick representative sequence set for each sample
 repset97() {
@@ -49,3 +49,8 @@ merge_otu_maps.py -i data/otus_97_byspecies/all_97_otus.txt,data/otus_97_byspeci
 
 # Remove singletons
 awk '$3 ~ /./ {print}' data/otus_97_byspecies/merged_otu_map.txt > data/otus_97_byspecies/nosingles_otus.txt
+
+# Make OTU table
+make_otu_table.py -i data/otus_97_byspecies/nosingles_otus.txt -o data/otus_97_byspecies/97_otus_byspecies.biom
+rm -f  data/otus_97_byspecies/97_otus_byspecies.tsv  # delete old OTU .tsv if present
+biom convert -i data/otus_97_byspecies/97_otus_byspecies.biom -o data/otus_97_byspecies/97_otus_byspecies.tsv --to-tsv
