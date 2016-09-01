@@ -20,7 +20,7 @@ options(scipen = 3, digits = 9)
 
 ```{r setup_2, include=FALSE}
 # Load all R scripts in "R/" directory
-sapply(list.files(path="R", pattern="*.R", full.names=TRUE), source, .GlobalEnv)
+sapply(list.files(path="R", pattern="*[^w].R", full.names=TRUE), source, .GlobalEnv)
 # Load package libraries
 library(phyloseq); library(vegan); library(multcompView); library(reshape2); library(igraph); library(stringr)
 # Set colors for plotting clades
@@ -56,188 +56,144 @@ The [phyloseq](https://joey711.github.io/phyloseq/) package is used here to comb
 ```
 
 ```{r filter_taxa}
-# Import taxonomic assignment data from local and global alignments
-taxcolnames <- c("OTU", "BLAST.hit", "BLAST.pct.id", "BLAST.align.length", "BLAST.mismatches", "BLAST.gapopen", 
-                 "BLAST.q.start", "BLAST.q.end", "BLAST.s.start", "BLAST.s.end", "BLAST.e.val", "BLAST.bit.score", 
-                 "needle.hit", "needle.length", "needle.score")
-
-TAX97 <- read.table("data/otus_97/tax_results.txt", sep=" ", col.names=taxcolnames)
-TAX97$needle.score <- as.numeric(gsub("[^0-9.]", "", TAX97$needle.score))
-
-TAX97bs <- read.table("data/otus_97_bysample/tax_results.txt", sep=" ", col.names=taxcolnames)
-TAX97bs$needle.score <- as.numeric(gsub("[^0-9.]", "", TAX97bs$needle.score))
-       
-TAX97bsp <- read.table("data/otus_97_byspecies/tax_results.txt", sep=" ", col.names=taxcolnames)
-TAX97bsp$needle.score <- as.numeric(gsub("[^0-9.]", "", TAX97bsp$needle.score))
-
-TAX100 <- read.table("data/otus_100/tax_results.txt", sep=" ", col.names=taxcolnames)
-TAX100$needle.score <- as.numeric(gsub("[^0-9.]", "", TAX100$needle.score))
-
-# Merge identical taxonomic assignments (because some reference sequences are not unique...)
-ident <- readLines("data/ITS2db_trimmed_notuniques_otus.txt")
-ident <- strsplit(ident, split="\t")
-names(ident) <- c("C3_multiple", "B19_multiple", "H1_multiple", "C33_multiple", "H5_multiple", "A2_multiple",
-                  "B21/B38_multiple", "C35/C26_multiple", "A1/A13_multiple", "F5.2_multiple", "D1_multiple", 
-                  "A10_multiple", "B2_multiple", "A1.2_multiple", "C1c/C45_multiple", "B1_multiple",
-                  "C91_multiple", "C82_multiple", "D1a_multiple", "A4a_multiple", "C1_multiple",
-                  "F5.2d_multiple", "C21/C32_multiple", "A3/A6_multiple", "C26/C35a_multiple")
-
-merge.identical.hits <- function(x) {
-  sapply(as.character(x), FUN=function(y) {
-    ifelse(y %in% unlist(ident), 
-           gsub("[0-9]*$", "", names(unlist(ident))[match(y, unlist(ident))]), 
-           y)
-    })
+# Import taxonomic assignment data from blast and nw
+blast.res.colnames <- c("otu", "BLAST.hit", "pct.id", "B.length", "B.mismatches", "B.gapopen", 
+                        "q.start", "q.end", "s.start", "s.end", "e.val", "bit.score")
+tax.import <- function(b, nw) {
+  m <- merge(read.table(b, col.names=blast.res.colnames, stringsAsFactors=FALSE),
+             read.table(nw, stringsAsFactors=FALSE), by="otu")
+  rownames(m) <- m$otu
+  m$Clade <- str_extract(m$nw.hits, pattern="^.")
+  return(m)
 }
 
-TAX97$BLAST.matched <- merge.identical.hits(TAX97$BLAST.hit)
-TAX97$needle.matched <- merge.identical.hits(TAX97$needle.hit)
+tax97 <- tax.import(b="data/otus_97/blast_tophits.txt", nw="data/otus_97/nw_tophits.tsv")
+tax100 <- tax.import(b="data/otus_100/blast_tophits.txt", nw="data/otus_100/nw_tophits.tsv")
+tax97bs <- tax.import(b="data/otus_97_bysample/blast_tophits.txt", nw="data/otus_97_bysample/nw_tophits.tsv")
+tax97bsp <- tax.import(b="data/otus_97_byspecies/blast_tophits.txt", nw="data/otus_97_byspecies/nw_tophits.tsv")
 
-# OTUs for which BLAST and needle gave different assignments
-nomatch <- subset(TAX97, BLAST.matched!=needle.matched)
-nomatch
+# Deal with identical taxonomic assignments (because some reference sequences are not unique...)
+# Create names for groups of identical sequences based on members of group...
+ident <- readLines("data/ITS2db_trimmed_notuniques_otus.txt")
+ident <- gsub("denovo[0-9]*\t", "", ident)
+ident <- strsplit(ident, split="\t")
+ident2 <- lapply(ident, str_match_all, pattern="[A-I]{1}[0-9]{1,3}.*[_/]")
+ident2 <- lapply(ident2, function(g) gsub(pattern="\\..*_$", "", x=unlist(g)))
+ident2 <- lapply(ident2, function(g) gsub(pattern="_$", "", g))
+ident2 <- lapply(ident2, function(g) unlist(strsplit(g, split="/")))
+subtypes <- lapply(ident2, function(x) levels(factor(unlist(x))))
+subtypes <- lapply(subtypes, function(s) paste(paste(s, collapse="/"), "_multiple", sep=""))
+names(ident) <- subtypes
+ident <- melt(do.call(rbind, ident))
+ident <- unique(ident[order(ident[,1]), c(3,1)])
 
+# Replace any sequence in taxonomy assignment that is a member of a group of identical sequences with the name of the group
+collapse.idents <- function(df) {
+  within(df, {
+    for (i in 1:nrow(ident)) {
+      BLAST.hit <- gsub(ident[i,1], ident[i,2], BLAST.hit)
+      nw.hits <- gsub(ident[i,1], ident[i,2], nw.hits)
+      nw.hit1 <- gsub(ident[i,1], ident[i,2], nw.hit1)
+    }
+  })
+}
 
-# Get percent identity of global alignment to needle hits
-# import reference sequences
-ref <- readDNAStringSet("data/ITS2db_trimmed.fasta")
-# import otu sequences
-otus97 <- readDNAStringSet("data/otus_97/97_otus_rep_set.fasta")
-names(otus97) <- gsub(" .*$", "", names(otus97))
-# align each otu sequence to its best needle hit, using same parameters as command line needle
-# "global-local" forces whole reference/pattern sequence to be used, but subject/query can be a concescutive subsequence -- this is because queries may include slightly longer region of gene than references because references were trimmed by o-smart-trim. this means that query sequence can have more bases than the reference at beginning or end of the sequence (=end gaps in alignment) without penalties.
-EDNAFULL <- as.matrix(read.table("data/EDNAFULL", skip=8, header=T, row.names=1))
-n.psa <- pairwiseAlignment(subject=otus97[TAX97$OTU], pattern=ref[TAX97$needle.hit], type="global-local",
-                           substitutionMatrix=EDNAFULL,
-                           gapOpening=10.0, gapExtension=0.5)
+tax97 <- collapse.idents(tax97)
+tax97bs <- collapse.idents(tax97bs)
+tax97bsp <- collapse.idents(tax97bsp)
+tax100 <- collapse.idents(tax100)
 
-# calculate percent similarity to reference with indels counting as single difference regardless of length
-TAX97 <- within(TAX97, {
-  needle.hit.length <- width(pattern(n.psa))
-  needle.mismatches <- nmismatch(n.psa)
-  needle.insertions <- unlist(lapply(as.list(insertion(n.psa)), length))
-  needle.deletions <- unlist(lapply(as.list(deletion(n.psa)), length))
-  needle.similarity <- (needle.hit.length-needle.mismatches-needle.insertions-needle.deletions)/needle.hit.length
-})
-
-g.psa <- pairwiseAlignment(subject=otus97[TAX97$OTU], pattern=ref[TAX97$needle.hit], type="global",
-                           substitutionMatrix=EDNAFULL,
-                           gapOpening=10.0, gapExtension=0.5)
-
-# calculate percent similarity to reference with indels counting as single difference regardless of length
-TAX97 <- within(TAX97, {
-  gneedle.hit.length <- width(pattern(g.psa))
-  gneedle.mismatches <- nmismatch(g.psa)
-  gneedle.insertions <- unlist(lapply(as.list(insertion(g.psa)), length))
-  gneedle.deletions <- unlist(lapply(as.list(deletion(g.psa)), length))
-  gneedle.similarity <- (gneedle.hit.length-gneedle.mismatches-gneedle.insertions-gneedle.deletions)/gneedle.hit.length
-})
-
-
-aligned(n.psa[])
-n.psa
-aligned(n.psa[1])
-TAX97$needle.hit.length <- width(pattern(n.psa))
-TAX97$needle.mismatches <- nmismatch(n.psa)
-TAX97$needle.insertions <- unlist(lapply(as.list(insertion(n.psa)), length))
-TAX97$needle.deletions <- unlist(lapply(as.list(deletion(n.psa)), length))
-TAX97$needle.similarity <- with(TAX97, (needle.hit.length - needle.mismatches - needle.insertions - needle.deletions) / needle.hit.length)
-
-with(TAX97[115, ], {
-  aln <<- pairwiseAlignment(subject=otus97[OTU], pattern=ref[needle.hit], type="global-local",
-                            substitutionMatrix=EDNAFULL,
-                            gapOpening=10.0, gapExtension=0.5)
-})
-aln
-
-aln <- pairwiseAlignment(subject="ACTTCTCTATCTATCTTGGTACG", pattern="AATTCTCGGTACG", type="global")
-aln2 <- pairwiseAlignment(subject="ACTTCTACG", pattern="AATTCTCGGTACG", type="global")
-aln
-aln2
-width(aligned(aln))
-nmatch(aln)/width(aligned(aln))
+# Get subtypes without accession numbers
+get.st <- function(df) {
+  within(df, {
+    bl.st <- gsub(BLAST.hit, pattern="_.*$", replacement="")
+    bl.st <- ifelse(nw.sim==100, bl.st, paste("'", bl.st, "'", sep=""))
+    nw.st <- gsub(nw.hits, pattern="_[A-Z]{2}[0-9]{6}", replacement="")
+    nw.st <- gsub(nw.st, pattern="_multiple", replacement="")
+    nw.st <- ifelse(nw.sim==100, nw.st, paste("'", nw.st, "'", sep=""))
+    Subtype <- nw.st
+  })
+}
 
 
-# calculate pct id of all positions relative to reference/(pattern)
-nmatch(aln)/width(pattern(aln))
-# calculate pct id counting indels as single difference regardless of length = GAST definition
-(width(pattern(aln)) - nmismatch(aln) - length(unlist(insertion(aln))) - length(unlist(deletion(aln))))/width(pattern(aln))
-
-stringDist(aln)
-
-nmatch(aln)
-nmismatch(aln)
-width(nindel(aln))
-length(unlist(insertion(aln))); length(unlist(deletion(aln)))
-length(unlist(insertion(aln)))
-length(unlist(deletion(aln)))
-insertion(aln)
-deletion(aln)
-unlist(nindel(aln))
-nindel(aln)$insertion
-str(nindel(aln))
-b <- n.psa[11]
-as.list(indel(subject(b)))
-as.list(indel(subject(aln)))
-length(as.data.frame(deletion(b))[[1]])
-indel(b)
-length(unlist(insertion(b)))
-
-
-
-class(EDNAFULL)
-n.psa[47]
-summary(n.psa[47])
-nmatch(n.psa[47])
-nindel(n.psa[47])
-nmismatch(n.psa[47])
-nchar(pattern(n.psa[2]))
-246/255
-nmismatch(n.psa[2])
-
+tax97 <- get.st(tax97)
+tax97bs <- get.st(tax97bs)
+tax97bsp <- get.st(tax97bsp)
+tax100 <- get.st(tax100)
 ```
 
 ```{r build_phyloseq}
 # Import OTU tables
-OTU97 <- otu_table(read.table("data/otus_97/97_otus.tsv", header=T, check.names=F, row.names=1,
+otu97 <- otu_table(read.table("data/otus_97/97_otus.tsv", header=T, check.names=F, row.names=1,
                               skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
-OTU97bs <- otu_table(read.table("data/otus_97_bysample/97_otus_bysample.tsv", header=T, check.names=F, row.names=1,
+otu97bs <- otu_table(read.table("data/otus_97_bysample/97_otus_bysample.tsv", header=T, check.names=F, row.names=1,
                               skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
-#OTU97bsp <- otu_table(read.table("data/97_otus_byspecies.tsv", header=T, check.names=F, row.names=1,
-#                              skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
-OTU100 <- otu_table(read.table("data/otus_100/100_otus.tsv", header=T, check.names=F, row.names=1,
+otu97bsp <- otu_table(read.table("data/otus_97_byspecies/97_otus_byspecies.tsv", header=T, check.names=F, row.names=1,
+                              skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
+otu100 <- otu_table(read.table("data/otus_100/100_otus.tsv", header=T, check.names=F, row.names=1,
                                skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
-# Import taxonomy
 
 # Import sample data
-SAM <- sample_data(read.delim("data/mapping_file.txt", sep="\t", header=T, row.names=1))
+sam <- sample_data(read.delim("data/mapping_file.txt", sep="\t", header=T, row.names=1))
+
 # Build phyloseq objects
-phy97 <- phyloseq(OTU97, TAX97, SAM)
-phy97bs <- phyloseq(OTU97bs, TAX97bs, SAM)
-phy97bsp <- phyloseq(OTU97bsp, TAX97bsp, SAM)
-phy100 <- phyloseq(OTU100, TAX100, SAM)
+phy97 <- phyloseq(otu97, tax_table(as.matrix(tax97)), sam)
+phy97bs <- phyloseq(otu97bs, tax_table(as.matrix(tax97bs)), sam)
+phy97bsp <- phyloseq(otu97bsp, tax_table(as.matrix(tax97bsp)), sam)
+phy100 <- phyloseq(otu100, tax_table(as.matrix(tax100)), sam)
 ```
 
 ### Filter dataset
 ```{r filter_dataset, cache=T}
+# FILTER OUT OTUS THAT ARE NOT SYMBIODINIUM
+# Build function to BLAST all sequences with less than 90% similarity to Symbiodinium to the NCBI nr database, and get the top hit. If the top hit does not contain the string "Symbiodinium", then this sequence is assumed to not be Symbiodinium.
+is.it.symbio <- function(df, repset) {
+  poor.otus <- df[which(df$nw.sim < 90), "otu"]  # Identify OTUs with <90% similarity to Symbiodinium
+  sapply(poor.otus, function(otu) {  # Get sequences for these OTUs to BLAST to NCBI
+    system(paste("awk '/", otu, " /{print;getline;print}' ", repset, " >> temp.fasta", sep=""))
+  })
+  blast.res <- system("blastn -db nr -remote -query temp.fasta -outfmt '6 qseqid qcovs stitle sseqid' -max_target_seqs 1 | sort -u", intern=TRUE)  # Blast sequences to NCBI
+  blast.res <- data.frame(do.call(rbind, lapply(strsplit(blast.res, split="\t"), "[", c(1,3))),
+                          stringsAsFactors=FALSE)
+  blast.res$sym <- str_detect(blast.res[, 2], "Symbiodinium")  # See if Symbiodinium is in BLAST result
+  df2 <- setNames(merge(poor.otus, blast.res, by=1, all=T), nm=c("otu", "hit", "sym"))
+  df2[which(is.na(df2$hit)), c("hit", "sym")] <- c("No hit", FALSE)
+  system("rm temp.fasta")  # Cleanup temp file
+  return(df2)
+}
 
+tax97.blasts <- is.it.symbio(tax97, "data/otus_97/97_otus_rep_set.fasta")
+tax97.notsym <- as.character(tax97.blasts[which(tax97.blasts$sym==FALSE), "otu"])
 
+tax97bs.blasts <- is.it.symbio(tax97bs, "data/otus_97_bysample/all_rep_set_rep_set.fasta")
+tax97bs.notsym <- as.character(tax97bs.blasts[which(tax97bs.blasts$sym==FALSE), "otu"])
 
+tax97bsp.blasts <- is.it.symbio(tax97bsp, "data/otus_97_byspecies/all_rep_set_rep_set.fasta")
+tax97bsp.notsym <- as.character(tax97bsp.blasts[which(tax97bsp.blasts$sym==FALSE), "otu"])
+
+tax100.blasts <- is.it.symbio(tax100, "data/otus_100/100_otus_rep_set.fasta")
+tax100.notsym <- as.character(tax100.blasts[which(tax100.blasts$sym==FALSE), "otu"])
+
+# Remove OTUs that are not Symbiodinium
+phy97.f <- prune_taxa(!taxa_names(phy97) %in% tax97.notsym, phy97)
+phy97bs.f <- prune_taxa(!taxa_names(phy97bs) %in% tax97bs.notsym, phy97bs)
+phy97bsp.f <- prune_taxa(!taxa_names(phy97bsp) %in% tax97bsp.notsym, phy97bsp)
+phy100.f <- prune_taxa(!taxa_names(phy100) %in% tax100.notsym, phy100)
 
 
 # Filter OTUs by minimum count
 # Set threshold count
 n <- 10
 # Identify OTUs below threshold count
-taxa97 <- taxa_sums(phy97)[which(taxa_sums(phy97) >= n)]
-taxa97bs <- taxa_sums(phy97bs)[which(taxa_sums(phy97bs) >= n)]
-taxa97bsp <- taxa_sums(phy97bsp)[which(taxa_sums(phy97bsp) >= n)] 
-taxa100 <- taxa_sums(phy100)[which(taxa_sums(phy100) >= n)]
+taxa97 <- taxa_sums(phy97.f)[which(taxa_sums(phy97.f) >= n)]
+taxa97bs <- taxa_sums(phy97bs.f)[which(taxa_sums(phy97bs.f) >= n)]
+taxa97bsp <- taxa_sums(phy97bsp.f)[which(taxa_sums(phy97bsp.f) >= n)] 
+taxa100 <- taxa_sums(phy100.f)[which(taxa_sums(phy100.f) >= n)]
 # Remove taxa below threshold count
-phy97.f <- prune_taxa(names(taxa97), phy97)
-phy97bs.f <- prune_taxa(names(taxa97bs), phy97bs)
-phy97bsp.f <- prune_taxa(names(taxa97bsp), phy97bsp)
-phy100.f <- prune_taxa(names(taxa100), phy100)
+phy97.f <- prune_taxa(names(taxa97), phy97.f)
+phy97bs.f <- prune_taxa(names(taxa97bs), phy97bs.f)
+phy97bsp.f <- prune_taxa(names(taxa97bsp), phy97bsp.f)
+phy100.f <- prune_taxa(names(taxa100), phy100.f)
 
 # Filter samples by minimum count
 # Set threshold number of reads
@@ -384,7 +340,7 @@ cladeAbund
 
 par(mfrow=c(1,1), mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7)
 # Plot composition of 97% within-sample OTUs colored by clade
-composition(phy97bs.f.p, col=taxcolors[factor(data.frame(tax_table(phy97bs.f.p))[order(data.frame(tax_table(phy97bs.f.p))$Subtype), ]$Clade, levels=c("A","B","C","D","F","G"))], legend=T)
+composition(phy97bs.f.p, col=taxcolors[factor(data.frame(tax_table(phy97bs.f.p))[order(data.frame(tax_table(phy97bs.f.p))$nw.st), ]$Clade, levels=c("A","B","C","D","F","G"))], legend=T)
 # Plot composition of 97% within-sample OTUs colored by OTU
 #composition(phy97bs.f.p, col=rainbow(ntaxa(phy97bs.f.p)), legend=F)
 
@@ -396,7 +352,7 @@ composition(phy97bs.f.p, col=taxcolors[factor(data.frame(tax_table(phy97bs.f.p))
 For each coral species, barplots are presented showing the relative abundance of OTUs obtained by 100%, 97%, and 97%-within-sample clustering. OTUs comprising more than 4% of a sample are labeled with the unique OTU number and the *Symbiodinium* subtype and NCBI GenBank accession number of the closest BLAST hit for that OTU in the reference database. OTU numbers and barplot colors are NOT comparable across the three clustering methods.
 
 ## *Diploria strigosa*  
-Notice how 97% OTUs and 97% within-sample OTUs are **NOT THE SAME!** Specifically, notice how in the 97% OTU dataset, all samples except two are dominated by the same OTU, denovo235. In the 97% within-sample OTU dataset, those samples are dominated by three different OTUs -- denovo73, denovo231, and denovo10. Look at the 100% OTU dataset to see the composition of unique sequence variants in these samples. Indeed, these samples are dominated by **different sequence variants**. However, in the 97% OTU approach, they have all been collapsed into the same OTU, while in the 97% within-sample clustering approach, samples with different dominant sequence variants are maintained as separate OTUs, even though these different sequence variants are more than 97% similar to each other. I suggest that the  within-sample clustering approach is a better way of treating *Symbiodinium* ITS2 sequence data.
+Notice how 97% OTUs and 97% within-sample OTUs are **NOT THE samE!** Specifically, notice how in the 97% OTU dataset, all samples except two are dominated by the same OTU, denovo235. In the 97% within-sample OTU dataset, those samples are dominated by three different OTUs -- denovo73, denovo231, and denovo10. Look at the 100% OTU dataset to see the composition of unique sequence variants in these samples. Indeed, these samples are dominated by **different sequence variants**. However, in the 97% OTU approach, they have all been collapsed into the same OTU, while in the 97% within-sample clustering approach, samples with different dominant sequence variants are maintained as separate OTUs, even though these different sequence variants are more than 97% similar to each other. I suggest that the  within-sample clustering approach is a better way of treating *Symbiodinium* ITS2 sequence data.
 ```{r dstr, cache=T, fig.height=16, fig.width=8}
 # Create subsetted phyloseq objects for Diploria strigosa
 dstr97.f.p <- subset_samples(phy97.f.p, Species=="strigosa")
@@ -684,7 +640,7 @@ net <- graph_from_data_frame(d=edges, vertices=nodes, directed=F)
 V(net)$shape <- c("square", "circle")[factor(V(net)$type)]
 V(net)$size <- ifelse(is.na(V(net)$Clade), 15, 10*sqrt(degree(net))) #5*sqrt(degree(net))
 V(net)$label <- ifelse(is.na(V(net)$Clade), names(V(net)),  
-                       unlist(lapply(strsplit(V(net)$Subtype, split="_"), "[", 1)))
+                       unlist(lapply(strsplit(V(net)$nw.st, split="_"), "[", 1)))
 V(net)$label <- str_replace_all(V(net)$label, c("alcicornis"="M.alc.", "annularis"="O.ann",
                                                 "astreoides"="P.ast.", "cavernosa"="M.cav.",
                                                 "cylindrus"="D.cyl.", "fragum"="F.fra.", 
@@ -731,7 +687,7 @@ net <- graph_from_data_frame(d=edges, vertices=nodes, directed=F)
 V(net)$shape <- c("square", "circle")[factor(V(net)$type)]
 V(net)$size <- ifelse(is.na(V(net)$Clade), 15, 10*(degree(net))^0.75) #5*sqrt(degree(net))
 V(net)$label <- ifelse(is.na(V(net)$Clade), names(V(net)),  
-                       unlist(lapply(strsplit(V(net)$Subtype, split="_"), "[", 1)))
+                       unlist(lapply(strsplit(V(net)$nw.st, split="_"), "[", 1)))
 V(net)$label <- str_replace_all(V(net)$label, c("alcicornis"="M.alc.", "annularis"="O.ann",
                                                 "astreoides"="P.ast.", "cavernosa"="M.cav.",
                                                 "cylindrus"="D.cyl.", "fragum"="F.fra.", 
@@ -780,7 +736,7 @@ net <- graph_from_data_frame(d=edges, vertices=nodes, directed=F)
 V(net)$shape <- c("square", "circle")[factor(V(net)$type)]
 V(net)$size <- ifelse(is.na(V(net)$Clade), 15, 5*degree(net)) #5*sqrt(degree(net))
 V(net)$label <- ifelse(is.na(V(net)$Clade), names(V(net)),  
-                       unlist(lapply(strsplit(V(net)$Subtype, split="_"), "[", 1)))
+                       unlist(lapply(strsplit(V(net)$nw.st, split="_"), "[", 1)))
 V(net)$label <- str_replace_all(V(net)$label, c("alcicornis"="M.alc.", "annularis"="O.ann",
                                                 "astreoides"="P.ast.", "cavernosa"="M.cav.",
                                                 "cylindrus"="D.cyl.", "fragum"="F.fra.", 
@@ -797,7 +753,7 @@ nodemap <- seq(1:length(V(net)))
 # Make a copy of the nodemap that will be modified
 nodemapnew <- nodemap
 # Find all nodes beginning with D, and give them the same node ID number
-nodemapnew[grep("^D", V(net)$Subtype)] <- min(grep("^D", V(net)$Subtype))
+nodemapnew[grep("^D", V(net)$nw.st)] <- min(grep("^D", V(net)$nw.st))
 # Replace the now missing values in the node map so node IDs remain sequential
 while (max(setdiff(nodemap, nodemapnew)) < max(nodemap)) {
   nodemapnew[which(nodemapnew==max(setdiff(nodemap, nodemapnew))+1)] <- min(setdiff(nodemap, nodemapnew))
@@ -847,7 +803,7 @@ with(betad97bs$sambdsumm.ord, {
   arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
   points(1:10, mean, cex=1, pch=21, bg="white")
   text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75, 
-       labels=levels(SAM$Species)[order(betad97bs$sambdsumm$mean, decreasing=T)])
+       labels=levels(sam$Species)[order(betad97bs$sambdsumm$mean, decreasing=T)])
   text(1:10, mean + se + 0.03, labels=betad97bs$saml$Letters[as.character(group)], cex=0.5)
 })
 ```
@@ -861,7 +817,7 @@ with(betad100$sambdsumm.ord, {
   arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
   points(1:10, mean, cex=1, pch=21, bg="white")
   text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75, 
-       labels=levels(SAM$Species)[order(betad100$sambdsumm$mean, decreasing=T)])
+       labels=levels(sam$Species)[order(betad100$sambdsumm$mean, decreasing=T)])
   text(1:10, mean + se + 0.03, labels=betad100$saml$Letters[as.character(group)], cex=0.5)
 })
 ```
@@ -876,7 +832,7 @@ with(betad97$sambdsumm.ord, {
   arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
   points(1:10, mean, cex=1, pch=21, bg="white")
   text(1:10, par("usr")[3]-0.025, srt=45, adj=1, xpd=T, cex=0.75, 
-       labels=levels(SAM$Species)[order(betad97$sambdsumm$mean, decreasing=T)])
+       labels=levels(sam$Species)[order(betad97$sambdsumm$mean, decreasing=T)])
   text(1:10, mean + se + 0.03, labels=betad97$saml$Letters[as.character(group)], cex=0.5)
 })
 ```
