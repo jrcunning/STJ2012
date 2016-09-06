@@ -20,7 +20,7 @@ options(scipen = 3, digits = 9)
 
 ```{r setup_2, include=FALSE}
 # Load all R scripts in "R/" directory
-sapply(list.files(path="R", pattern="*[^w].R", full.names=TRUE), source, .GlobalEnv)
+source("R/functions.R", .GlobalEnv)
 # Load package libraries
 library(phyloseq); library(vegan); library(multcompView); library(reshape2); library(igraph); library(stringr)
 # Set colors for plotting clades
@@ -51,26 +51,42 @@ OTU tables and taxonomic assignments from each of these bioinformatic approaches
 # Data pre-processing
 ### Import dataset
 The [phyloseq](https://joey711.github.io/phyloseq/) package is used here to combine the OTU table, taxonomic assignments, and sample metadata into a single R data object (class 'phyloseq') to facilitate downstream analyses.
-```{r data_import, cache=T}
-
-```
-
-```{r filter_taxa}
+```{r import_taxa_data, cache=T}
 # Import taxonomic assignment data from blast and nw
-blast.res.colnames <- c("otu", "BLAST.hit", "pct.id", "B.length", "B.mismatches", "B.gapopen", 
-                        "q.start", "q.end", "s.start", "s.end", "e.val", "bit.score")
-tax.import <- function(b, nw) {
-  m <- merge(read.table(b, col.names=blast.res.colnames, stringsAsFactors=FALSE),
-             read.table(nw, stringsAsFactors=FALSE), by="otu")
+
+read.blast <- function(file) {
+  b <- read.table(file, stringsAsFactors=FALSE,
+                  col.names=c("otu", "pct.id", "length", "mismatches", "gapopen", "q.start", "q.end", 
+                              "s.start", "s.end", "e.val", "bit.score", "hit"))
+  b <- b[order(b$otu),]
+  return(b)
+}
+b <- read.blast("data/otus_97/blast_tophits.tsv")
+
+read.nw <- function(file) {
+  nw <- read.table(file, stringsAsFactors=FALSE)
+  nw <- nw[order(nw$otu),]
+  return(nw)
+}
+nw <- read.nw("data/otus_97/nw_tophits.tsv")
+
+tax.import <- function(bfp, nwfp) {
+  b <- read.table(bfp, col.names=blast.res.colnames, stringsAsFactors=FALSE)
+  b <- b[order(b$otu),]
+  ag <- aggregate(data.frame(BLAST.hit=b$BLAST.hit), by=list(otu=b$otu), FUN=function(x) paste0(x, collapse=";"))
+  b2 <- b[!duplicated(b$otu), ]
+  b2$BLAST.hit <- ag$BLAST.hit
+  nw <- read.table(nwfp, stringsAsFactors=FALSE)
+  m <- merge(b2, nw, by="otu")
   rownames(m) <- m$otu
   m$Clade <- str_extract(m$nw.hits, pattern="^.")
   return(m)
 }
 
-tax97 <- tax.import(b="data/otus_97/blast_tophits.txt", nw="data/otus_97/nw_tophits.tsv")
-tax100 <- tax.import(b="data/otus_100/blast_tophits.txt", nw="data/otus_100/nw_tophits.tsv")
-tax97bs <- tax.import(b="data/otus_97_bysample/blast_tophits.txt", nw="data/otus_97_bysample/nw_tophits.tsv")
-tax97bsp <- tax.import(b="data/otus_97_byspecies/blast_tophits.txt", nw="data/otus_97_byspecies/nw_tophits.tsv")
+tax97 <- tax.import(bfp="data/otus_97/blast_tophits_withties.txt", nwfp="data/otus_97/nw_tophits.tsv")
+tax100 <- tax.import(bfp="data/otus_100/blast_tophits.txt", nwfp="data/otus_100/nw_tophits.tsv")
+tax97bs <- tax.import(bfp="data/otus_97_bysample/blast_tophits.txt", nwfp="data/otus_97_bysample/nw_tophits.tsv")
+tax97bsp <- tax.import(bfp="data/otus_97_byspecies/blast_tophits.txt", nwfp="data/otus_97_byspecies/nw_tophits.tsv")
 
 # Deal with identical taxonomic assignments (because some reference sequences are not unique...)
 # Create names for groups of identical sequences based on members of group...
@@ -87,7 +103,7 @@ names(ident) <- subtypes
 ident <- melt(do.call(rbind, ident))
 ident <- unique(ident[order(ident[,1]), c(3,1)])
 
-# Replace any sequence in taxonomy assignment that is a member of a group of identical sequences with the name of the group
+# Replace any sequence name in taxonomy assignment that is a member of a group of identical sequences with the name of the group
 collapse.idents <- function(df) {
   within(df, {
     for (i in 1:nrow(ident)) {
