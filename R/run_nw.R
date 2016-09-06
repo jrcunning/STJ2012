@@ -43,24 +43,28 @@ stopCluster(cl)  # Stop cluster
 
 # Collect results in a data frame
 results <- data.frame(otu=rep(names(best), sapply(best, length)),
-                      nw.hit=unlist(best))
+                      hit=unlist(best), stringsAsFactors = FALSE)
 
-# Get percent similarity of global alignment of each sequence with its bets hits from database
+# Align each sequence with its bets hits from database to get number of mismatches, indels, and % similarity
 # Align each otu sequence to its best hits
-psa <- pairwiseAlignment(subject=otus[results$otu], pattern=ref[results$nw.hit], type="global-local",
+psa <- pairwiseAlignment(subject=otus[results$otu], pattern=ref[results$hit], type="global-local",
                          substitutionMatrix=EDNAFULL,
                          gapOpening=10.0, gapExtension=0.5)
 
 # Calculate percent similarity to reference with indels counting as single difference regardless of length
 results <- within(results, {
-  nw.len <- width(pattern(psa))
-  nw.mis <- nmismatch(psa)
-  nw.ins <- unlist(lapply(as.list(insertion(psa)), length))
-  nw.del <- unlist(lapply(as.list(deletion(psa)), length))
-  nw.sim <- round((nw.len-nw.mis-nw.ins-nw.del)/nw.len, 4) * 100
+  score <- score(psa)
+  len <- width(pattern(psa))
+  mis <- nmismatch(psa)
+  ins <- unlist(lapply(as.list(insertion(psa)), length))
+  del <- unlist(lapply(as.list(deletion(psa)), length))
+  sim <- round((len-mis-ins-del)/len, 4) * 100
 })
 
+# Merge identical hits
+results2 <- with(results, aggregate(hit ~ otu + sim + del + ins + mis + len + score, FUN=paste0, collapse=";"))
+
 # Write results to .tsv file
-write.table(results, file=paste(dirname(args[1]), "/", "nw_tophits.tsv", sep=""), 
+write.table(results2, file=paste(dirname(args[1]), "/", "nw_tophits.tsv", sep=""), 
             sep="\t", quote=FALSE)
 
