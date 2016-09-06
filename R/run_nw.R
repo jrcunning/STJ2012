@@ -27,7 +27,7 @@ get.best <- function(x) {
   scores <- pairwiseAlignment(subject=x, pattern=ref, type="global-local", scoreOnly=TRUE,
                            substitutionMatrix=EDNAFULL,
                            gapOpening=10.0, gapExtension=0.5)
-  best <- paste(names(ref)[which(scores==max(scores))], collapse=";")
+  best <- cbind(names(x), names(ref)[which(scores==max(scores))])
   return(best)
 }
 
@@ -42,13 +42,12 @@ best <- parSapply(cl, otus, FUN=get.best)
 stopCluster(cl)  # Stop cluster
 
 # Collect results in a data frame
-results <- data.frame(otu=names(otus), nw.hits=best, stringsAsFactors=FALSE)
+results <- data.frame(otu=rep(names(best), sapply(best, length)),
+                      nw.hit=unlist(best))
 
-# Get percent similarity of global alignment of each sequence with its best hit from database
-# If multiple best hits, select first one for comparison
-results$nw.hit1 <- unlist(lapply(strsplit(results$nw.hits, split=";"), "[", 1))
-# Align each otu sequence to its best hit
-psa <- pairwiseAlignment(subject=otus[results$otu], pattern=ref[results$nw.hit1], type="global-local",
+# Get percent similarity of global alignment of each sequence with its bets hits from database
+# Align each otu sequence to its best hits
+psa <- pairwiseAlignment(subject=otus[results$otu], pattern=ref[results$nw.hit], type="global-local",
                          substitutionMatrix=EDNAFULL,
                          gapOpening=10.0, gapExtension=0.5)
 
