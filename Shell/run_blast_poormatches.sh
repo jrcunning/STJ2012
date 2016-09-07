@@ -9,3 +9,7 @@ awk 'NR==FNR {a[">"$1]; next} $1 in a {print; getline; print}' $dir/poor_matches
 
 # Blast sequences to NCBI nr databse
 blastn -db nr -remote -query $dir/poor_matches_seqs.fasta -outfmt '6 qseqid qcovs stitle sseqid' -max_target_seqs 1 | sort -u > $dir/poormatch_IDs.txt
+
+# Clean up
+rm $dir/poor_matches.txt
+rm $dir/poor_matches_seqs.fasta
