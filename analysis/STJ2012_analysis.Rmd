@@ -215,9 +215,9 @@ get.st <- function(df) {
     Subtype <- gsub(hit, pattern="_[A-Z]{2}[0-9]{6}", replacement="")
     Subtype <- gsub(Subtype, pattern="_multiple", replacement="")
     Subtype2 <- ifelse(as.numeric(sim)==100, Subtype,
-                       paste0("[", rep(rle(sort(Subtype))$values, times=rle(sort(Subtype))$lengths), "]^", 
+                       paste0("'[", rep(rle(sort(Subtype))$values, times=rle(sort(Subtype))$lengths), "]'^", 
                               unlist(lapply(rle(sort(Subtype))$lengths, seq_len)))[order(order(Subtype))])
-    Subtype <- ifelse(as.numeric(sim)==100, Subtype, paste("*", Subtype, sep=""))
+    #Subtype <- ifelse(as.numeric(sim)==100, Subtype, paste("*", Subtype, sep=""))
   })
 }
 
@@ -333,7 +333,7 @@ phy100.f.t <- transform_sample_counts(phy100.f, transform)
 
 # Clade overview
 Here the composition of each sample is plotted as a horizontal bar, sorted by species and shore. Each segment of the bar represents an individual OTU and is colored by clade. This plot is a nice overview of the whole dataset but only provides coarse information at the clade level.
-```{r cladecomp97bs, cache=T, fig.height=6, fig.width=4}
+```{r cladecomp, cache=T, fig.height=3, fig.width=4}
 cladeAbund <- aggregate(data.frame(RelAbund=rowSums(otu_table(phy97bs.f.p))),
                         by=list(Clade=data.frame(tax_table(phy97bs.f.p))$Clade), FUN=sum)
 cladeAbund$Prop <- prop.table(cladeAbund$RelAbund)
@@ -344,8 +344,9 @@ bars <- barplot(cladeAbund$Prop*100, col=taxcolors, space=0,
 text(bars, cladeAbund$Prop*100+2, labels=round(cladeAbund$Prop*100, 1), xpd=T)
 
 cladeAbund$Notus <- table(data.frame(tax_table(phy97bs.f.p))$Clade)
+```
 
-
+```{r cladecomp_bysample, cache=T, fig.height=6, fig.width=4}
 par(mfrow=c(1,1), mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7)
 # Plot composition of 97% within-sample OTUs colored by clade
 composition(phy97bs.f.p, col=taxcolors[factor(data.frame(tax_table(phy97bs.f.p))[order(data.frame(tax_table(phy97bs.f.p))$Subtype), ]$Clade, levels=c("A","B","C","D","F","G"))], legend=T)
