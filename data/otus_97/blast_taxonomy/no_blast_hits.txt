@@ -1,7 +1,0 @@
-denovo25	No blast hit	None	None
-denovo11	No blast hit	None	None
-denovo148	No blast hit	None	None
-denovo97	No blast hit	None	None
-denovo139	No blast hit	None	None
-denovo34	No blast hit	None	None
-denovo33	No blast hit	None	None

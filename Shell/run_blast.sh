@@ -10,7 +10,7 @@ blastall -p blastn -i $1 -d $2 -e 0.00001 -b 10 -m 8 > $dir/blast_results.txt
 
 # Identify the lowest E-value obtained for each sequence
 sort -k1,1 -k11,11g $dir/blast_results.txt | sort -u -k1,1 | cut -f1,11 > $dir/lowevals.txt
-# Get all BLAST hits that obtained the lowest E-value for each sequence (keeps ties)
+# Get all BLAST hits that obtained the lowest E-value for each sequence (keeps ties/multiple hits with same E-val)
 rm -f $dir/blast_tophits_withties.txt
 while read n; do
   otu=`echo $n | cut -d" " -f1`
