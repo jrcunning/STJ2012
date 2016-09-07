@@ -1,0 +1,6 @@
+denovo11	95	Siderastrea siderea isolate ss2-12 18S ribosomal RNA gene, partial sequence; internal transcribed spacer 1, 5.8S ribosomal RNA gene and internal transcribed spacer 2, complete sequence; and 28S ribosomal RNA gene, partial sequence	gi|36962912|gb|AY322594.1|
+denovo139	100	Symbiodinium sp. clade A ex. Pteraeolidia ianthina genes for 5.8S rRNA, ITS2, 28S rRNA, partial and complete sequence, clone: KMG102-a-01	gi|758370828|dbj|AB778572.1|
+denovo148	100	Cliona vermifera isolate CVE-ITS6 internal transcribed spacer 1, partial sequence; 5.8S ribosomal RNA gene and internal transcribed spacer 2, complete sequence; and 28S ribosomal RNA gene, partial sequence	gi|874520638|gb|KP411754.1|
+denovo33	100	Gyrodiniellum shiwhaense 18S rRNA gene, ITS1, 5.8S rRNA gene, ITS2 and 28S rRNA gene	gi|312004122|emb|FR720082.1|
+denovo34	100	Diploria labyrinthiformis 18S ribosomal RNA gene, partial sequence; internal transcribed spacer 1, 5.8S ribosomal RNA gene, and internal transcribed spacer 2, complete sequence; and 28S ribosomal RNA gene, partial sequence	gi|827599051|gb|KF492678.1|
+denovo97	100	Siderastrea stellata isolate Sst1-5 internal transcribed spacer 1, partial sequence; 5.8S ribosomal RNA gene and internal transcribed spacer 2, complete sequence; and 28S ribosomal RNA gene, partial sequence	gi|953525338|gb|KT163839.1|
