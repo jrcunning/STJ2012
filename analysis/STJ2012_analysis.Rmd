@@ -53,40 +53,16 @@ OTU tables and taxonomic assignments from each of these bioinformatic approaches
 The [phyloseq](https://joey711.github.io/phyloseq/) package is used here to combine the OTU table, taxonomic assignments, and sample metadata into a single R data object (class 'phyloseq') to facilitate downstream analyses.
 ```{r import_taxa_data, cache=T}
 # Import taxonomic assignment data from blast and nw
-
-read.blast <- function(file) {
-  b <- read.table(file, stringsAsFactors=FALSE,
-                  col.names=c("otu", "pct.id", "length", "mismatches", "gapopen", "q.start", "q.end", 
-                              "s.start", "s.end", "e.val", "bit.score", "hit"))
-  b <- b[order(b$otu),]
-  return(b)
-}
-b <- read.blast("data/otus_97/blast_tophits.tsv")
-
 read.nw <- function(file) {
   nw <- read.table(file, stringsAsFactors=FALSE)
   nw <- nw[order(nw$otu),]
   return(nw)
 }
-nw <- read.nw("data/otus_97/nw_tophits.tsv")
 
-tax.import <- function(bfp, nwfp) {
-  b <- read.table(bfp, col.names=blast.res.colnames, stringsAsFactors=FALSE)
-  b <- b[order(b$otu),]
-  ag <- aggregate(data.frame(BLAST.hit=b$BLAST.hit), by=list(otu=b$otu), FUN=function(x) paste0(x, collapse=";"))
-  b2 <- b[!duplicated(b$otu), ]
-  b2$BLAST.hit <- ag$BLAST.hit
-  nw <- read.table(nwfp, stringsAsFactors=FALSE)
-  m <- merge(b2, nw, by="otu")
-  rownames(m) <- m$otu
-  m$Clade <- str_extract(m$nw.hits, pattern="^.")
-  return(m)
-}
-
-tax97 <- tax.import(bfp="data/otus_97/blast_tophits_withties.txt", nwfp="data/otus_97/nw_tophits.tsv")
-tax100 <- tax.import(bfp="data/otus_100/blast_tophits.txt", nwfp="data/otus_100/nw_tophits.tsv")
-tax97bs <- tax.import(bfp="data/otus_97_bysample/blast_tophits.txt", nwfp="data/otus_97_bysample/nw_tophits.tsv")
-tax97bsp <- tax.import(bfp="data/otus_97_byspecies/blast_tophits.txt", nwfp="data/otus_97_byspecies/nw_tophits.tsv")
+tax97 <- read.nw("data/otus_97/nw_tophits.tsv")
+tax100 <- read.nw("data/otus_100/nw_tophits.tsv")
+tax97bs <- read.nw("data/otus_97_bysample/nw_tophits.tsv")
+tax97bsp <- read.nw("data/otus_97_byspecies/nw_tophits.tsv")
 
 # Deal with identical taxonomic assignments (because some reference sequences are not unique...)
 # Create names for groups of identical sequences based on members of group...
@@ -107,9 +83,7 @@ ident <- unique(ident[order(ident[,1]), c(3,1)])
 collapse.idents <- function(df) {
   within(df, {
     for (i in 1:nrow(ident)) {
-      BLAST.hit <- gsub(ident[i,1], ident[i,2], BLAST.hit)
-      nw.hits <- gsub(ident[i,1], ident[i,2], nw.hits)
-      nw.hit1 <- gsub(ident[i,1], ident[i,2], nw.hit1)
+      hit <- gsub(ident[i,1], ident[i,2], hit)
     }
   })
 }
@@ -119,23 +93,27 @@ tax97bs <- collapse.idents(tax97bs)
 tax97bsp <- collapse.idents(tax97bsp)
 tax100 <- collapse.idents(tax100)
 
-# Get subtypes without accession numbers
-get.st <- function(df) {
-  within(df, {
-    bl.st <- gsub(BLAST.hit, pattern="_.*$", replacement="")
-    bl.st <- ifelse(nw.sim==100, bl.st, paste("'", bl.st, "'", sep=""))
-    nw.st <- gsub(nw.hits, pattern="_[A-Z]{2}[0-9]{6}", replacement="")
-    nw.st <- gsub(nw.st, pattern="_multiple", replacement="")
-    nw.st <- ifelse(nw.sim==100, nw.st, paste("'", nw.st, "'", sep=""))
-    Subtype <- nw.st
-  })
-}
 
 
-tax97 <- get.st(tax97)
-tax97bs <- get.st(tax97bs)
-tax97bsp <- get.st(tax97bsp)
-tax100 <- get.st(tax100)
+#tax97 <- get.st(tax97)
+tax97 <- with(tax97, tax97[order(otu, -sim), ])
+tax97 <- tax97[!duplicated(tax97$otu), ]
+rownames(tax97) <- tax97$otu
+
+#tax97bs <- get.st(tax97bs)
+tax97bs <- with(tax97bs, tax97bs[order(otu, -sim), ])
+tax97bs <- tax97bs[!duplicated(tax97bs$otu), ]
+rownames(tax97bs) <- tax97bs$otu
+
+#tax97bsp <- get.st(tax97bsp)
+tax97bsp <- with(tax97bsp, tax97bsp[order(otu, -sim), ])
+tax97bsp <- tax97bsp[!duplicated(tax97bsp$otu), ]
+rownames(tax97bsp) <- tax97bsp$otu
+
+#tax100 <- get.st(tax100)
+tax100 <- with(tax100, tax100[order(otu, -sim), ])
+tax100 <- tax100[!duplicated(tax100$otu), ]
+rownames(tax100) <- tax100$otu
 ```
 
 ```{r build_phyloseq}
@@ -162,39 +140,37 @@ phy100 <- phyloseq(otu100, tax_table(as.matrix(tax100)), sam)
 ### Filter dataset
 ```{r filter_dataset, cache=T}
 # FILTER OUT OTUS THAT ARE NOT SYMBIODINIUM
-# Build function to BLAST all sequences with less than 90% similarity to Symbiodinium to the NCBI nr database, and get the top hit. If the top hit does not contain the string "Symbiodinium", then this sequence is assumed to not be Symbiodinium.
-is.it.symbio <- function(df, repset) {
-  poor.otus <- df[which(df$nw.sim < 90), "otu"]  # Identify OTUs with <90% similarity to Symbiodinium
-  sapply(poor.otus, function(otu) {  # Get sequences for these OTUs to BLAST to NCBI
-    system(paste("awk '/", otu, " /{print;getline;print}' ", repset, " >> temp.fasta", sep=""))
-  })
-  blast.res <- system("blastn -db nr -remote -query temp.fasta -outfmt '6 qseqid qcovs stitle sseqid' -max_target_seqs 1 | sort -u", intern=TRUE)  # Blast sequences to NCBI
-  blast.res <- data.frame(do.call(rbind, lapply(strsplit(blast.res, split="\t"), "[", c(1,3))),
-                          stringsAsFactors=FALSE)
-  blast.res$sym <- str_detect(blast.res[, 2], "Symbiodinium")  # See if Symbiodinium is in BLAST result
-  df2 <- setNames(merge(poor.otus, blast.res, by=1, all=T), nm=c("otu", "hit", "sym"))
-  df2[which(is.na(df2$hit)), c("hit", "sym")] <- c("No hit", FALSE)
-  system("rm temp.fasta")  # Cleanup temp file
-  return(df2)
-}
+# If the top hit in NCBI does not contain the string "Symbiodinium", then this sequence is assumed to not be Symbiodinium.
+poormatch97 <- readLines("data/otus_97/poormatch_IDs.txt")
+poormatch97 <- data.frame(otu=str_extract(poormatch97, "denovo[^ ]*"),
+                          symbio=str_detect(poormatch97, "Symbiodinium"),   # TRUE if Symbiodinium
+                          stringsAsFactors = FALSE)
+notsymbio97 <- poormatch97[which(poormatch97$symbio==F), 1]
 
-tax97.blasts <- is.it.symbio(tax97, "data/otus_97/97_otus_rep_set.fasta")
-tax97.notsym <- as.character(tax97.blasts[which(tax97.blasts$sym==FALSE), "otu"])
+poormatch97bs <- readLines("data/otus_97_bysample/poormatch_IDs.txt")
+poormatch97bs <- data.frame(otu=str_extract(poormatch97bs, "denovo[^ ]*"),
+                            symbio=str_detect(poormatch97bs, "Symbiodinium"),   # TRUE if Symbiodinium
+                            stringsAsFactors = FALSE)
+notsymbio97bs <- poormatch97bs[which(poormatch97bs$symbio==F), 1]
 
-tax97bs.blasts <- is.it.symbio(tax97bs, "data/otus_97_bysample/all_rep_set_rep_set.fasta")
-tax97bs.notsym <- as.character(tax97bs.blasts[which(tax97bs.blasts$sym==FALSE), "otu"])
+poormatch97bsp <- readLines("data/otus_97_byspecies/poormatch_IDs.txt")
+poormatch97bsp <- data.frame(otu=str_extract(poormatch97bsp, "denovo[^ ]*"),
+                             symbio=str_detect(poormatch97bsp, "Symbiodinium"),   # TRUE if Symbiodinium
+                             stringsAsFactors = FALSE)
+notsymbio97bsp <- poormatch97bsp[which(poormatch97bsp$symbio==F), 1]
 
-tax97bsp.blasts <- is.it.symbio(tax97bsp, "data/otus_97_byspecies/all_rep_set_rep_set.fasta")
-tax97bsp.notsym <- as.character(tax97bsp.blasts[which(tax97bsp.blasts$sym==FALSE), "otu"])
+poormatch100 <- readLines("data/otus_100/poormatch_IDs.txt")
+poormatch100 <- data.frame(otu=str_extract(poormatch100, "denovo[^ ]*"),
+                           symbio=str_detect(poormatch100, "Symbiodinium"),   # TRUE if Symbiodinium
+                           stringsAsFactors = FALSE)
+notsymbio100 <- poormatch100[which(poormatch100$symbio==F), 1]
 
-tax100.blasts <- is.it.symbio(tax100, "data/otus_100/100_otus_rep_set.fasta")
-tax100.notsym <- as.character(tax100.blasts[which(tax100.blasts$sym==FALSE), "otu"])
 
 # Remove OTUs that are not Symbiodinium
-phy97.f <- prune_taxa(!taxa_names(phy97) %in% tax97.notsym, phy97)
-phy97bs.f <- prune_taxa(!taxa_names(phy97bs) %in% tax97bs.notsym, phy97bs)
-phy97bsp.f <- prune_taxa(!taxa_names(phy97bsp) %in% tax97bsp.notsym, phy97bsp)
-phy100.f <- prune_taxa(!taxa_names(phy100) %in% tax100.notsym, phy100)
+phy97.f <- prune_taxa(!taxa_names(phy97) %in% notsymbio97, phy97)
+phy97bs.f <- prune_taxa(!taxa_names(phy97bs) %in% notsymbio97bs, phy97bs)
+phy97bsp.f <- prune_taxa(!taxa_names(phy97bsp) %in% notsymbio97bsp, phy97bsp)
+phy100.f <- prune_taxa(!taxa_names(phy100) %in% notsymbio100, phy100)
 
 
 # Filter OTUs by minimum count
@@ -231,6 +207,25 @@ phy97.f <- prune_taxa(names(taxa97), phy97.f)
 phy97bs.f <- prune_taxa(names(taxa97bs), phy97bs.f)
 phy97bsp.f <- prune_taxa(names(taxa97bsp), phy97bsp.f)
 phy100.f <- prune_taxa(names(taxa100), phy100.f)
+
+# Label clades and subtypes for filtered phyloseq object tax_tables
+get.st <- function(df) {
+  within(df, {
+    Clade <- substr(hit, 1, 1)
+    Subtype <- gsub(hit, pattern="_[A-Z]{2}[0-9]{6}", replacement="")
+    Subtype <- gsub(Subtype, pattern="_multiple", replacement="")
+    Subtype2 <- ifelse(as.numeric(sim)==100, Subtype,
+                       paste0("[", rep(rle(sort(Subtype))$values, times=rle(sort(Subtype))$lengths), "]^", 
+                              unlist(lapply(rle(sort(Subtype))$lengths, seq_len)))[order(order(Subtype))])
+    Subtype <- ifelse(as.numeric(sim)==100, Subtype, paste("*", Subtype, sep=""))
+  })
+}
+
+tax_table(phy97.f) <- as.matrix(get.st(data.frame(tax_table(phy97.f), stringsAsFactors=FALSE)))
+tax_table(phy97bs.f) <- as.matrix(get.st(data.frame(tax_table(phy97bs.f), stringsAsFactors=FALSE)))
+tax_table(phy97bsp.f) <- as.matrix(get.st(data.frame(tax_table(phy97bsp.f), stringsAsFactors=FALSE)))
+tax_table(phy100.f) <- as.matrix(get.st(data.frame(tax_table(phy100.f), stringsAsFactors=FALSE)))
+
 ```
 * Minimum count to retain OTU: `r n`
 * Minimum count to retain sample: `r sn`
@@ -341,22 +336,19 @@ Here the composition of each sample is plotted as a horizontal bar, sorted by sp
 ```{r cladecomp97bs, cache=T, fig.height=6, fig.width=4}
 cladeAbund <- aggregate(data.frame(RelAbund=rowSums(otu_table(phy97bs.f.p))),
                         by=list(Clade=data.frame(tax_table(phy97bs.f.p))$Clade), FUN=sum)
-sum(cladeAbund$RelAbund)
 cladeAbund$Prop <- prop.table(cladeAbund$RelAbund)
-pie(cladeAbund$Prop, col=taxcolors)
-dotchart(cladeAbund$Prop)
+
 bars <- barplot(cladeAbund$Prop*100, col=taxcolors, space=0,
                 names.arg=cladeAbund$Clade, xlab=expression(paste(italic('Symbiodinium'), " Clade")),
                 ylab="Relative abundance (%)")
 text(bars, cladeAbund$Prop*100+2, labels=round(cladeAbund$Prop*100, 1), xpd=T)
 
 cladeAbund$Notus <- table(data.frame(tax_table(phy97bs.f.p))$Clade)
-cladeAbund
 
 
 par(mfrow=c(1,1), mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7)
 # Plot composition of 97% within-sample OTUs colored by clade
-composition(phy97bs.f.p, col=taxcolors[factor(data.frame(tax_table(phy97bs.f.p))[order(data.frame(tax_table(phy97bs.f.p))$nw.st), ]$Clade, levels=c("A","B","C","D","F","G"))], legend=T)
+composition(phy97bs.f.p, col=taxcolors[factor(data.frame(tax_table(phy97bs.f.p))[order(data.frame(tax_table(phy97bs.f.p))$Subtype), ]$Clade, levels=c("A","B","C","D","F","G"))], legend=T)
 # Plot composition of 97% within-sample OTUs colored by OTU
 #composition(phy97bs.f.p, col=rainbow(ntaxa(phy97bs.f.p)), legend=F)
 
@@ -368,7 +360,7 @@ composition(phy97bs.f.p, col=taxcolors[factor(data.frame(tax_table(phy97bs.f.p))
 For each coral species, barplots are presented showing the relative abundance of OTUs obtained by 100%, 97%, and 97%-within-sample clustering. OTUs comprising more than 4% of a sample are labeled with the unique OTU number and the *Symbiodinium* subtype and NCBI GenBank accession number of the closest BLAST hit for that OTU in the reference database. OTU numbers and barplot colors are NOT comparable across the three clustering methods.
 
 ## *Diploria strigosa*  
-Notice how 97% OTUs and 97% within-sample OTUs are **NOT THE samE!** Specifically, notice how in the 97% OTU dataset, all samples except two are dominated by the same OTU, denovo235. In the 97% within-sample OTU dataset, those samples are dominated by three different OTUs -- denovo73, denovo231, and denovo10. Look at the 100% OTU dataset to see the composition of unique sequence variants in these samples. Indeed, these samples are dominated by **different sequence variants**. However, in the 97% OTU approach, they have all been collapsed into the same OTU, while in the 97% within-sample clustering approach, samples with different dominant sequence variants are maintained as separate OTUs, even though these different sequence variants are more than 97% similar to each other. I suggest that the  within-sample clustering approach is a better way of treating *Symbiodinium* ITS2 sequence data.
+Notice how 97% OTUs and 97% within-sample OTUs are **NOT THE SAME!** Specifically, notice how in the 97% OTU dataset, all samples except two are dominated by the same OTU, denovo235. In the 97% within-sample OTU dataset, those samples are dominated by three different OTUs -- denovo73, denovo231, and denovo10. Look at the 100% OTU dataset to see the composition of unique sequence variants in these samples. Indeed, these samples are dominated by **different sequence variants**. However, in the 97% OTU approach, they have all been collapsed into the same OTU, while in the 97% within-sample clustering approach, samples with different dominant sequence variants are maintained as separate OTUs, even though these different sequence variants are more than 97% similar to each other. I suggest that the  within-sample clustering approach is a better way of treating *Symbiodinium* ITS2 sequence data.
 ```{r dstr, cache=T, fig.height=16, fig.width=8}
 # Create subsetted phyloseq objects for Diploria strigosa
 dstr97.f.p <- subset_samples(phy97.f.p, Species=="strigosa")
@@ -630,175 +622,78 @@ plotnet(mcav.net)
 White circles represent coral samples, colored circles represent *Symbiodinium* OTUs (97% within-sample). Thickness of lines corresponds to the relative abundance of an OTU within a sample.
 
 # Network analyses
-## "Resident" symbionts
+## Abundant symbionts
 #### (>1% relative abundance)
 In this network, each coral species is collapsed into a single node (white squares), and connected to every *Symbiodinium* OTU (colored circles) that comprises **at least 1% relative abundance** within at least one individual of that species. Thus, very low abundance OTUs are not represented. The thickness of connections between coral species and OTUs is scaled by the relative proportion of samples of that species in which that OTU was present at ≥1% relative abundance (i.e., the frequency of presence at ≥1%). The size of *Symbiodinium* OTU nodes in the network is scaled by the number of species in which they occur, and colored according to clade.
 ```{r networks, fig.width=5, fig.height=5, fig.align="center"}
-# Get network with one node for each species.
-otudf <- data.frame(t(otu_table(phy97bs.f.p)), check.names=F)
-# Percent of samples of species that contain OTU at more than 1% relative abundance
-sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p))$Species), 
-                   FUN=function(x) length(x[x>0.01])/length(x))
-rownames(sp.ag) <- sp.ag$Species
-sp.ag <- sp.ag[, -1]
-edges <- setNames(melt(as.matrix(sp.ag)), nm=c("source", "target", "weight"))  # Melt data
-edges <- droplevels(edges[edges$weight>0, ])
-# Create "nodes" table from sample and tax data
-sdf <- data.frame(id=levels(data.frame(sample_data(phy97bs.f.p))$Species))
-tdf <- data.frame(tax_table(phy97bs.f.p))[rownames(data.frame(tax_table(phy97bs.f.p))) %in% edges$target, ]
-tdf$id <- rownames(tdf)
-nodes <- merge(sdf, tdf, all=T)
-nodes$type <- ifelse(is.na(nodes$Clade), 1, 2)
-# Create network
-net <- graph_from_data_frame(d=edges, vertices=nodes, directed=F)
+abunet <- sppnet(phy=phy97bs.f.p, plot=F,
+                 fun=function(x) length(x[x>0.01])/length(x),
+                 layout=layout.fruchterman.reingold)
 
-# Best one for now ---------
-V(net)$shape <- c("square", "circle")[factor(V(net)$type)]
-V(net)$size <- ifelse(is.na(V(net)$Clade), 15, 10*sqrt(degree(net))) #5*sqrt(degree(net))
-V(net)$label <- ifelse(is.na(V(net)$Clade), names(V(net)),  
-                       unlist(lapply(strsplit(V(net)$nw.st, split="_"), "[", 1)))
-V(net)$label <- str_replace_all(V(net)$label, c("alcicornis"="M.alc.", "annularis"="O.ann",
-                                                "astreoides"="P.ast.", "cavernosa"="M.cav.",
-                                                "cylindrus"="D.cyl.", "fragum"="F.fra.", 
-                                                "furcata"="P.fur.", "radians"="S.rad.", 
-                                                "siderea"="S.sid.", "strigosa"="D.str."))
-V(net)$color <- ifelse(is.na(V(net)$Clade), "white",
-                       taxcolors[factor(V(net)$Clade, levels=c("A","B","C","D","F","G"))])
-E(net)$color <- "gray60"
-E(net)$width <- 15 * E(net)$weight
-set.seed(12347)
-set.seed(12364)
-set.seed(12374)
-l <- layout.fruchterman.reingold(net)
-l <- norm_coords(l, ymin=-1, ymax=1, xmin=-1, xmax=1)
 par(mar=c(0,0,0,0))
-plot(net, rescale=F, layout=l*1, edge.curved=0.1, vertex.label.cex=V(net)$size/20,
+V(abunet)$size <- ifelse(is.na(V(abunet)$Clade), 15, 10*sqrt(degree(abunet)))
+set.seed(12374)
+l <- layout.fruchterman.reingold(abunet)
+l <- norm_coords(l, ymin=-1, ymax=1, xmin=-1, xmax=1)
+plot(abunet, rescale=F, layout=l, edge.curved=0.1, vertex.label.cex=V(abunet)$size/20,
      vertex.label.color="black")
-#legend(x=-1.05, y=1.1, c("CladeA", "CladeB", "CladeC", "CladeD", "CladeF", "CladeG"), pch=21,
-#     col="#777777", pt.bg=taxcolors, pt.cex=1.1, cex=.6, bty="n", ncol=2, text.width=0.2)
 ```
 
 ## Dominant symbionts
 #### (>50% relative abundance)
 ```{r dom_networks, fig.width=5, fig.height=5, fig.align="center"}
-# Get network with one node for each species.
-otudf <- data.frame(t(otu_table(phy97bs.f.p)), check.names=F)
-# Percent of samples of species that contain OTU at more than 50% relative abundance
-sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p))$Species), 
-                   FUN=function(x) length(x[x>0.5])/length(x))
-rownames(sp.ag) <- sp.ag$Species
-sp.ag <- sp.ag[, -1]
-edges <- setNames(melt(as.matrix(sp.ag)), nm=c("source", "target", "weight"))  # Melt data
-edges <- droplevels(edges[edges$weight>0, ])
-# Create "nodes" table from sample and tax data
-sdf <- data.frame(id=levels(data.frame(sample_data(phy97bs.f.p))$Species))
-tdf <- data.frame(tax_table(phy97bs.f.p))[rownames(data.frame(tax_table(phy97bs.f.p))) %in% edges$target, ]
-tdf$id <- rownames(tdf)
-nodes <- merge(sdf, tdf, all=T)
-nodes$type <- ifelse(is.na(nodes$Clade), 1, 2)
-# Create network
-net <- graph_from_data_frame(d=edges, vertices=nodes, directed=F)
+# Create dominant symbionts network
+domnet <- sppnet(phy=phy97bs.f.p, plot=F,
+                 fun=function(x) length(x[x>0.5])/length(x), 
+                 layout=layout.fruchterman.reingold)
 
-# Best one for now ---------
-V(net)$shape <- c("square", "circle")[factor(V(net)$type)]
-V(net)$size <- ifelse(is.na(V(net)$Clade), 15, 10*(degree(net))^0.75) #5*sqrt(degree(net))
-V(net)$label <- ifelse(is.na(V(net)$Clade), names(V(net)),  
-                       unlist(lapply(strsplit(V(net)$nw.st, split="_"), "[", 1)))
-V(net)$label <- str_replace_all(V(net)$label, c("alcicornis"="M.alc.", "annularis"="O.ann",
-                                                "astreoides"="P.ast.", "cavernosa"="M.cav.",
-                                                "cylindrus"="D.cyl.", "fragum"="F.fra.", 
-                                                "furcata"="P.fur.", "radians"="S.rad.", 
-                                                "siderea"="S.sid.", "strigosa"="D.str."))
-V(net)$color <- ifelse(is.na(V(net)$Clade), "white",
-                       taxcolors[factor(V(net)$Clade, levels=c("A","B","C","D","F","G"))])
-E(net)$color <- "gray60"
-E(net)$width <- 15 * E(net)$weight
-set.seed(12347)
-set.seed(12364)
+par(mar=c(0,0,0,0), lwd=1)
 set.seed(12374)
-l <- layout.fruchterman.reingold(net)
+l <- layout.fruchterman.reingold(domnet)
 l <- norm_coords(l, ymin=-1, ymax=1, xmin=-1, xmax=1)
-par(mar=c(0,0,0,0))
-plot(net, rescale=F, layout=l*1, edge.curved=0.1, vertex.label.cex=V(net)$size/20,
+plot(domnet, rescale=F, layout=l, edge.curved=0.1, vertex.label.cex=V(domnet)$size/20,
      vertex.label.color="black")
-#legend(x=-1.05, y=1.1, c("CladeA", "CladeB", "CladeC", "CladeD", "CladeF", "CladeG"), pch=21,
-#     col="#777777", pt.bg=taxcolors, pt.cex=1.1, cex=.6, bty="n", ncol=2, text.width=0.2)
+
 ```
 
 ## Background symbionts
 #### (<1% relative abundance)
 ```{r bk.net, fig.width=5, fig.height=5, fig.align="center"}
+# Create background symbionts network
 # filter out OTUs that only occurred in one sample
 phy97bs.f.p2 <- filter_taxa(phy97bs.f.p, function(x) sum(x>0) > 1, prune=TRUE)
-# Get network with one node for each species.
-otudf <- data.frame(t(otu_table(phy97bs.f.p2)), check.names=F)
-# Whether any samples of species contain OTU at less than 1% relative abundance (but more than 0%)
-sp.ag <- aggregate(otudf, by=list(Species=data.frame(sample_data(phy97bs.f.p2))$Species), 
-                   FUN=function(x) any(x>0 & x<0.01))
-rownames(sp.ag) <- sp.ag$Species
-sp.ag <- sp.ag[, -1]
-edges <- setNames(melt(as.matrix(sp.ag)), nm=c("source", "target", "weight"))  # Melt data
-edges <- droplevels(edges[edges$weight>0, ])  # only keep if was observed in more than N colony of a spp
-# Create "nodes" table from sample and tax data
-sdf <- data.frame(id=levels(data.frame(sample_data(phy97bs.f.p2))$Species))
-tdf <- data.frame(tax_table(phy97bs.f.p2))[rownames(data.frame(tax_table(phy97bs.f.p2))) %in% edges$target, ]
-tdf$id <- rownames(tdf)
-nodes <- merge(sdf, tdf, all=T)
-nodes$type <- ifelse(is.na(nodes$Clade), 1, 2)
-# Create network
-net <- graph_from_data_frame(d=edges, vertices=nodes, directed=F)
-
-# Edit vertex attributes
-V(net)$shape <- c("square", "circle")[factor(V(net)$type)]
-V(net)$size <- ifelse(is.na(V(net)$Clade), 15, 5*degree(net)) #5*sqrt(degree(net))
-V(net)$label <- ifelse(is.na(V(net)$Clade), names(V(net)),  
-                       unlist(lapply(strsplit(V(net)$nw.st, split="_"), "[", 1)))
-V(net)$label <- str_replace_all(V(net)$label, c("alcicornis"="M.alc.", "annularis"="O.ann",
-                                                "astreoides"="P.ast.", "cavernosa"="M.cav.",
-                                                "cylindrus"="D.cyl.", "fragum"="F.fra.", 
-                                                "furcata"="P.fur.", "radians"="S.rad.", 
-                                                "siderea"="S.sid.", "strigosa"="D.str."))
-V(net)$color <- ifelse(is.na(V(net)$Clade), "white",
-                       taxcolors[factor(V(net)$Clade, levels=c("A","B","C","D","F","G"))])
-E(net)$color <- "gray60"
-E(net)$width <- E(net)$weight * 2
-
+bkgnet <- sppnet(phy=phy97bs.f.p2, plot=F,
+                 fun=function(x) any(x>0 & x<0.01),
+                 layout=layout.fruchterman.reingold)
 # Merge D nodes (assuming they are all D1a/trenchii)
 # Get original node map (sequence starting at one to the total number of nodes)
-nodemap <- seq(1:length(V(net)))
+nodemap <- seq(1:length(V(bkgnet)))
 # Make a copy of the nodemap that will be modified
 nodemapnew <- nodemap
 # Find all nodes beginning with D, and give them the same node ID number
-nodemapnew[grep("^D", V(net)$nw.st)] <- min(grep("^D", V(net)$nw.st))
+nodemapnew[grep("^D", V(bkgnet)$Subtype)] <- min(grep("^D", V(bkgnet)$Subtype))
 # Replace the now missing values in the node map so node IDs remain sequential
 while (max(setdiff(nodemap, nodemapnew)) < max(nodemap)) {
   nodemapnew[which(nodemapnew==max(setdiff(nodemap, nodemapnew))+1)] <- min(setdiff(nodemap, nodemapnew))
 }
 # Contract the network using the new nodemap (nodes with same node ID are merged)
-net2 <- contract(net, nodemapnew, vertex.attr.comb=list(size="sum", "last"))
+bkgnet2 <- contract(bkgnet, nodemapnew, vertex.attr.comb=list(size="sum", "last"))
 # Simplify network so that multiple edges are combined
-net2 <- simplify(net2, remove.multiple=T, edge.attr.comb=list(weight="mean", width="mean", "ignore"))
-
+bkgnet2 <- simplify(bkgnet2, remove.multiple=T, edge.attr.comb=list(weight="mean", width="mean", "ignore"))
 # remove symbionts that are only connected to one or two coral species
-net3 <- delete.vertices(net2, degree(net2)<=2) # & V(net2)$type==2)
-V(net3)$size <- ifelse(is.na(V(net3)$Clade), 15, 1.5*degree(net3)^1.5)
+bkgnet3 <- delete.vertices(bkgnet2, degree(bkgnet2)<=2) # & V(net2)$type==2)
+V(bkgnet3)$size <- ifelse(is.na(V(bkgnet3)$Clade), 15, 1.5*degree(bkgnet3)^1.5)
+E(bkgnet3)$width <- E(bkgnet3)$weight * 2
+
+# Plot background symbionts network
 set.seed(42384)
-l3 <- layout.fruchterman.reingold(net3, weights=E(net3)$weight)
+l3 <- layout.fruchterman.reingold(bkgnet3)
 l3 <- norm_coords(l3, ymin=-1, ymax=1, xmin=-1, xmax=1)
 par(mar=c(0,0,0,0))
-plot(net3, rescale=F, layout=l3*1, edge.curved=0.1, vertex.label.cex=V(net3)$size/20,
+plot(bkgnet3, rescale=F, layout=l3*1, edge.curved=0.1, vertex.label.cex=V(bkgnet3)$size/20,
      vertex.label.color="black")
 points(0.9,0.9, pch=0, cex=4)
 text(0.9,0.9, "O.ann.", cex=0.5)
-
-
-set.seed(42399)
-l3 <- layout_nicely(net3)
-l3 <- norm_coords(l3, ymin=-1, ymax=1, xmin=-1, xmax=1)
-par(mar=c(0,0,0,0))
-V(net3)$size <- ifelse(is.na(V(net3)$Clade), 15, 10*degree(net3)^0.2)
-plot(net3, rescale=F, layout=l3*1, edge.curved=0.1, vertex.label.cex=V(net3)$size/20,
-     vertex.label.color="black")
 
 ```
 
