@@ -214,7 +214,7 @@ get.st <- function(df) {
     Clade <- substr(hit, 1, 1)
     Subtype <- gsub(hit, pattern="_[A-Z]{2}[0-9]{6}", replacement="")
     Subtype <- gsub(Subtype, pattern="_multiple", replacement="")
-    Subtype2 <- ifelse(as.numeric(sim)==100, Subtype,
+    Subtype2 <- ifelse(as.numeric(sim)==100, paste0("'", Subtype, "'"),
                        paste0("'[", rep(rle(sort(Subtype))$values, times=rle(sort(Subtype))$lengths), "]'^", 
                               unlist(lapply(rle(sort(Subtype))$lengths, seq_len)))[order(order(Subtype))])
     #Subtype <- ifelse(as.numeric(sim)==100, Subtype, paste("*", Subtype, sep=""))

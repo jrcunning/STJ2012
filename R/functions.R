@@ -88,7 +88,8 @@ otubarplot <- function(phy, main) {
   typerelabund <- typerelabund[, rownames(sample_data(phy)[with(sample_data(phy), 
                                                                 order(Shore, Site, InputFileName))])]
   # Get info for plotting OTU names and blast hits on top of barplot
-  blasthits <- as.character(data.frame(tax_table(phy))[order(data.frame(tax_table(phy))$Subtype), "Subtype"])
+  blasthits <- as.character(data.frame(tax_table(phy))[order(data.frame(tax_table(phy))$Subtype), "Subtype2"])
+  blasthits <- parse(text=blasthits)
   names <- as.character(rownames(data.frame(tax_table(phy)))[order(data.frame(tax_table(phy))$Subtype)])
   samples <- colnames(typerelabund)
   shores <- data.frame(sample_data(phy))[samples, "Shore"]
@@ -107,8 +108,9 @@ otubarplot <- function(phy, main) {
   for (i in 1:length(bars)) {
     text(rep(bars[i], length(heights[which(!is.na(heights[,i])),i])), 
          divides[which(!is.na(heights[,i])),i] + heights[which(!is.na(heights[,i])),i] / 2, 
-         labels=paste(names[which(!is.na(heights[,i]))+1],blasthits[which(!is.na(heights[,i]))+1],sep="\n"),
+         labels=blasthits[which(!is.na(heights[,i]))+1],
          cex=0.75)
+    #paste(names[which(!is.na(heights[,i]))+1],
   }
   mtext(side=3, main, xpd=T, adj=0, line=0.5, font=2)
 }
