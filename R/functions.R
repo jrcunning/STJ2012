@@ -109,7 +109,7 @@ otubarplot <- function(phy, main) {
     text(rep(bars[i], length(heights[which(!is.na(heights[,i])),i])), 
          divides[which(!is.na(heights[,i])),i] + heights[which(!is.na(heights[,i])),i] / 2, 
          labels=blasthits[which(!is.na(heights[,i]))+1],
-         cex=0.75)
+         cex=0.9)
     #paste(names[which(!is.na(heights[,i]))+1],
   }
   mtext(side=3, main, xpd=T, adj=0, line=0.5, font=2)
@@ -289,7 +289,8 @@ plotnet <- function(net) {
   plot(net,
        edge.curved=0.1, 
        edge.width=15*(E(net)$weight)^0.35,
-       vertex.label=parse(text=V(net)$Subtype2),
+       vertex.label=parse(text=ifelse(is.na(V(net)$Clade),
+                                      names(V(net)), V(net)$Subtype2)),
        vertex.color=ifelse(is.na(V(net)$Clade), "white",
                            taxcolors[factor(V(net)$Clade, levels=c("A","B","C","D","F","G"))]),
        vertex.size=ifelse(is.na(V(net)$Clade), 15, 10*sqrt(degree(net))))
