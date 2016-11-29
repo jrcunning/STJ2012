@@ -279,8 +279,8 @@ phystats <- function(phy) {
       'Range of reads per sample'=paste0(range(sample_sums(phy)), collapse=" - "),
       'Arithmetic mean (±SD) reads per sample'=paste(as.integer(mean(sample_sums(phy))), 
                                                      as.integer(sd(sample_sums(phy))), sep=" ± "),
-      'Geometric mean (±SD) reads per sample'=paste(as.integer(exp(mean(log(sample_sums(phy))))),
-                                                    as.integer(exp(sd(log(sample_sums(phy))))), sep=" ± "),
+      'Geometric mean (*/SD) reads per sample'=paste(as.integer(exp(mean(log(sample_sums(phy))))),
+                                                    as.integer(exp(sd(log(sample_sums(phy))))), sep=" */ "),
       check.names=F)
   )
 }
