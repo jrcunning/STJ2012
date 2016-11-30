@@ -128,7 +128,7 @@ otubarplot2 <- function(samples) {
   # Get sample data
   samdat <- data.frame(sample_data(phy100))
   # Set sample order to go by dominant 97% OTU symbiont subtype then coral species
-  sord <- rownames(sample_data(phy97)[order(factor(tax_table(phy97)[apply(otu_table(phy97), MARGIN=2, FUN=which.max), "Subtype"]), sample_data(phy97)$Species), ])
+  sord <- rownames(sample_data(phy97)[order(factor(tax_table(phy97)[apply(otu_table(phy97), MARGIN=2, FUN=which.max), "Subtype2"]), sample_data(phy97)$Species), ])
   samdat <- samdat[sord, ]
   # Get tax table and otu table
   taxdat <- data.frame(tax_table(phy100))
@@ -174,7 +174,7 @@ otubarplot2 <- function(samples) {
   }
   # Add dominant OTU assigned by 97% clustering across samples
   text(-0.03, -0.125, label=expression(paste(bold("B. "), "Dominant OTU assigned by 97% clustering across samples:")), xpd=NA, adj=c(0,0))
-  names97 <- unlist(lapply(strsplit(as.character(data.frame(tax_table(phy97)[apply(data.frame(otu_table(phy97), check.names=F)[,sord], MARGIN=2, FUN=which.max), "Subtype"])$Subtype), split="_"), "[[", 1))
+  names97 <- unlist(lapply(strsplit(as.character(data.frame(tax_table(phy97)[apply(data.frame(otu_table(phy97), check.names=F)[,sord], MARGIN=2, FUN=which.max), "Subtype2"])$Subtype2), split="_"), "[[", 1))
   otus97 <- rownames(tax_table(phy97)[apply(data.frame(otu_table(phy97), check.names=F)[,sord], MARGIN=2, FUN=which.max), ])
   newotus97 <- c(1, which(diff(as.numeric(factor(otus97)))!=0)+1, nsamples(phy100)+1)
   # Get color of dominant 97% OTU representative sequence, match to color of representative unique sequence variant
@@ -193,12 +193,12 @@ otubarplot2 <- function(samples) {
   while (i < length(newotus97)) {
     polygon(x=c(rep(starts[newotus97[i]], 2), rep(ends[newotus97[i+1]-1], 2)), y=c(-0.15, -0.25, -0.25, -0.15), 
             col=unique(matchcols)[i], xpd=NA)
-    text((starts[newotus97[i]]+ends[newotus97[i+1]-1])/2, -0.2, labels=names97[newotus97[i]], xpd=NA, cex=0.8)
+    text((starts[newotus97[i]]+ends[newotus97[i+1]-1])/2, -0.2, labels=parse(text=names97[newotus97[i]]), xpd=NA, cex=0.8)
     i <- i + 1
   }
   # Add dominant OTU assigned by 97% clustering within samples
   text(-0.03, -0.375, label=expression(paste(bold("C. "), "Dominant OTU assigned by 97% clustering within samples:")), xpd=NA, adj=c(0,0))
-  names97bs <- unlist(lapply(strsplit(as.character(data.frame(tax_table(phy97bs)[apply(data.frame(otu_table(phy97bs), check.names=F)[,sord], MARGIN=2, FUN=which.max), "Subtype"])$Subtype), split="_"), "[[", 1))
+  names97bs <- unlist(lapply(strsplit(as.character(data.frame(tax_table(phy97bs)[apply(data.frame(otu_table(phy97bs), check.names=F)[,sord], MARGIN=2, FUN=which.max), "Subtype2"])$Subtype2), split="_"), "[[", 1))
   otus97bs <- rownames(tax_table(phy97bs)[apply(data.frame(otu_table(phy97bs), check.names=F)[,sord], MARGIN=2, FUN=which.max), ])
   newotus97bs <- c(1, which(diff(as.numeric(factor(otus97bs)))!=0)+1, nsamples(phy100)+1)
   # Get color of dominant 97% by-sample OTU representative sequence, match to color of representative unique sequence variant
@@ -220,7 +220,7 @@ otubarplot2 <- function(samples) {
   while (i < length(newotus97bs)) {
     polygon(x=c(rep(starts[newotus97bs[i]], 2), rep(ends[newotus97bs[i+1]-1], 2)), y=c(-0.4, -0.5, -0.5, -0.4), 
             col=unique(matchcols)[i], xpd=NA)
-    text((starts[newotus97bs[i]]+ends[newotus97bs[i+1]-1])/2, -0.45, labels=names97bs[newotus97bs[i]], xpd=NA, cex=0.8)
+    text((starts[newotus97bs[i]]+ends[newotus97bs[i+1]-1])/2, -0.45, labels=parse(text=names97bs[newotus97bs[i]]), xpd=NA, cex=0.8)
     i <- i + 1
   }
 }
