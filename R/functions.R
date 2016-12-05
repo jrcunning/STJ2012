@@ -320,11 +320,11 @@ sppnet <- function(phy, fun, layout, plot=T) {
   V(net)$size <- ifelse(is.na(V(net)$Clade), 15, 10*(degree(net))^0.75) #5*sqrt(degree(net))
   V(net)$label <- parse(text=str_replace_all(
     ifelse(is.na(V(net)$Clade), names(V(net)), V(net)$Subtype2),
-    c("alcicornis"="M.alc.", "annularis"="O.ann",
-      "astreoides"="P.ast.", "cavernosa"="M.cav.",
-      "cylindrus"="D.cyl.", "fragum"="F.fra.", 
-      "furcata"="P.fur.", "radians"="S.rad.", 
-      "siderea"="S.sid.", "strigosa"="D.str.")))
+    c("alcicornis"="Ma", "annularis"="Oa",
+      "astreoides"="Pa", "cavernosa"="Mc",
+      "cylindrus"="Dc", "fragum"="Ff", 
+      "furcata"="Pf", "radians"="Sr", 
+      "siderea"="Ss", "strigosa"="Ds")))
   V(net)$color <- ifelse(is.na(V(net)$Clade), "white", taxcolors[factor(V(net)$Clade, levels=c("A","B","C","D","F","G"))])
   E(net)$color <- "gray60"
   E(net)$width <- 15 * E(net)$weight
