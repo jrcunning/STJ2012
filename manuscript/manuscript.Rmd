@@ -1,0 +1,512 @@
+---
+title: Describing *Symbiodinium* metacommunities using high-throughput sequencing
+  of ITS2
+author:
+- affiliation: University of Hawaii
+  email: ross.cunning@gmail.com
+  footnote: Corresponding Author
+  name: Ross Cunning
+- affiliation: University of Hawaii
+  name: Ruth D. Gates
+- affiliation: California State University Northridge
+  name: Peter J. Edmunds
+bibliography: library.bib
+output:
+  word_document: default
+  pdf_document: default
+  html_document:
+    fig_caption: yes
+subtitle: A case study from St. John, U.S. Virgin Islands
+address:
+- address: Hawaii Institute of Marine Biology, Kaneohe, HI 96744, USA
+  code: University of Hawaii
+- address: Department of Biology, Northridge, CA 91330, USA
+  code: California State University Northridge
+---
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+knitr::opts_chunk$set(echo = F, warning = F, message = F, cache = T)
+options(scipen = 3, digits = 9)
+```
+
+```{r setup_2, cache=F, include=FALSE}
+# Load all R scripts in "R/" directory
+source("R/functions.R", .GlobalEnv)
+# Load package libraries
+library(phyloseq); library(vegan); library(multcompView); library(reshape2); library(igraph); library(stringr); library(RColorBrewer); library(pBrackets)
+# Set colors for plotting clades
+taxcolors <- matrix(c("#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462"), 
+                    dimnames=list(c("CladeA", "CladeB", "CladeC", "CladeD", "CladeF", "CladeG")))
+```
+
+```{r import_taxa_data, include=F}
+# Import taxonomic assignment data from nw
+read.nw <- function(file) {
+  nw <- read.table(file, stringsAsFactors=FALSE)
+  nw <- nw[order(nw$otu),]
+  return(nw)
+}
+
+tax97 <- read.nw("data/otus_97/nw_tophits.tsv")
+tax100 <- read.nw("data/otus_100/nw_tophits.tsv")
+tax97bs <- read.nw("data/otus_97_bysample/nw_tophits.tsv")
+
+# Deal with identical taxonomic assignments (because some reference sequences are not unique...)
+# Create names for groups of identical sequences based on members of group...
+ident <- readLines("data/ITS2db_trimmed_notuniques_otus.txt")
+ident <- gsub("denovo[0-9]*\t", "", ident)
+ident <- strsplit(ident, split="\t")
+ident2 <- lapply(ident, str_match_all, pattern="[A-I]{1}[0-9]{1,3}.*[_/]")
+ident2 <- lapply(ident2, function(g) gsub(pattern="\\..*_$", "", x=unlist(g)))
+ident2 <- lapply(ident2, function(g) gsub(pattern="_$", "", g))
+ident2 <- lapply(ident2, function(g) unlist(strsplit(g, split="/")))
+subtypes <- lapply(ident2, function(x) levels(factor(unlist(x))))
+subtypes <- lapply(subtypes, function(s) paste(paste(s, collapse="/"), "_multiple", sep=""))
+names(ident) <- subtypes
+ident <- melt(do.call(rbind, ident))
+ident <- unique(ident[order(ident[,1]), c(3,1)])
+
+# Replace any sequence name in taxonomy assignment that is a member of a group of identical sequences with the name of the group
+collapse.idents <- function(df) {
+  within(df, {
+    for (i in 1:nrow(ident)) {
+      hit <- gsub(ident[i,1], ident[i,2], hit)
+    }
+  })
+}
+
+tax97 <- collapse.idents(tax97)
+tax97bs <- collapse.idents(tax97bs)
+tax100 <- collapse.idents(tax100)
+
+tax97 <- with(tax97, tax97[order(otu, -sim), ])
+tax97 <- tax97[!duplicated(tax97$otu), ]
+rownames(tax97) <- tax97$otu
+
+tax97bs <- with(tax97bs, tax97bs[order(otu, -sim), ])
+tax97bs <- tax97bs[!duplicated(tax97bs$otu), ]
+rownames(tax97bs) <- tax97bs$otu
+
+tax100 <- with(tax100, tax100[order(otu, -sim), ])
+tax100 <- tax100[!duplicated(tax100$otu), ]
+rownames(tax100) <- tax100$otu
+```
+
+```{r build_phyloseq, include=F}
+# Import OTU tables
+otu97 <- otu_table(read.table("data/otus_97/97_otus.tsv", header=T, check.names=F, row.names=1,
+                              skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
+otu97bs <- otu_table(read.table("data/otus_97_bysample/97_otus_bysample.tsv", header=T, check.names=F, row.names=1,
+                              skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
+otu100 <- otu_table(read.table("data/otus_100/100_otus.tsv", header=T, check.names=F, row.names=1,
+                               skip=1, sep="\t", comment.char=""), taxa_are_rows=T)
+
+# Import sample data
+sam <- sample_data(read.delim("data/mapping_file.txt", sep="\t", header=T, row.names=1))
+
+# Build phyloseq objects
+phy97 <- phyloseq(otu97, tax_table(as.matrix(tax97)), sam)
+phy97bs <- phyloseq(otu97bs, tax_table(as.matrix(tax97bs)), sam)
+phy100 <- phyloseq(otu100, tax_table(as.matrix(tax100)), sam)
+```
+
+```{r filter_dataset, include=F}
+# FILTER OUT OTUS THAT ARE NOT SYMBIODINIUM
+# If the top hit in NCBI does not contain the string "Symbiodinium", then this sequence is assumed to not be Symbiodinium.
+poormatch97 <- readLines("data/otus_97/poormatch_IDs.txt")
+poormatch97 <- data.frame(otu=str_extract(poormatch97, "denovo[^ ]*"),
+                          symbio=str_detect(poormatch97, "Symbiodinium"),   # TRUE if Symbiodinium
+                          stringsAsFactors = FALSE)
+notsymbio97 <- poormatch97[which(poormatch97$symbio==F), 1]
+
+poormatch97bs <- readLines("data/otus_97_bysample/poormatch_IDs.txt")
+poormatch97bs <- data.frame(otu=str_extract(poormatch97bs, "denovo[^ ]*"),
+                            symbio=str_detect(poormatch97bs, "Symbiodinium"),   # TRUE if Symbiodinium
+                            stringsAsFactors = FALSE)
+notsymbio97bs <- poormatch97bs[which(poormatch97bs$symbio==F), 1]
+
+poormatch100 <- readLines("data/otus_100/poormatch_IDs.txt")
+poormatch100 <- data.frame(otu=str_extract(poormatch100, "denovo[^ ]*"),
+                           symbio=str_detect(poormatch100, "Symbiodinium"),   # TRUE if Symbiodinium
+                           stringsAsFactors = FALSE)
+notsymbio100 <- poormatch100[which(poormatch100$symbio==F), 1]
+
+
+# Remove OTUs that are not Symbiodinium
+phy97.f <- prune_taxa(!taxa_names(phy97) %in% notsymbio97, phy97)
+phy97bs.f <- prune_taxa(!taxa_names(phy97bs) %in% notsymbio97bs, phy97bs)
+phy100.f <- prune_taxa(!taxa_names(phy100) %in% notsymbio100, phy100)
+
+
+# Filter OTUs by minimum count
+# Set threshold count
+n <- 10
+# Identify OTUs below threshold count
+taxa97 <- taxa_sums(phy97.f)[which(taxa_sums(phy97.f) >= n)]
+taxa97bs <- taxa_sums(phy97bs.f)[which(taxa_sums(phy97bs.f) >= n)]
+taxa100 <- taxa_sums(phy100.f)[which(taxa_sums(phy100.f) >= n)]
+# Remove taxa below threshold count
+phy97.f <- prune_taxa(names(taxa97), phy97.f)
+phy97bs.f <- prune_taxa(names(taxa97bs), phy97bs.f)
+phy100.f <- prune_taxa(names(taxa100), phy100.f)
+
+# Filter samples by minimum count
+# Set threshold number of reads
+sn <- 200
+# Remove samples with fewer reads than threshold
+phy97.f <- prune_samples(sample_sums(phy97.f)>=sn, phy97.f)
+phy97bs.f <- prune_samples(sample_sums(phy97bs.f)>=sn, phy97bs.f)
+phy100.f <- prune_samples(sample_sums(phy100.f)>=sn, phy100.f)
+
+# Filter OTUs by minimum count again in case any dropped below threshold after filtering samples
+# Identify OTUs below threshold count
+taxa97 <- taxa_sums(phy97.f)[which(taxa_sums(phy97.f) >= n)]
+taxa97bs <- taxa_sums(phy97bs.f)[which(taxa_sums(phy97bs.f) >= n)]
+taxa100 <- taxa_sums(phy100.f)[which(taxa_sums(phy100.f) >= n)]
+# Remove taxa below threshold count
+phy97.f <- prune_taxa(names(taxa97), phy97.f)
+phy97bs.f <- prune_taxa(names(taxa97bs), phy97bs.f)
+phy100.f <- prune_taxa(names(taxa100), phy100.f)
+
+# Label clades and subtypes for filtered phyloseq object tax_tables
+get.st <- function(df) {
+  within(df, {
+    Clade <- substr(hit, 1, 1)
+    Subtype <- gsub(hit, pattern="_[A-Z]{2}[0-9]{6}", replacement="")
+    Subtype <- gsub(Subtype, pattern="_multiple", replacement="")
+    Subtype2 <- ifelse(as.numeric(sim)==100, paste0("'", Subtype, "'"),
+                       paste0("'", rep(rle(sort(Subtype))$values, times=rle(sort(Subtype))$lengths), "'^", 
+                              unlist(lapply(rle(sort(Subtype))$lengths, seq_len)))[order(order(Subtype))])
+    #Subtype <- ifelse(as.numeric(sim)==100, Subtype, paste("*", Subtype, sep=""))
+  })
+}
+
+tax_table(phy97.f) <- as.matrix(get.st(data.frame(tax_table(phy97.f), stringsAsFactors=FALSE)))
+tax_table(phy97bs.f) <- as.matrix(get.st(data.frame(tax_table(phy97bs.f), stringsAsFactors=FALSE)))
+tax_table(phy100.f) <- as.matrix(get.st(data.frame(tax_table(phy100.f), stringsAsFactors=FALSE)))
+```
+
+```{r transform_dataset, include=F}
+# TRANSFORM COUNT DATA
+# Convert to proportion (relative abundance)
+phy97.f.p <- transform_sample_counts(phy97.f, function(x) x/sum(x))
+phy97bs.f.p <- transform_sample_counts(phy97bs.f, function(x) x/sum(x))
+phy100.f.p <- transform_sample_counts(phy100.f, function(x) x/sum(x))
+# Apply transformation function
+transform <- function(x) sqrt(x/sum(x))  # Set transformation function
+phy97.f.t <- transform_sample_counts(phy97.f, transform)  # Transform data
+phy97bs.f.t <- transform_sample_counts(phy97bs.f, transform) 
+phy100.f.t <- transform_sample_counts(phy100.f, transform)
+```
+
+### Abstract
+
+  Symbiotic microalgae (*Symbiodinium* spp.) strongly influence the performance, fitness, and susceptibility to stress of their coral hosts. Therefore, describing the diversity and community structure of *Symbiodinium* assemblages in corals, as well as their metacommunities on the scale of whole reefs, has become a routine and essential goal in coral reef research. High-throughput sequencing of ITS2 nrDNA can describe these communities with unprecedented resolution, and the ease of such analyses facilitates studies across large spatial scales, yet the quantity of data generated and the high intragenomic variability at the ITS2 locus complicates parsing intragenomic vs. interspecific variability, with this task requiring application of appropriate bioinformatic pipelines to achieve meaningful descriptions of diversity. Using samples of *Symbiodinium* collected from ten coral species on shallow reefs on the north and south shores of St. John, US Virgin islands, we demonstrate that clustering *Symbiodinium* ITS2 sequences at 97% similarity within, but not across, samples collapses variability that is more likely to be intragenomic, while maintaining variability that is more likely interspecific. While this approach cannot resolve all *Symbiodinium* species (e.g., when closely related species co-occur in a sample, or when ITS2 fails to differentiate them), it enables broad-scale metabarcoding of the evolutionarily complex, yet commonly-used ITS2 locus to generate taxa-abundance data that is suitable for ecological analysis. We utilized this approach to create a comprehensive metacommunity network of host-symbiont associations in St. John, which revealed *Symbiodinium* lineages that occupy 'dominant' vs. 'background' niches, and coral hosts that are 'flexible' or 'specific' in their associations, though no differences were observed between north and south shore environments. These methods shed new light on important questions in coral symbiosis ecology, and demonstrate how application-specific bioinformatic pipelines can improve the analysis of metabarcoding data in microbial metacommunity studies.
+  
+
+### Introduction
+
+  The composition of symbiotic algal communities (*Symbiodinium* spp.) in reef-building corals plays a major role in their biology and ecology, as the identity and functional performance of individual symbionts influences emergent outcomes such as photobiology, energetics, coral growth, and susceptibility to stress [@Rowan:2004p3383; @Cantin:2009p4376; @Jones:2011dt]. Even slight differences in the relative abundance of different symbionts within a coral may have important functional consequences [@Loram:2007p3688; @Cunning:2015ja]. Moreover, plasticity and flexibility of these communities within species and individuals over time has been identified as an important trait that may underlie a coral's sensitivity to stress [@Putnam:2012wv] and its ability to respond adaptively to environmental change by 'shuffling' or 'switching' symbionts [@Baker:2003p200]. Therefore, understanding and predicting ecological performance of corals depends on our ability to accurately and comprehensively describe their *Symbiodinium* communities. 
+  
+  *Symbiodinium* are primarily described using genetic sequence data, including both chloroplast (cp23S and psbA^ncr^) and nuclear markers (18S, 28S, ITS1, and ITS2) [@LaJeunesse:2001p64; Santos:2003kt; @Pochon:2012we]. Together, these markers support nine major 'clades' within the genus *Symbiodinium* (clades A through I [@Pochon:2010p8784]), which are further subdivided into 'types' based on the marker used. *Symbiodinium* species are beginning to be described based on a combinations of markers, including microsatellites to establish reproductive isolation [@LaJeunesse:2014io]. However, until more species are described, ecological surveys of *Symbiodinium* diversity must rely on established marker genes -- the one most commonly used is ITS2. High-throughput sequencing of ITS2 is now increasingly being utilized to characterize these communities at unprecedented resolution [e.g., @Arif:2014gk; @Quigley:2014dv; @Thomas:2014da; @Edmunds:2014jc; @Cunning:2015hb]; however, these big datasets place even greater importance on issues surrounding the interpretation of ITS2 sequence diversity in relation to biological diversity.
+  
+  While ITS2 was initially investigated as a potential species-level marker in *Symbiodinium* [@LaJeunesse:2001p64], it is now understood that this marker is not variable enough in all cases [@Finney:2010p8324; @Thornhill:2013dx]; for example, the 'B1' ITS2 sequence variant is shared by *S. minutum*, *S. pseudominutum*, and *S. antillogorgium*, and potentially others [@Parkinson:2015gt]. Moreover, the position of ITS2 within the tandemly repeating ribosomal DNA array results in the occurrence of multiple ITS2 sequence variants within a single genome [@Thornhill:2007p145] that evolve through concerted evolution. In fact, this process may mask species divergence by maintaining ancestral sequence variants as numerical dominants in multiple derived lineages [@Thornhill:2013dx]. Together, these features of ITS2 complicate the interpretation of intragenomic vs. interspecific variation and preclude its use as a true species-level marker. Nevertheless, numerically dominant intragenomic variants of ITS2 are still phylogenetically informative across the *Symbiodinium* genus [@LaJeunesse:2001p64], and due to the high volume of existing sequence data for comparative analysis and the relative ease of amplifying and sequencing ITS2 using current high-throughput platforms, it remains an essential and powerful marker. Therefore, it is important to develop best practices in the bioinformatic analysis and interpretation of ITS2 metabarcoding surveys.
+  
+  Here, we describe a *Symbiodinium* metacommunity in St. John, U.S. Virgin Islands, with the objectives of 1) developing an appropriate bioinformatic approach for *Symbiodinium* ITS2 metabarcoding surveys, and 2) exploring network analysis and statistical approaches uniquely enabled by such datasets to advance understanding of *Symbiodinium* metacommunity ecology. In addressing the first objective, we test the ability of 'within-sample clustering' to extract meaningful information from ITS2 metabarcoding data given its inherent limitations. Specifically, this approach seeks to cope with the fact that sequences within a genome may be only 97% similar [@Arif:2014gk], while the dominant intragenomic variants from different species may be >97% similar, or even identical [@Thornhill:2013dx; @Parkinson:2015gt]. Clearly, treating each ITS2 sequence as a unique *Symbiodinium* type overestimates diversity due to the presence of intragenomic variants, while clustering sequences at 97% similarity underestimates diversity by collapsing species known to be different. True biological diversity may be better approximated by a within-sample clustering approach that exploits key assumptions regarding the distribution of symbionts among samples, and sequences among symbionts.
+  
+  These assumptions are that 1) most individual colonies are dominated by a single *Symbiodinium* type [@LaJeunesse:2011us; @Pettay:2011wt; @Baums:2014hj], and 2) different numerically dominant ITS2 sequence variants diagnose different *Symbiodinium* types, even when they differ by only 1 nucleotide [@Sampayo:2009p3422]. These assumptions together suggest that closely related ITS2 sequences (>97% similar; @Arif:2014gk) occurring within the same sample are more likely to arise from a single taxon rather than multiple, but closely related ITS2 sequences occurring as numerically dominant variants in different samples are more likely to represent distinct *Symbiodinium* taxa. These assumptions can be leveraged to bioinformatically parse intragenomic and interspecific variation by clustering sequences at 97% similarity within each sample independently, in order to collapse variability that is more likely to be intragenomic (i.e., occurring within a sample), while maintaining variability that is more likely to be interspecific (i.e., occurring in different samples). 
+  
+  Using this within-sample clustering approach, we analyzed *Symbiodinium* communities in ten coral species across the north and south shores of St. John. We then explore ecological patterns only made possible by large metabarcoding datasets, including 1) testing for whole-community differences corresponding to environmental variability between the north and south shores, 2) analyzing coral-*Symbiodinium* metacommunity association networks, and 3) quantifying and testing for differences in symbiosis flexibility (i.e., beta diversity) among coral species. The volume of data and multitude of analysis approaches facilitated by ITS2 metabarcoding has the potential to revolutionize our understanding of *Symbiodinium* metacommunity ecology. More generally, this work demonstrates how ecological knowledge can inform bioinformatic analyses given complex marker gene to species correspondence.
+  
+
+### Materials and Methods
+
+#### Sample collection and processing
+
+  A total of 87 tissue samples from scleractinian and milleporine corals were collected from various sites around St. John, US Virgin Islands, USA (Fig. 1), between August 7th and 9th, 2012. Small tissue biopsies (~5 mm diameter and ~5 mm depth) were removed from coral colonies with sterile metal borers, and the small holes were plugged with non-toxic modeling clay. Samples were preserved in ~500 µL Guanidinium buffer (50% w/v guanidinium isothiocyanate; 50 mM Tris pH 7.6; 10 μM EDTA; 4.2% w/v sarkosyl; 2.1% v/v β-mercaptoethanol) and shipped to the Hawaii Institute of Marine Biology (HIMB). Genomic DNA was extracted from each coral tissue sample following a guanidinium-based extraction protocol [@Cunning:2015hb], and sent to Research and Testing Laboratory (Lubbock, TX) for sequencing of ITS2 amplicons ('itsD' and 'its2rev2' primers from @Stat:2009p7366) on the Illumina MiSeq platform with 2x300 paired-end read chemistry. 
+
+```{r Fig1, fig.height=3, fig.width=4, fig.cap="Figure 1. Sampling locations in St. John, U.S. Virgin Islands."}
+library(rgdal)
+stjmap <- readOGR("data/coastline/zipfolder", layer="Coastal_Coastline_line", verbose=F)  # units are in meters
+stjmap <- spTransform(stjmap, CRS("+proj=longlat +datum=WGS84"))  # transform to lat/long
+
+sitecoords <- data.frame(
+  name=c("Booby Rock", "Tektite", "Kiddel", "Groot Pan", "Yawzi Point", "Anna's Point", "Haulover Bay"),
+  lat=c(18.30327, 18.31057, 18.30770, 18.31067, 18.31515, 18.36710, 18.35008),
+  lon=c(-64.71057, -64.72203, -64.71398, -64.71813, -64.72513, -64.73337, -64.67933)
+)
+
+viers <- c(-64.722697, 18.322277)
+
+#pdf(file="figures/map.pdf", height=3, width=4)
+par(mar=c(0,0,0,0))
+plot(stjmap, lwd=1, col="gray40",
+     xlim=c(-64.75, -64.68), ylim=c(18.303, 18.370))
+box()
+text(-64.74, 18.34, expression(italic("       St. John\nU.S. Virgin Islands")), col="gray40")
+axis(side=3, at=seq(-64.75, -64.65, 0.01), line=0, tck=0.02, labels=FALSE)
+axis(side=3, at=seq(-64.75, -64.65, 0.04), line=-2, lwd=0, cex.axis=0.6)
+axis(side=2, at=seq(18.3, 18.4, 0.01), line=0, tck=0.02, labels=FALSE)
+axis(side=2, at=seq(18.3, 18.4, 0.02), line=-2, lwd=0, cex.axis=0.6)
+with(sitecoords, {
+  points(lon, lat, pch=21, bg="black")
+  text(lon, lat, name, pos=c(4,2,4,4,2,1,3))
+})
+points(viers[1], viers[2], pch=2, col="gray40", cex=0.8)
+text(viers[1], viers[2], expression(italic("VIERS")), col="gray40", pos=4, cex=0.7)
+#dev.off()
+```
+
+#### Bioinformatics
+
+  Paired reads from each sample (provided in .fastq format by Research and Testing Laboratory) were merged using illumina-utils software [@Eren:2013hh] with an enforced Q30-check and an overlap ≥150 bp with ≤3 mismatches required to retain a sequence. Chimeric sequences were removed using usearch61 [@Edgar:2010cv] implemented in QIIME [@Caporaso:2010jf]. Primers were trimmed using cutadapt [@Martin:2011eu] allowing 3 mismatches, and only sequences with both forward and reverse primer matches and length ≥250 bp after trimming were retained. Subsequently, three different clustering approaches, each based on the uclust algorithm [@Edgar:2010cv] and implemented in QIIME, were used to group ITS2 sequences into operational taxonomic units (OTUs): 1) clustering at 100% identity, 2) clustering at 97% identity across samples (i.e., sequences from all samples clustered together), and 3) clustering at 97% identity within samples (i.e., sequences from each sample clustered independently). For each 97% cluster, the most abundant sequence variant was chosen as the representative sequence, and within-sample clusters were merged across samples if their representative sequences were 100% identical. After removing singleton clusters, representative sequences for each OTU were assigned taxonomy by searching a custom reference database of *Symbiodinium* ITS2 sequences using the Needleman-Wunsch global alignment algorithm implemented in the Biostrings package [@BiostringsStringo:Fbauxymn] in R [@RALanguageandEn:2014wf]. Each OTU was then assigned a name corresponding to the reference sequence(s) with the highest alignment score; if the match was <100%, the assignment was given a unique superscript. If the match was less than 90%, the sequence was blasted to NCBI and omitted if the top hit did not contain "Symbiodinium".
+  
+  The reference database comprised `r system("grep -c '>' data/ITS2db_trimmed_derep.fasta")` *Symbiodinium* ITS2 sequences downloaded directly from NCBI. These sequences included those used in previous reference databases [@Cunning:2015hb] supplemented with additional sequences of *Symbiodinium* from Caribbean corals [@Finney:2010p8324; @Green:2014ev]. Reference sequences were separated and aligned by clade using muscle [@Edgar:2004bo], and trimmed to equal length using the o-smart-trim command from oligotyping software [@Eren:2013fp], before being reconcatenated into a single fasta file. The bioinformatic pipeline used here was implemented using a series of bash scripts and a Makefile, which can be found in the data archive accompanying this paper and executed to fully reproduce this analysis.
+
+#### *Symbiodinium* data analysis
+
+  OTU tables, sample metadata, and taxonomic data were imported into R using the phyloseq package [@McMurdie:2013ky] to facilitate downstream analyses. OTU tables were filtered to remove any OTU that was not observed at least `r n` times, or any sample with less than `r sn` sequences, and counts were transformed to relative abundance. Permutational analysis of variance (PERMANOVA) was used to test for differences in *Symbiodinium* community composition between the north and south shores of St. John within each coral species.
+  
+  Network analysis and visualization was performed in R using the igraph package [@Csardi:2006vh]. For the dominant and abundant symbionts networks, weighted edges were defined as the proportion of individuals of a species in which a symbiont OTU occurred at greater than 50% or greater than 1% relative abundance, respectively. For the background symbionts network, unweighted edges were defined based on the presence of a symbiont at less than 1% relative abundance in at least one individual within the species. To simplify visualization of the background symbiont network, clade D OTUs were merged into a single node under the assumption that clade D in the Caribbean comprises a single species (*Symbiodinium trenchii*; [@LaJeunesse:2014io]), and symbiont nodes connected to ≤ 2 coral species were removed from the network. All network layouts were constructed based on the Fruchterman-Reingold algorithm.
+  
+  Beta diversity was calculated as the multivariate dispersion of samples within a coral species. Principal coordinate analysis of Bray-Curtis dissimilarities of square-root transformed OTU counts was used to calculate average distance-to-centroid values for each species, which were then compared statistically by a permutation test. This analysis was implemented using betadisper() in the vegan package [@veganCommunityEco:uw], based on [@Anderson:2006fs].
+
+#### Environmental data
+
+  Sea Surface Temperature (SST) and chlorophyll concentration (chla): nighttime sea surface temperature and ocean colour data at 1 km spatial resolution were extracted from the sensor MODIS aboard the Aqua satellite. We used as input the monthly climatologies available at the IMaRS website. From the 12 monthly climatological values, we calculated the median, mean, standard deviation and minimum and maximum monthly mean. Climatologies for MODIS cover the period 2003 to 2010. 
+
+  Wind-driven wave exposure for each station is dependent on the wind patterns and the configuration of the coastline, which defines the fetch, or the length of water over which a given wind has blown to generate waves. To calculate wave exposure, wind speed and direction data at each location were acquired from the QuickSCAT (NASA) satellite scatterometer from 1999 to 2008 at 25 km spatial resolution [@Hoffman:2005dz]. Coastline data were obtained from the Global Self-consistent, Hierarchical, High-resolution, Shoreline (GSHHS v 2.2) database which provides global coastline at 1:250,000 scale [@Wessel:1996wk]. From these datasets wave exposure was calculated using the methods based on wave theory described in Chollett et al. (2012) for 32 fetch directions and the coastline data at full resolution. Average wave exposure at each station was calculated in R with the aid of the packages maptools [@maptoolsToolsfor:_dYm01UK], raster [@rasterGeographicD:524kz2M0], rgeos [@rgeosInterfaceto:8WVz_nNk], and sp [@Bivand:2013ux].
+
+### Results
+
+#### Comparison of clustering approaches
+
+  The dataset comprised `r system("grep -c '>' data/fasta/combined_seqs_trimmed.fasta")` sequences after merging paired reads, removing chimeric sequences, and trimming primers. After clustering, OTUs with <`r n` sequences and samples with <`r sn` sequences were excluded, leaving n=`r nsamples(phy97.f)` samples for downstream analysis. The number of OTUs resolved, as well as the number of sequences per OTU and per sample, depended on the clustering approach used (Table 1 and Fig. S1). More OTUs were resolved as the clustering resolution increased (i.e., 97% OTUs across samples < 97% OTUs within samples < 100% OTUs), with fewer reads per OTU (Table 1). The number of sequences per sample was less for the 100% OTU approach because more OTUs were filtered out of the dataset by the minimum threshold count of `r n`.
+
+```{r Table1}
+# Compute summary statistics 
+stats97.f <- data.frame(`97% OTUs<br>(across samples)`=t(phystats(phy97.f)), check.names=F)
+stats97bs.f <- data.frame(`97% OTUs<br>(within samples)`=t(phystats(phy97bs.f)), check.names=F)
+stats100.f <- data.frame(`100% OTUs`=t(phystats(phy100.f)), check.names=F)
+
+knitr::kable(cbind(stats97.f, stats97bs.f, stats100.f)[c(2, 3, 6, 8), ], align="c",
+             caption = "Table 1. Summary statistics for each clustering approach.")
+```
+
+  A subset of samples were selected for comparative analysis of the three clustering approaches (Fig. 1). 97% across-sample clustering assigned the same dominant OTU to samples dominated by different sequence variants, while 97% within-sample clustering assigned distinct dominant OTUs to these samples. Because the outcomes of this approach are more consistent with the current understanding of ITS2 sequence diversity as it links to *Symbiodinium* biology and ecology (see Discussion), we present the remainder of the results using the 97% within-sample clustering approach. Additional detailed comparisons of the outcomes of each clustering approach for each coral species are presented in the Supplementary Information.
+    
+```{r Fig2, fig.width=6, fig.height=4, fig.align="center", fig.cap="Figure 2. Comparison of dominant OTUs assigned by 100%, 97% across-sample, and 97% within-sample clustering approaches. A.) The composition of unique sequence variants (i.e., 100% OTUs) in each sample, sorted by relative abundance, and filled by unique colors corresponding to unique sequence variants. The dominant OTUs within each sample assigned by B.) 97% across-sample clustering and C.) 97% within-sample clustering are shown by rectangles below each bar, with fill colors matching the unique sequence variants presented in (A.) to indicate the representative sequence of the assigned OTU. Colored rectangles that span multiple bars indicate that the corresponding samples were assigned the same dominant OTU. Rectangles are annotated with the closest BLAST hit to the representative sequence of the OTU; those with the same annotation but different fill colors represent unique sequence variants with the same closest BLAST hit."}
+set.seed(42432)
+otubarplot2(samples=c("64","72","29","45","73","59","47","26","48","66","63"))
+```
+
+#### Symbiodinium community composition
+
+```{r cladeAbund, include=F}
+# Calculate relative abundance of each clade
+cladeAbund <- aggregate(data.frame(RelAbund=rowSums(otu_table(phy97bs.f.p))),
+                        by=list(Clade=data.frame(tax_table(phy97bs.f.p))$Clade), FUN=sum)
+cladeAbund$Prop <- prop.table(cladeAbund$RelAbund) * 100
+cladeAbund$Notus <- table(data.frame(tax_table(phy97bs.f.p))$Clade)
+clademax <- aggregate(data.frame(max=apply(otu_table(phy97bs.f.p), 1, FUN=max)),
+                      by=list(Clade=data.frame(tax_table(phy97bs.f.p))$Clade), FUN=max)
+```
+
+  Within the set of coral samples obtained in this study, clade B had the highest relative abundance (`r with(cladeAbund, Prop[Clade=="B"])`%), followed by clade C (`r with(cladeAbund, Prop[Clade=="C"])`%), A (`r with(cladeAbund, Prop[Clade=="A"])`%), D (`r with(cladeAbund, Prop[Clade=="D"])`%), and G (`r with(cladeAbund, Prop[Clade=="G"])`%. The number of OTUs within each clade followed a similar pattern, with the highest number in clade B (`r with(cladeAbund, Notus[Clade=="B"])`), followed by clade C (`r with(cladeAbund, Notus[Clade=="C"])`), A (`r with(cladeAbund, Notus[Clade=="A"])`), D (`r with(cladeAbund, Notus[Clade=="D"])`), and G (`r with(cladeAbund, Notus[Clade=="G"])`). The distribution of these clades within each sample is shown in Fig. 3.
+  
+```{r Fig3, fig.height=6, fig.width=4, fig.align="center", fig.cap="Figure 3. *Symbiodinium* community composition of each sample. Samples are plotted as horizontal bars, sorted by species and shore. Individual segments of each bar represent distinct 97% within-sample OTUs, colored by *Symbiodinium* clade identity."}
+par(mfrow=c(1,1), mar=c(2, 1.5, 2, 5), lwd=0.1, cex=0.7)
+# Plot composition of 97% within-sample OTUs colored by clade
+composition(phy97bs.f.p, col=taxcolors[factor(data.frame(tax_table(phy97bs.f.p))[order(data.frame(tax_table(phy97bs.f.p))$Subtype), ]$Clade, levels=c("A","B","C","D","F","G"))], legend=T)
+```
+
+#### Differences between shores
+
+  The north shore of St. John was characterized by lower wave exposure, slightly higher and more variable temperatures, and much higher and more variable chlorophyll A, relative to the south shore (Table 2).
+
+```{r Table2}
+envdata <- read.csv("data/STJ_envdata.csv", check.names=F, row.names=1)
+sites <- envdata[-1,4:5]
+colnames(sites) <- c("North", "South")
+sites$North <- as.numeric(as.character(sites$North))
+sites$South <- as.numeric(as.character(sites$South))
+knitr::kable(sites, digits=3, caption="Table 2. Environmental differences between the north and south shores of St. John, U.S. Virgin Islands. (North shore=64.711967°W, 18.368141°N; South shore=64.726840°W,	18.315465°N).")
+```
+
+  No significant differences in *Symbiodinium* community composition between the north and south shores were detected for any coral species (Table 3). However, some species showed trends that may have been significant with larger sample sizes. For example, *Porites furcata* colonies were dominated by either clade A or clade C *Symbiodinium* on the south shore, but clade C only on the north shore (difference between shores PERMANOVA: p=0.056). *Siderastrea siderea* was dominated by either clade C or clade D on the south shore, but clade C only on the north shore (difference between shores PERMANOVA: p=0.071). 
+
+```{r Table3, cache=T} 
+set.seed(43789) 
+shorestats97bs <- perms(phy97bs.f.p, group="Species", trt="Shore")
+knitr::kable(shorestats97bs, digits=3, row.names=F, 
+             caption="Table 3. Bray-Curtis dissimilarities within and between shores for *Symbiodinium* communities in each coral species and PERMANOVA tests for a difference between shores.")
+
+
+
+#df <- data.frame(otu_table(phy97bs.f.p), check.names=F)
+
+#clade.otutab <- aggregate(df, by=list(Clade=data.frame(tax_table(phy97bs.f.p))$Clade), FUN=sum)
+#rownames(clade.otutab) <- clade.otutab[,1]
+#clade.otutab <- clade.otutab[,-1]
+
+#clade.phy <- phyloseq(otu_table(clade.otutab, taxa_are_rows=T), sample_data(sam))
+#perms(clade.phy, group="Species", trt="Shore")
+
+```
+
+#### Network analyses of *Symbiodinium* meta-community
+```{r networks,  cahce=F, include=FALSE}
+# Create dominant symbionts network
+set.seed(12374)
+domnet <- sppnet(phy=phy97bs.f.p, plot=F,
+                 fun=function(x) length(x[x>0.5])/length(x), 
+                 layout=layout.fruchterman.reingold)
+# Calculate number of dominant symbionts connected to each species
+dom.Nedges <- sapply(levels(data.frame(sample_data(phy97bs.f.p))$Species),
+                     FUN=function(x) length(E(domnet)[from(x)]))
+dom.Nedges <- sort(dom.Nedges, decreasing=T)
+
+# Create abundant symbionts network
+set.seed(12374)
+abunet <- sppnet(phy=phy97bs.f.p, plot=F,
+                 fun=function(x) length(x[x>0.01])/length(x),
+                 layout=layout.fruchterman.reingold)
+# Calculate number of abundant symbionts connected to each species
+abu.Nedges <- sapply(levels(data.frame(sample_data(phy97bs.f.p))$Species),
+                     FUN=function(x) length(E(abunet)[from(x)]))
+abu.Nedges <- sort(abu.Nedges, decreasing=T)
+
+# Create background symbionts network
+# filter out OTUs that only occurred in one sample
+phy97bs.f.p2 <- filter_taxa(phy97bs.f.p, function(x) sum(x>0) > 1, prune=TRUE)
+bkgnet <- sppnet(phy=phy97bs.f.p2, plot=F,
+                 fun=function(x) any(x>0 & x<0.01),
+                 layout=layout.fruchterman.reingold)
+# Merge D nodes (assuming they are all D1a/trenchii)
+# Get original node map (sequence starting at one to the total number of nodes)
+nodemap <- seq(1:length(V(bkgnet)))
+# Make a copy of the nodemap that will be modified
+nodemapnew <- nodemap
+# Find all nodes beginning with D, and give them the same node ID number
+nodemapnew[grep("^D", V(bkgnet)$Subtype)] <- min(grep("^D", V(bkgnet)$Subtype))
+# Replace the now missing values in the node map so node IDs remain sequential
+while (max(setdiff(nodemap, nodemapnew)) < max(nodemap)) {
+  nodemapnew[which(nodemapnew==max(setdiff(nodemap, nodemapnew))+1)] <- min(setdiff(nodemap, nodemapnew))
+}
+# Contract the network using the new nodemap (nodes with same node ID are merged)
+bkgnet2 <- contract(bkgnet, nodemapnew, vertex.attr.comb=list(size="sum", "last"))
+# Simplify network so that multiple edges are combined
+bkgnet2 <- simplify(bkgnet2, remove.multiple=T, edge.attr.comb=list(weight="mean", width="mean", "ignore"))
+# remove symbionts that are only connected to one or two coral species
+bkgnet3 <- delete.vertices(bkgnet2, degree(bkgnet2)<=2) # & V(net2)$type==2)
+V(bkgnet3)$size <- ifelse(is.na(V(bkgnet3)$Clade), 15, 1.5*degree(bkgnet3)^1.5)
+E(bkgnet3)$width <- E(bkgnet3)$weight * 2
+
+# Calculate number of edges for background symbionts
+nspp <- sapply(V(bkgnet3)[V(bkgnet3)$type==2], function(x) length(E(bkgnet3)[from(x)]))
+names(nspp) <- V(bkgnet3)$label[match(names(nspp), V(bkgnet3)$name)]
+nspp <- sort(nspp, decreasing=T)
+```
+
+  We analyzed patterns of association between coral species and *Symbiodinium* by constructing three networks focusing on "abundant" (>1% relative abundance; Fig. 4), "dominant" (>50% relative abundance; Fig. 5A), and "background" (<1% relative abundance; Fig. 5B) symbionts in each coral species, based on 97% within-sample clustering. (Networks for individuals within each species are presented in Supplementary Materials). In the abundant symbiont network (Fig. 4), `r sum(V(abunet)$type==2)` distinct OTUs were observed. *D. strigosa* associated with the greatest number of distinct OTUs (n=`r abu.Nedges["strigosa"]`), followed by *F. fragum* (n=`r abu.Nedges["fragum"]`), *M. alcicornis* (n=`r abu.Nedges["alcicornis"]`), and *D. cylindrus* (n=`r abu.Nedges["cylindrus"]`); these primarily comprised OTUs closely related to B1 and B19. In contrast, only a single OTU occurred at >1% relative abundance in both *P. astreoides* (A4) and *M. cavernosa* (C3). All coral species hosted at least one "abundant" *Symbiodinium* OTU that was also abundant in at least one other coral species, except for *S. radians*. This species was heavily dominated by C46, but also contained *Symbiodinium* closely related to B1 and B19, as well as B5.  
+  
+  A total of `r sum(V(domnet)$type==2)` different *Symbiodinium* OTUs occurred as "dominant" symbionts, meaning they were present at >50% relative abundance within a sample (Fig. 5A). A single *Symbiodinium* B1 OTU was the most prevalent dominant symbiont, dominating all *D. cylindrus* samples and many *D. strigosa*, *O. annularis*, *M. alcicornis*, and *F. fragum* samples. Other closely related clade B OTUs (similar to B1, B1d, and B19) occasionally dominated *D. strigosa*, *M. alcicornis*, and *F. fragum*, while *O. annularis* was dominated just as often by *Symbiodinium* C7. After B1, the next most prevalent dominant symbionts were *Symbiodinium* C3, which dominated all *M. cavernosa* and most *S. siderea* samples, and *Symbiodinium* A4, which dominated all *P. astreoides* and most *P. furcata* samples. *P. furcata* and *S. siderea* were each occasionally dominated by other symbiont OTUs, including C45 or C45a (*P. furcata*), and C1 or D1 (*S. siderea*). All coral species were dominated by at least one *Symbiodinium* OTU that also dominated at least one other coral species, except for *S. radians*, which was exclusively dominated by C46. 
+  
+  There were `r sum(V(bkgnet3)$type==2)` symbionts that occurred at background levels (<1% relative abundance) in at least three coral species (Fig. 5B). *Symbiodinium* D1a/*S. trenchii* was detected in the highest number of species (n=`r nspp["D1a"]`), followed by A4 (n=`r nspp["A4"]`) and C3 (n=`r nspp["C3"]`). C31, C46, and B1 were each detected at background levels in 4 different species.
+
+```{r Fig4, fig.width=5, fig.height=5, fig.align="center", fig.retina=1, out.width=5, fig.cap="<br>Figure 4. Network analysis of abundant *Symbiodinium* taxa in each coral species. *Symbiodinium* OTUs (circular nodes) are connected to each coral species (square nodes) in which they ever occurred at greater than 1% relative abundance within an individual; thickness of edges is relative to the proportion of individuals within the coral species in which the *Symbiodinium* OTU was present at >1%. Symbiont nodes are colored by clade identity, sized proportionally to the number of coral species they dominated."}
+# Plot abundant symbionts network
+par(mfrow=c(1,1), mar=c(0,0,0,0), lwd=1)
+V(abunet)$size <- ifelse(is.na(V(abunet)$Clade), 10, 13*(degree(abunet))^0.4)
+set.seed(12374)
+l <- layout.fruchterman.reingold(abunet)
+l <- norm_coords(l, ymin=-1, ymax=1, xmin=-1, xmax=1)
+plot(abunet, rescale=F, layout=l, edge.curved=0.1, 
+     vertex.label.cex=ifelse(is.na(V(abunet)$Clade), V(abunet)$size/15, V(abunet)$size/18),
+     vertex.label.color="black") 
+```
+
+```{r Fig5, fig.width=7.20472, fig.height=3.60236, fig.align="center", fig.cap="Figure 5. Network analysis of dominant (A) and background (B) *Symbiodinium* taxa in each coral species (see Materials and Methods for details on network construction). Symbiont nodes are colored by clade identity, sized proportionally to the number of coral species to which they are connected."}
+
+par(mfrow=c(1,2), mar=c(0.1,1,1.9,1), lwd=1, xpd=NA) 
+# Plot dominant symbionts network
+set.seed(12374)
+l <- layout.fruchterman.reingold(domnet)
+l <- norm_coords(l, ymin=-1, ymax=1, xmin=-1, xmax=1)
+V(domnet)$size <- ifelse(is.na(V(domnet)$Clade), 16, 18*(degree(domnet))^0.5)
+plot(domnet, rescale=F, layout=l, edge.curved=0.1, vertex.label.cex=V(domnet)$size/25,
+     vertex.label.color="black")
+title("A.) Dominant symbionts", adj=0)
+
+# Plot background symbionts network
+set.seed(42384)
+l3 <- layout.fruchterman.reingold(bkgnet3)
+l3 <- norm_coords(l3, ymin=-1, ymax=1, xmin=-1, xmax=1)
+V(bkgnet3)$size <- ifelse(is.na(V(bkgnet3)$Clade), 16, 8*(degree(bkgnet3))^0.8)
+plot(bkgnet3, rescale=F, layout=l3, edge.curved=0.1, vertex.label.cex=V(bkgnet3)$size/25,
+     vertex.label.color="black")
+points(0.9,0.9, pch=0, cex=3.5)
+text(0.9,0.9, "Oa", cex=1)
+title("B.) Background symbionts", adj=0)
+```
+
+#### Symbiotic flexibility of coral species
+
+  Significant differences in symbiotic flexibility (i.e. multivariate dispersion) were detected among coral species. The highest flexibility was found in *D. strigosa*, *P. furcata*, *M. alcicornis*, *S. siderea*, and *M. annularis*, and the lowest was found in *M. cavernosa*. Flexibility was also low in *D. cylindrus*, *S. radians*, and *P. astreoides*, and intermediate in *F. fragum*.
+
+```{r Fig6, cache=F, fig.width=3.5, fig.height=3.5, fig.cap="Figure 6. Symbiotic flexibility in coral species quantified as multivariate dispersion of *Symbiodinium* community composition."}
+betad97bs <- betad(phy97bs.f.t, group="Species")
+
+par(mar=c(3,3,1,1), mgp=c(1.8,0.1,0), tcl=0.25)
+with(betad97bs$sambdsumm.ord, {
+  plot(mean, type="n", ylim=c(0, 0.65), ylab="Distance to centroid", xaxt="n", xlab="Coral species")
+  arrows(1:10, mean - se, 1:10, mean + se, length=0.05, angle=90, code=3)
+  points(1:10, mean, cex=1, pch=21, bg="white")
+  axis(side=1, at=1:10, cex.axis=0.75,
+       labels=str_replace_all(levels(sam$Species)[order(betad97bs$sambdsumm$mean, decreasing=T)],
+                              c("alcicornis"="Ma", "annularis"="Oa",
+                                "astreoides"="Pa", "cavernosa"="Mc",
+                                "cylindrus"="Dc", "fragum"="Ff", 
+                                "furcata"="Pf", "radians"="Sr", 
+                                "siderea"="Ss", "strigosa"="Ds")))
+  text(1:10, mean + se + 0.03, labels=betad97bs$saml$Letters[as.character(group)], cex=0.5)
+})
+```
+
+### Discussion
+
+#### Bioinformatic analysis of ITS2 diversity
+
+  The perceived structure of corals' *Symbiodinium* communities was significantly impacted by the bioinformatic approach used to analyze ITS2 sequence data; specifically, the method of clustering sequence diversity into operational taxonomic units (OTUs). Clustering sequences from all samples together at 97% similarity reduced the total number of OTUs by 98% relative to no clustering (Table 1). Intermediate diversity was resolved by within-sample clustering, with 13% more OTUs than across-sample clustering. By comparing the qualitative outcomes of these approaches (Fig. 2), it is apparent that across-sample clustering may assign the same dominant OTU to samples with dissimilar sequence assemblages. This results from the fact that an OTU's representative sequence (and basis for taxonomic assignment) is selected as the numerically dominant member; when these member sequences occur across many samples, the most abundant may simply reflect the number and composition of samples in the dataset. Consequently, closely related sequences arising from different *Symbiodinium* may be subsumed under the dominant variant that happens to be most well-represented (i.e., most heavily sampled). Therefore, while 97% similarity may successfully collapse intragenomic variation within a single *Symbiodinium* type [@Arif:2014gk], when clustering is applied across a dataset potentially comprised of many closely related types, it may also collapse interspecific variation and underestimate true diversity. 
+  
+  Meanwhile, clustering within samples assigns OTUs that reflect only the assemblage of sequences within that sample, and therefore does not depend on the size or structure of the sample set. The outcomes of within-sample clustering more accurately reflect knowledge of *Symbiodinium* diversity and ecology that has been revealed by more variable markers (psbA^ncr^) and microsatellites [@Finney:2010p8324; @Thornhill:2013dx]; namely, that considerable species diversity exists within clades B and C in the Caribbean that associates strongly with host specificity. Indeed, only within-sample clustering assigned different dominant clade C types to samples of *O. annularis* and *S. siderea*, which have been differentiated based on other markers and microsatellites [@Thornhill:2013dx]. While multi-locus approaches clearly provide a superior description of *Symbiodinium* diversity, within-sample clustering of ITS2 metabarcoding data may be a good approximation of diversity in most cases, and in theory should reflect patterns that would be observed by sequencing dominant bands from denaturing gradient gel electrophoresis (DGGE; the most commonly use method of describing *Symbioinium* diversity prior to metabarcoding). Furthermore, metabarcoding overcomes the primary limitations of DGGE by providing quantitative data and highly sensitive detection of low abundance taxa. Therefore, we recommend within-sample clustering approach for metabarcoding studies where many different *Symbiodinium* types are likely to be encountered. 
+  
+  Importantly, the assumptions underlying a within-sample clustering approach -- that samples typically contain one *Symbiodinium* clone that can be diagnosed by its most abundant intragenomic ITS2 variant -- will not always be met. In fact, multiple types co-occur frequently in coral samples [@Silverstein:2012ub], which undermines support for assuming variation within a sample is intragenomic. However, co-occurring types in many cases are members of different clades, with ITS2 sequences divergent enough to still be resolved separately by 97% clustering. Thus, only when very closely related types co-occur [e.g., @Sampayo:2007p4020; @Wham:2016gl] is this approach likely to fail, requiring population genetic markers to parse interspecific variation. Other problematic cases may occur when multiple ITS2 sequence variants are co-dominant (i.e., comprise nearly equal proportions of the rDNA array), such that a slight numerical dominance of one or the other may lead to different OTU assigments in samples with very similar sequence assemblages (e.g., Fig. SX). These challenges may be overcome by 1) analyzing read abundance correlations across samples to inform OTU assignments, or 2) using alternative criteria for taxonomic assignment, such as the most evolutionarily derived sequence variant.
+  
+  While within-sample clustering of ITS2 data cannot provide species-level descriptions of *Symbiodinium* communities (since the ITS2 marker itself does not provide this resolution), this nuanced bioinformatic approach nevertheless accommodates known complexities in the evolution of the ITS2 locus to provide community descriptions that better approximate true biological diversity than either across-sample clustering or no clustering at all.
+
+#### *Symbiodinium* metacommunity ecology in St. John
+
+  When treated with a bioinformatic approach that reflects the complexity of the marker, ITS2 metabarcoding remains a very powerful way to describe *Symbiodinium* communities - it provides a comprehensive and quantitative picture of *Symbiodinium* taxa present in a sample, has a high sensitivity for detection of rare 'background' taxa (which may be ecologically important), and can be easily applied across host species and scaled up to rapidly survey the *Symbiodinium* metacommunity on a reef-wide scale.
+  
+  In the ten host species sampled at St. John USVI, the most prevalent *Symbiodinium* were members of clades B and C, consistent with previous work in this region [@LaJeunesse:2004p122; @Correa:2009p4378; @Finney:2010p8324]. Less frequent associations with members of clades A and D were observed, though these types did dominate colonies of certain species (clade A dominated *P. astreoides* and *P. furcata*, while clade D dominated *S. siderea*). Finally, clade G was also observed at low relative abundances (<`r round(clademax[5,2], 1)` within samples), which likely would not have been detected without high-throughput sequencing. 
+  
+  When the associations between *Symbiodinium* types and coral species are visualized by network analysis, features of both symbiont and host ecology emerge. First, ITS2 type B1 was "abundant" (i.e. >1%) in individuals of seven out of ten coral species, and "dominant" (i.e. >50%) in five out of ten, suggesting it is a more generalist symbiont lineage. However, analysis of more variable chloroplast and microsatellite loci has revealed that ITS2 type B1 in the Caribbean is comprised of numerous specialized lineages that demonstrate specific associations with different coral host species [@Santos:2004p4044; @Finney:2010p8324; @Parkinson:2015gt]. Likewise, the apparent generalist *Symbiodinium* C3 (which dominated colonies of both *S. siderea* and *M. cavernosa*) and *Symbiodinium* A4 (which dominated both *P. astreoides* and *P. furcata*) may also be comprised of multiple specialized lineages [@Thornhill:2013dx], which will require evaluation with population genetic markers.
+  
+  In addition to hosting apparent generalist ITS2 lineages, most coral species (except for *M. cavernosa* and *P. astreoides*) hosted abundant OTUs that were not abundant in any other corals, and are thus apparently more host-specific. Unique OTUs in the B1-radiation were abundant in *M. alcicornis* and *D. cylindrus*, while others from both the B1- and B19-radiations [see @LaJeunesse:2004p122] were abundant in *F. fragum*, *S. radians*, and *D. strigosa*. Several clade C OTUs were similarly only abundant in one species: C1144 in *D. strigosa*, C7 in *O. annularis*, C1 in *S. siderea*, C1c/C45 and C45a in *P. furcata*, and C46 in *S. radians*. Interestingly, *S. radians* was the only coral species in which none of the abundant symbionts occurred in any other corals, which may reflect the unique ecology of *S. radians* as the only study species that typically forms small, encrusting colonies.
+  
+  Finally, to reveal symbionts that consistently occupied a 'background' niche, we identified OTUs present at less than 1% relative abundance in at least three different host species. Such a distribution suggests that these symbionts can occupy a range of hosts, but functionally do not outperform other resident symbionts to become dominant under prevailing environmental conditions. Their presence, however, indicates that they may be able to achieve dominance within a colony under certain environmental conditions. Indeed, the most prevalent 'background' symbiont in St. John was a member of clade D (*Symbiodinium trenchii* [@LaJeunesse:2014io], in seven out of ten species), a thermotolerant symbiont that has been shown to proliferate within coral hosts during and after thermal stress [@LaJeunesse:2009p7364; @Silverstein:2015er], or in more marginal environments [@LaJeunesse:2010p7790]. Association with these symbionts may therefore be indicative of a broader fundamental niche space and resilience to environmental change. *Symbiodinium* A4 and C3 also commonly occurred as background symbionts, suggesting they may perform analogous functional and ecological roles within the metacommunity.
+  
+  Focusing on coral hosts, there was a clear difference among species in the number of OTUs that were abundant (Fig. 4) and dominant (Fig. 5A), indicating different levels of variability in the symbiosis ecology of different coral species. *D. strigosa* individuals were dominated by four different OTUs, while *D. cylindrus*, *S. radians*, *M. cavernosa*, and *P. astreoides* were dominated by a single OTU. In fact, metabarcoding data enables quantifying symbiosis flexibility as multivariate dispersion (a metric of beta diversity), which can be statistically compared among species [@Anderson:2006fs]. The flexibility of symbiosis is important as a potential indicator of the environmental sensitivity of a species [@Putnam:2012wv], and its ability to switch or shuffle its symbionts. This metric revealed that *M. cavernosa*, *P. astreoides*, *S. radians*, and *D. cylindrus* all had the lowest symbiotic flexibility. On the other hand, *D. strigosa*, *P. furcata*, *M. alcicornis*, and *S. siderea* had the most variable symbiont communities, indicating that these species may be more 'flexible' in their associations, and that their symbiont community structure may be more responsive to variability in the natural environment.
+  
+  To analyze potential influence of the environment at a larger spatial scale, we tested whether symbiont community composition of each species differed between the north and south shores. While environmental data revealed a significant biophysical differences between these two sides of the island (e.g., wave height, temperature, and chlorophyll A), there were no significant differences in symbiont community composition. This may partly be due to low statistical power associated with small sample sizes, since two species showed clear trends: *S. siderea* and *P. furcata* tended to be dominated more frequently by *Symbiodinium* in clades D and A, respectively, on the south shore, compared to the north shore (Fig. 2). Since these symbionts are typically associated with higher temperature environments, it is counter to expectation that they were more prevalent on the south shore, which was characterized by slightly lower and more stable temperatures. This pattern may indicate that other factors that we did not measure (or did not measure with high enough spatial resolution) may be more important in structuring these communities.
+  
+#### Conclusions
+
+  While not providing species-level resolution, ITS2 metabarcoding represents a powerful approach to quantitatively and comprehensively describe *Symbiodinium* metacommunity composition on coral reefs. With proper bioinformatic interpretation, these datasets can address critical topics in coral symbiosis ecology, including the influence of the environment on community structure, changes in dominant or background symbiont abundance over environmental gradients of over time, with important implications for understanding coral responses to environmental change.
+
+
+### Acknowledgements
+Funding for this work was provided by _________. RC was supported by a NSF Postdoctoral Research Fellowship in Biology (NSF-PRFB 1400787). Remote sensing observations of sea surface temperature and phytoplankton pigment concentration were processed at the Institute for Marine Remote Sensing at the College of Marine Science, University of South Florida, in St. Petersburg, Florida, and provided courtesy of Frank Müller-Karger.
+
+### References
