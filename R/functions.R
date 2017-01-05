@@ -231,9 +231,9 @@ perms <- function(phy, group, trt) {
   groups <- data.frame(sample_data(phy))[, group]
   # Create data frame to populate with results
   resdf <- data.frame(
-    matrix(ncol=8, nrow=10,
+    matrix(ncol=7, nrow=10,
            dimnames=list(levels(data.frame(sample_data(phy))[, group]), 
-                         c(group, "n", "overall", "within", "between", "R2", "bd", "p")))
+                         c(group, "n", "overall", "within", "between", "R2", "p")))
   )
   # Compute within- and between-treatment statistics for each group
   for (i in 1:nlevels(groups)) {
@@ -255,12 +255,12 @@ perms <- function(phy, group, trt) {
       permanova <- adonis(braydist ~ get(trt), data=samdat, permutations=99999)
       resdf$R2[i] <- permanova$aov.tab$"R2"[1]  # PERMANOVA partial R-squared
       resdf$p[i] <- permanova$aov.tab$"Pr(>F)"[1]  # PERMANOVA p-value
-      bd <- betadisper(braydist, group=samdat[, trt])
-      resdf$bd[i] <- TukeyHSD(bd)$group[4]
+      #bd <- betadisper(braydist, group=samdat[, trt])
+      #resdf$bd[i] <- TukeyHSD(bd)$group[4]
     } else {
       resdf$R2[i] <- NA
       resdf$p[i] <- NA
-      resdf$bd[i] <- NA
+      #resdf$bd[i] <- NA
     }
   }
   return(resdf)
