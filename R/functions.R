@@ -54,7 +54,7 @@ composition <- function(phy, col, legend=T) {
   # Add lines to separate species and species names
   for (i in 1:length(spbreaks)) {
     lines(c(0, 1.07), c(spbreaks[i], spbreaks[i]), xpd=T, type="l", lwd=0.4)
-    text(1.03, (spbreaks[i] + spbreaks[i+1]) / 2, xpd=T, pos=4, cex=0.6,
+    text(1.03, (spbreaks[i] + spbreaks[i+1]) / 2, xpd=T, pos=4, cex=0.6, font = 3,
          labels=paste(samdat$Genus[which(duplicated(samdat$Species)==F)][i], "\n",
                       samdat$Species[which(duplicated(samdat$Species)==F)][i], sep=""))
   }
@@ -277,9 +277,9 @@ phystats <- function(phy) {
       'Number of singleton OTUs'=length(taxa_sums(phy)[taxa_sums(phy) <= 1]),
       'Number of samples'=nsamples(phy),
       'Range of reads per sample'=paste0(range(sample_sums(phy)), collapse=" - "),
-      'Arithmetic mean (±SD) reads per sample'=paste(as.integer(mean(sample_sums(phy))), 
+      'Arithmetic mean (± SD) reads per sample'=paste(as.integer(mean(sample_sums(phy))), 
                                                      as.integer(sd(sample_sums(phy))), sep=" ± "),
-      'Geometric mean (*/SD) reads per sample'=paste(as.integer(exp(mean(log(sample_sums(phy))))),
+      'Geometric mean (*/ GSD) reads per sample'=paste(as.integer(exp(mean(log(sample_sums(phy))))),
                                                     as.integer(exp(sd(log(sample_sums(phy))))), sep=" */ "),
       check.names=F)
   )
