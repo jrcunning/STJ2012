@@ -163,7 +163,7 @@ otubarplot2 <- function(samples) {
        xpd=NA, adj=c(0,0))
   # Add species names
   spnames <- as.character(sample_data(phy97)$Species[match(sord, rownames(sample_data(phy97)))])
-  fspnames <- c("D. strigosa", "M. alcicornis", "P. furcata", "O. annularis", "S. siderea", "F. fragum", "S. radians", "P. astreoides", "D. cylindrus", "M. cavernosa")
+  fspnames <- c("P. strigosa", "M. alcicornis", "P. furcata", "O. annularis", "S. siderea", "F. fragum", "S. radians", "P. astreoides", "D. cylindrus", "M. cavernosa")
   spnames <- sapply(spnames, function(x) str_subset(fspnames, x))
   newsp <- c(1, which(diff(as.numeric(factor(spnames)))!=0)+1, nsamples(phy100)+1)
   i <- 1
