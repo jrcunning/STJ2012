@@ -2,4 +2,5 @@
 .Rhistory
 .RData
 *~
-manuscript/
+manuscript/*
+!manuscript/manuscript.Rmd
