@@ -27,7 +27,7 @@ cat data/otus_97_bysample/[0-9]*_rep_set.fasta > data/otus_97_bysample/all_rep_s
 # Cluster all 97% rep sets at 100% identity
 pick_otus.py -i data/otus_97_bysample/all_rep_set.fasta -s 1.0 --optimal_uclust -o data/otus_97_bysample
 
-# Get rep set of 100% OTUs and assign taxonomy
+# Get rep set of 100% OTUs
 pick_rep_set.py -i data/otus_97_bysample/all_rep_set_otus.txt -f data/otus_97_bysample/all_rep_set.fasta \
 -o data/otus_97_bysample/all_rep_set_rep_set.fasta
 
