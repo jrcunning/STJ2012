@@ -1,6 +1,5 @@
 .DS_Store
 *.zip
-fastq
 fasta
 merge
 *~
