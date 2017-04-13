@@ -1,1 +1,5 @@
 *2015.zip filter=lfs diff=lfs merge=lfs -text
+
+data/* linguist-vendored
+figures/* linguist-vendored
+supp/STJ2012_analysis.html linguist-vendored
