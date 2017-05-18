@@ -165,7 +165,7 @@ otubarplot2 <- function(samples) {
   tax_to_label <- sort(otutab[, 1], decreasing=T)[sort(otutab[, 1], decreasing=T) > 0.05]
   tax_names <- as.character(taxdat[rownames(tax_to_label), "Subtype3"])
   tax_cent <- cumsum(c(0, tax_to_label)[1:length(tax_to_label)]) + diff(cumsum(c(0, tax_to_label))) / 2
-  text(bars, tax_cent, labels=tax_names, cex=0.6)
+  text(bars, tax_cent, labels=tax_names, cex=0.5)
   axis(side=2, tcl=-0.15, at=c(0.2, 0.4, 0.6, 0.8, 1.0), las=1)
   for (i in 2:ncol(otutab)) {
     barplot(sort(otutab[, i], decreasing=T), add=T, yaxt="n", xaxt="n", width=1/(ncol(otutab)*1), space=1*(i-1),
@@ -173,7 +173,7 @@ otubarplot2 <- function(samples) {
     tax_to_label <- sort(otutab[, i], decreasing=T)[sort(otutab[, i], decreasing=T) > 0.05]
     tax_names <- as.character(taxdat[rownames(tax_to_label), "Subtype3"])
     tax_cent <- cumsum(c(0, tax_to_label)[1:length(tax_to_label)]) + diff(cumsum(c(0, tax_to_label))) / 2
-    text(bars+((1/(ncol(otutab)*1)))*(i-1), tax_cent, labels=tax_names, cex=0.6)
+    text(bars+((1/(ncol(otutab)*1)))*(i-1), tax_cent, labels=tax_names, cex=0.5)
   }
   # Get midpoint, start, and end x-coords of each bar for annotating plot
   midpts <- seq(from=bars, by=bars*2, length.out=nsamples(phy100))
@@ -194,7 +194,7 @@ otubarplot2 <- function(samples) {
   i <- 1
   while (i < length(newsp)) {
     brackets(starts[newsp[i]], 1, ends[newsp[i+1]-1], 1, xpd=NA)
-    text((starts[newsp[i]]+ends[newsp[i+1]-1])/2, 1.1, labels=substitute(italic(x), list(x=spnames[newsp[i]])), xpd=NA, cex=0.8)
+    text((starts[newsp[i]]+ends[newsp[i+1]-1])/2, 1.1, labels=substitute(italic(x), list(x=spnames[newsp[i]])), xpd=NA, cex=0.7)
     i <- i + 1
   }
   # Add dominant OTU assigned by 97% clustering across samples
@@ -246,7 +246,7 @@ otubarplot2 <- function(samples) {
   while (i < length(newotus97bs)) {
     polygon(x=c(rep(starts[newotus97bs[i]], 2), rep(ends[newotus97bs[i+1]-1], 2)), y=c(-0.4, -0.5, -0.5, -0.4), 
             col=unique(matchcols)[i], xpd=NA)
-    text((starts[newotus97bs[i]]+ends[newotus97bs[i+1]-1])/2, -0.45, labels=names97bs[newotus97bs[i]], xpd=NA, cex=0.8)
+    text((starts[newotus97bs[i]]+ends[newotus97bs[i+1]-1])/2, -0.45, labels=names97bs[newotus97bs[i]], xpd=NA, cex=0.7)
     i <- i + 1
   }
 }
