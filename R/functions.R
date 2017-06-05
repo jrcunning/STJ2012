@@ -184,8 +184,10 @@ otubarplot2 <- function(samples) {
   
   
   # Add title
-  text(-0.03, 1.18, label=expression(paste(bold("A. "), "Relative abundance of unique sequence variants in samples:", sep=" ")), 
+  text(-0.03, 1.18, label=expression(paste(bold("A. "), "", sep=" ")), 
        xpd=NA, adj=c(0,0))
+  #text(-0.03, 1.18, label=expression(paste(bold("A. "), "Relative abundance of unique sequence variants in samples:", sep=" ")), 
+  #     xpd=NA, adj=c(0,0))
   # Add species names
   spnames <- as.character(sample_data(phy97)$Species[match(sord, rownames(sample_data(phy97)))])
   fspnames <- c("P. strigosa", "M. alcicornis", "P. furcata", "O. annularis", "S. siderea", "F. fragum", "S. radians", "P. astreoides", "D. cylindrus", "M. cavernosa")
@@ -198,7 +200,9 @@ otubarplot2 <- function(samples) {
     i <- i + 1
   }
   # Add dominant OTU assigned by 97% clustering across samples
-  text(-0.03, -0.125, label=expression(paste(bold("B. "), "Dominant OTU assigned by 97% clustering across samples:")), xpd=NA, adj=c(0,0))
+  #text(-0.03, -0.125, label=expression(paste(bold("B. "), "Dominant OTU assigned by 97% clustering across samples:")), xpd=NA, adj=c(0,0))
+  text(-0.03, -0.125, label=expression(paste(bold("B. "), "")), xpd=NA, adj=c(0,0))
+  
   names97 <- unlist(lapply(strsplit(as.character(data.frame(tax_table(phy97)[apply(data.frame(otu_table(phy97), check.names=F)[,sord], MARGIN=2, FUN=which.max), "Subtype3"])$Subtype3), split="_"), "[[", 1))
   #names97 <- taxdat[taxdat$Subtype3 %in% names97, "Subtype3"]
   otus97 <- rownames(tax_table(phy97)[apply(data.frame(otu_table(phy97), check.names=F)[,sord], MARGIN=2, FUN=which.max), ])
@@ -223,7 +227,9 @@ otubarplot2 <- function(samples) {
     i <- i + 1
   }
   # Add dominant OTU assigned by 97% clustering within samples
-  text(-0.03, -0.375, label=expression(paste(bold("C. "), "Dominant OTU assigned by 97% clustering within samples:")), xpd=NA, adj=c(0,0))
+  #text(-0.03, -0.375, label=expression(paste(bold("C. "), "Dominant OTU assigned by 97% clustering within samples:")), xpd=NA, adj=c(0,0))
+  text(-0.03, -0.375, label=expression(paste(bold("C. "), "")), xpd=NA, adj=c(0,0))
+  
   names97bs <- unlist(lapply(strsplit(as.character(data.frame(tax_table(phy97bs)[apply(data.frame(otu_table(phy97bs), check.names=F)[,sord], MARGIN=2, FUN=which.max), "Subtype3"])$Subtype3), split="_"), "[[", 1))
   otus97bs <- rownames(tax_table(phy97bs)[apply(data.frame(otu_table(phy97bs), check.names=F)[,sord], MARGIN=2, FUN=which.max), ])
   newotus97bs <- c(1, which(diff(as.numeric(factor(otus97bs)))!=0)+1, nsamples(phy100)+1)
@@ -350,7 +356,7 @@ sppnet <- function(phy, fun, layout, plot=T) {
       "astreoides"="Pa", "cavernosa"="Mc",
       "cylindrus"="Dc", "fragum"="Ff", 
       "furcata"="Pf", "radians"="Sr", 
-      "siderea"="Ss", "strigosa"="Ds")))
+      "siderea"="Ss", "strigosa"="Ps")))
   V(net)$color <- ifelse(is.na(V(net)$Clade), "white", taxcolors[factor(V(net)$Clade, levels=c("A","B","C","D","F","G"))])
   E(net)$color <- "gray60"
   E(net)$width <- 15 * E(net)$weight
