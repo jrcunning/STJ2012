@@ -7,8 +7,10 @@ awk '$3 < 90 {print $2}' $1 | sort -u > $dir/poor_matches.txt
 # Get corresponding sequences
 awk 'NR==FNR {a[">"$1]; next} $1 in a {print; getline; print}' $dir/poor_matches.txt $2 > $dir/poor_matches_seqs.fasta
 
-# Blast sequences to NCBI nr databse
-blastn -db nr -remote -query $dir/poor_matches_seqs.fasta -outfmt '6 qseqid qcovs stitle sseqid' -max_target_seqs 1 | sort -u -k1,1 > $dir/poormatch_IDs1.txt
+# Blast sequences to NCBI nt database
+### Must point -db to local copy of the nt database
+### or enable remote blast using '-remote' flag
+blastn -db ~/ncbi_nt/nt -query $dir/poor_matches_seqs.fasta -outfmt '6 qseqid qcovs stitle sseqid' -max_target_seqs 1 | sort -u -k1,1 > $dir/poormatch_IDs1.txt
 
 join -a 1 $dir/poor_matches.txt $dir/poormatch_IDs1.txt > $dir/poormatch_IDs.txt
 
