@@ -1,4 +1,4 @@
-all: data/otus_97/97_otus.tsv data/otus_97/nw_tophits.tsv data/otus_97/poormatch_IDs.txt data/otus_97_bysample/97_otus_bysample.tsv data/otus_97_bysample/nw_tophits.tsv data/otus_97_bysample/poormatch_IDs.txt data/otus_100/100_otus.tsv data/otus_100/nw_tophits.tsv data/otus_100/poormatch_IDs.txt data/otus_97_byspecies/97_otus_byspecies.tsv data/otus_97_byspecies/nw_tophits.tsv data/otus_97_byspecies/poormatch_IDs.txt
+all: data/otus_97/97_otus.tsv data/otus_97/nw_tophits.tsv data/otus_97/poormatch_IDs.txt data/otus_97_bysample/97_otus_bysample.tsv data/otus_97_bysample/nw_tophits.tsv data/otus_97_bysample/poormatch_IDs.txt data/otus_100/100_otus.tsv data/otus_100/nw_tophits.tsv data/otus_100/poormatch_IDs.txt
 
 # 12. Determine which 97%-across-sample OTUs are probably not Symbiodinium
 data/otus_97/poormatch_IDs.txt: data/otus_97/nw_tophits.tsv Shell/run_blast_poormatches.sh
