@@ -6,3 +6,4 @@ manuscript/*
 data/STJ_envdata.csv
 data/StJohn_envData_v2.xlsx
 data/coastline/extractedData.zip
+*.uc
