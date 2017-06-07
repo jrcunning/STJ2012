@@ -14,7 +14,9 @@ This project investigates *Symbiodinium* communities in scleractinian and millep
 
 2. Characterize *Symbiodinium* communities in a range of coral species using high-throughput sequencing (many for the first time)
 
-The bioinformatic pipeline is coded using a Makefile that calls a series of Shell and R scripts that generate the reference database, *Symbiodinium* OTU tables, and taxonomic assignments from the raw sequence data. Downstream statistical analysis and figure generation is then performed in the **R/analysis.R** script.
+The bioinformatic pipeline\* is coded using a Makefile that calls a series of Shell and R scripts that generate the reference database, *Symbiodinium* OTU tables, and taxonomic assignments from the raw sequence data. Downstream statistical analysis and figure generation is then performed in the **R/analysis.R** script.
+
+*\*Code for the bioinformatic pipeline utilized here has been generalized into a more usable form at [http://github.com/jrcunning/SymITS2](http://github.com/jrcunning/SymITS2)* 
 
 ### Repository contents:
 
