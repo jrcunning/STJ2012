@@ -247,7 +247,7 @@ boxplot(envdata$chlA ~ envdata$Site, range=0, add=T, axes=F, horizontal=T)
 text(par("usr")[1], par("usr")[4], "c)", adj=3)
 
 #Wave exposure
-we <- list(N=3.234787362,	S=4.025022708)
+we <- list(N=3.234787362,	S=4.025022708)  # Wave exposure data provided by Iliana Chollett
 barplot(c(we$S, we$N), horiz=T, xlim=c(0,5), ylab="", xlab="Wave exposure (ln J m-3)")
 text(par("usr")[1], c(0.7,1.9), c("S","N"), pos=2, offset=0.5, xpd=NA)
 points(rep(par("usr")[1]-strwidth("cc"),2), c(0.7,1.9), pch=1, cex=2.5, xpd=NA)
