@@ -1,4 +1,4 @@
-This repository contains all of the raw data and analysis scripts to accompany the manuscript:
+This repository contains all of the raw data, code, and supplemental information for the manuscript:
 
 # Using high-throughput sequencing of ITS2 to describe *Symbiodinium* metacommunities in St. John, U.S. Virgin Islands
 ### Authors: Ross Cunning, Ruth D. Gates, Peter J. Edmunds
@@ -16,21 +16,21 @@ This project investigates *Symbiodinium* communities in scleractinian and millep
 
 The bioinformatic pipeline\* is coded using a Makefile that calls a series of Shell and R scripts that generate the reference database, *Symbiodinium* OTU tables, and taxonomic assignments from the raw sequence data. Downstream statistical analysis and figure generation is then performed in the **R/analysis.R** script.
 
-*\*Code for the bioinformatic pipeline utilized here has been generalized into a more usable form at [http://github.com/jrcunning/SymITS2](http://github.com/jrcunning/SymITS2)* 
+*\*Code for the bioinformatic pipeline utilized here has been generalized to be readily used on new datasets at [http://github.com/jrcunning/SymITS2](http://github.com/jrcunning/SymITS2)* 
 
 ### Repository contents:
 
 #### Makefile: 
-- This Makefile codes the entire bioinformatic pipeline utilized in this study with calls to scripts in the **Shell/** and **R/** directories. Given the raw sequence reads archive (**data/Cunning_3967Raw10232015.zip**), the list of samples contained therein (**data/fastq_list.txt**), and the list of accession numbers to include in the reference database (**data/accn_nos.txt**), execution of this Makefile using `make` will generate OTUs, build the ITS2 reference database, and assign taxonomy using 100% clustering, 97% clustering, and 97%-within-sample clustering.
+- This Makefile codes the entire bioinformatic pipeline utilized in this study with calls to scripts in the **Shell/** and **R/** directories. Given the raw sequence reads (**data/Cunning_3967Raw10232015.zip**), the list of samples contained therein (**data/fastq_list.txt**), and the list of accession numbers to include in the reference database (**data/accn_nos.txt**), execution of this Makefile using `make` will generate OTUs, build the ITS2 reference database, and assign taxonomy using 100% clustering, 97% clustering, and 97%-within-sample clustering.
 
 #### Shell/:
 - **fetch_seqs.sh:** This script downloads sequence data from NCBI given a list of named sequences with accession numbers (e.g., >C1_AF333515)
-- **merge_qc_reads.sh:** This script unzips the fastq archive, merges and QCs reads, filters out chimeras, and trims primers.
+- **merge_qc_reads.sh:** This script unzips the fastq archive, merges and QC's reads, filters out chimeras, and trims primer sequences.
 - **otus_100.sh:** This script clusters ITS2 sequences at 100% identity across all samples.
 - **otus_97.sh:** This script clusters ITS2 sequences at 97% identity across all samples.
 - **otus_97_bysample.sh:** This script separates ITS2 sequences by sample and clusters at 97% identity within each sample independently.
 - **prep_ITS2db.sh:** This script prepares the ITS2 reference database from downloaded sequences by aligning sequences within clades, trimming to equal length, and removing duplicated sequences.
-- **run_blast_poormatches.sh:** This script identifies sequences with poor matches to the ITS2 reference database (<90% similarity to best match) and BLASTs these sequences against the NCBI nt database.
+- **run_blast_poormatches.sh:** This script identifies OTU representative sequences with poor matches to the ITS2 reference database (<90% similarity to best match) and BLASTs these sequences against the NCBI nt database.
 
 #### R/:
 - **analysis.R:** This script codes all of the analysis downstream of OTU clustering and taxonomic assignment, including OTU quality filtering, summary statistics, and analysis of *Symbiodinium* community composition using multivariate statistics and network analysis. This script also generates all of the figures presented in the published manuscript (**figures/Fig\*.png**).
