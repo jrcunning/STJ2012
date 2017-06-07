@@ -29,8 +29,8 @@ cutadapt -a AAGCATATAAGTAAGCGGAGG -e 0.15 data/ITS2db_trimF2_trimR.fasta -o data
 
 
 # Generate id_to_taxonomy file
-TAB=$'\t'  # ( because \t is not recognized by sed on mac os x )
-sed -e 's/>\([A-Z]\)\(.*\)\(_.*$\)/\1\2\3'"${TAB}"'Symbiodiniaceae;Symbiodinium;Clade\1;\1\2;_;_/' -e 'tx' -e 'd' -e ':x' data/ITS2db.fasta > data/id_to_taxonomy.txt
+#TAB=$'\t'  # ( because \t is not recognized by sed on mac os x )
+#sed -e 's/>\([A-Z]\)\(.*\)\(_.*$\)/\1\2\3'"${TAB}"'Symbiodiniaceae;Symbiodinium;Clade\1;\1\2;_;_/' -e 'tx' -e 'd' -e ':x' data/ITS2db.fasta > data/id_to_taxonomy.txt
 
 
 
