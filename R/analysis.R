@@ -223,7 +223,7 @@ par(mar=c(7,5,5,6), mgp=c(0.5,0.2,0))
 b <- barplot(t(as.matrix(nsam)), las=2, ylab="# samples", xpd=NA, names.arg=rep("",10), cex.axis=0.5, cex.names=0.5, cex.lab=0.5, tcl=0.1)
 text(b+1.2, -0.5, labels=rownames(nsam), srt=45, pos=2, cex=0.5, adj=1)
 legend("topleft", pch=22, pt.bg=c("gray90", "gray40"), pt.cex=1, cex=0.5, legend=c("N","S"), bty="n", inset=c(0.12,-0.1), xpd=T, y.intersp=0.8, x.intersp=0.75)
-text(par("usr")[1], par("usr")[4], "a)", cex=0.75, adj=2.5)
+text(par("usr")[1], par("usr")[4], "A)", cex=0.75, adj=2.5)
 
 # Plot environmental data
 envdata <- read.csv("data/STJ_envdata2.csv")
@@ -236,7 +236,7 @@ axis(side=1, at=seq(25,30,1))
 text(par("usr")[1], c(1,2), c("S","N"), pos=2, offset=0.5)
 points(rep(par("usr")[1]-strwidth("cc"),2), c(1,2), pch=1, cex=2.5)
 boxplot(envdata$SST ~ envdata$Site, range=0, add=T, axes=F, horizontal=T)
-text(par("usr")[1], par("usr")[4], "b)", adj=3)
+text(par("usr")[1], par("usr")[4], "B)", adj=3)
 
 #chlA
 plot(NA, xlim=c(0,0.1), ylim=c(0.5,2.5), bty="n", yaxt="n", ylab="", xlab="ChlA (mg m-3)", xaxt="n")
@@ -244,14 +244,14 @@ axis(side=1, at=seq(0,0.1,0.01))
 text(par("usr")[1], c(1,2), c("S","N"), pos=2, offset=0.5)
 points(rep(par("usr")[1]-strwidth("cc"),2), c(1,2), pch=1, cex=2.5)
 boxplot(envdata$chlA ~ envdata$Site, range=0, add=T, axes=F, horizontal=T)
-text(par("usr")[1], par("usr")[4], "c)", adj=3)
+text(par("usr")[1], par("usr")[4], "C)", adj=3)
 
 #Wave exposure
 we <- list(N=3.234787362,	S=4.025022708)  # Wave exposure data provided by Iliana Chollett
 barplot(c(we$S, we$N), horiz=T, xlim=c(0,5), ylab="", xlab="Wave exposure (ln J m-3)")
 text(par("usr")[1], c(0.7,1.9), c("S","N"), pos=2, offset=0.5, xpd=NA)
 points(rep(par("usr")[1]-strwidth("cc"),2), c(0.7,1.9), pch=1, cex=2.5, xpd=NA)
-text(par("usr")[1], par("usr")[4], "d)", adj=3)
+text(par("usr")[1], par("usr")[4], "D)", adj=3)
 
 dev.off()
 
