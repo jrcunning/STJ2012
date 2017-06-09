@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.803992.svg)](https://doi.org/10.5281/zenodo.803992)
+
 This repository contains all of the raw data, code, and supplemental information for the manuscript:
 
 # Using high-throughput sequencing of ITS2 to describe *Symbiodinium* metacommunities in St. John, U.S. Virgin Islands
